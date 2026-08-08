@@ -1,0 +1,8221 @@
+{
+ "id": "wimbledon-men",
+ "tournament": "Wimbledon",
+ "year": 2026,
+ "event": "Gentlemen's Singles",
+ "surface": "Grass",
+ "venue": "All England Lawn Tennis and Croquet Club",
+ "city": "London",
+ "bestOf": 5,
+ "source": {
+  "wikipedia": "2026 Wimbledon Championships – Men's singles",
+  "url": "https://en.wikipedia.org/wiki/2026_Wimbledon_Championships_%E2%80%93_Men%27s_singles"
+ },
+ "players": {
+  "jannik-sinner": {
+   "id": "jannik-sinner",
+   "name": "Jannik Sinner",
+   "short": "J Sinner",
+   "country": "ITA",
+   "seed": "1"
+  },
+  "miomir-kecmanovic": {
+   "id": "miomir-kecmanovic",
+   "name": "Miomir Kecmanović",
+   "short": "M Kecmanović",
+   "country": "SRB",
+   "seed": null
+  },
+  "nuno-borges": {
+   "id": "nuno-borges",
+   "name": "Nuno Borges",
+   "short": "N Borges",
+   "country": "POR",
+   "seed": null
+  },
+  "tristan-boyer": {
+   "id": "tristan-boyer",
+   "name": "Tristan Boyer",
+   "short": "T Boyer",
+   "country": "USA",
+   "seed": "Q"
+  },
+  "aleksandar-vukic": {
+   "id": "aleksandar-vukic",
+   "name": "Aleksandar Vukic",
+   "short": "A Vukic",
+   "country": "AUS",
+   "seed": null
+  },
+  "jenson-brooksby": {
+   "id": "jenson-brooksby",
+   "name": "Jenson Brooksby",
+   "short": "J Brooksby",
+   "country": "USA",
+   "seed": null
+  },
+  "emilio-nava": {
+   "id": "emilio-nava",
+   "name": "Emilio Nava",
+   "short": "E Nava",
+   "country": "USA",
+   "seed": null
+  },
+  "ignacio-buse": {
+   "id": "ignacio-buse",
+   "name": "Ignacio Buse",
+   "short": "I Buse",
+   "country": "PER",
+   "seed": "31"
+  },
+  "rafael-jodar": {
+   "id": "rafael-jodar",
+   "name": "Rafael Jódar",
+   "short": "R Jódar",
+   "country": "ESP",
+   "seed": "23"
+  },
+  "felix-gill": {
+   "id": "felix-gill",
+   "name": "Felix Gill",
+   "short": "F Gill",
+   "country": "GBR",
+   "seed": "WC"
+  },
+  "denis-shapovalov": {
+   "id": "denis-shapovalov",
+   "name": "Denis Shapovalov",
+   "short": "D Shapovalov",
+   "country": "CAN",
+   "seed": null
+  },
+  "pablo-carreno-busta": {
+   "id": "pablo-carreno-busta",
+   "name": "Pablo Carreño Busta",
+   "short": "P Carreño Busta",
+   "country": "ESP",
+   "seed": null
+  },
+  "shintaro-mochizuki": {
+   "id": "shintaro-mochizuki",
+   "name": "Shintaro Mochizuki",
+   "short": "S Mochizuki",
+   "country": "JPN",
+   "seed": "Q"
+  },
+  "max-basing": {
+   "id": "max-basing",
+   "name": "Max Basing",
+   "short": "M Basing",
+   "country": "GBR",
+   "seed": "Q"
+  },
+  "ethan-quinn": {
+   "id": "ethan-quinn",
+   "name": "Ethan Quinn",
+   "short": "E Quinn",
+   "country": "USA",
+   "seed": null
+  },
+  "luciano-darderi": {
+   "id": "luciano-darderi",
+   "name": "Luciano Darderi",
+   "short": "L Darderi",
+   "country": "ITA",
+   "seed": "14"
+  },
+  "casper-ruud": {
+   "id": "casper-ruud",
+   "name": "Casper Ruud",
+   "short": "C Ruud",
+   "country": "NOR",
+   "seed": "11"
+  },
+  "hubert-hurkacz": {
+   "id": "hubert-hurkacz",
+   "name": "Hubert Hurkacz",
+   "short": "H Hurkacz",
+   "country": "POL",
+   "seed": null
+  },
+  "hamad-medjedovic": {
+   "id": "hamad-medjedovic",
+   "name": "Hamad Medjedovic",
+   "short": "H Medjedovic",
+   "country": "SRB",
+   "seed": null
+  },
+  "sebastian-ofner": {
+   "id": "sebastian-ofner",
+   "name": "Sebastian Ofner",
+   "short": "S Ofner",
+   "country": "AUT",
+   "seed": null
+  },
+  "kwon-soon-woo": {
+   "id": "kwon-soon-woo",
+   "name": "Kwon Soon-woo",
+   "short": "S-w Kwon",
+   "country": "KOR",
+   "seed": "Q"
+  },
+  "martin-landaluce": {
+   "id": "martin-landaluce",
+   "name": "Martín Landaluce",
+   "short": "M Landaluce",
+   "country": "ESP",
+   "seed": null
+  },
+  "alexandre-muller": {
+   "id": "alexandre-muller",
+   "name": "Alexandre Müller",
+   "short": "A Müller",
+   "country": "FRA",
+   "seed": null
+  },
+  "tommy-paul": {
+   "id": "tommy-paul",
+   "name": "Tommy Paul",
+   "short": "T Paul",
+   "country": "USA",
+   "seed": "21"
+  },
+  "brandon-nakashima": {
+   "id": "brandon-nakashima",
+   "name": "Brandon Nakashima",
+   "short": "B Nakashima",
+   "country": "USA",
+   "seed": "28"
+  },
+  "jack-pinnington-jones": {
+   "id": "jack-pinnington-jones",
+   "name": "Jack Pinnington Jones",
+   "short": "J Pinnington Jones",
+   "country": "GBR",
+   "seed": "WC"
+  },
+  "jan-lennard-struff": {
+   "id": "jan-lennard-struff",
+   "name": "Jan-Lennard Struff",
+   "short": "J-L Struff",
+   "country": "GER",
+   "seed": null
+  },
+  "sebastian-baez": {
+   "id": "sebastian-baez",
+   "name": "Sebastián Báez",
+   "short": "S Báez",
+   "country": "ARG",
+   "seed": null
+  },
+  "camilo-ugo-carabelli": {
+   "id": "camilo-ugo-carabelli",
+   "name": "Camilo Ugo Carabelli",
+   "short": "C Ugo Carabelli",
+   "country": "ARG",
+   "seed": null
+  },
+  "daniel-merida": {
+   "id": "daniel-merida",
+   "name": "Daniel Mérida",
+   "short": "D Mérida",
+   "country": "ESP",
+   "seed": null
+  },
+  "marin-cilic": {
+   "id": "marin-cilic",
+   "name": "Marin Čilić",
+   "short": "M Čilić",
+   "country": "CRO",
+   "seed": null
+  },
+  "daniil-medvedev": {
+   "id": "daniil-medvedev",
+   "name": "Daniil Medvedev",
+   "short": "D Medvedev",
+   "country": null,
+   "seed": "8"
+  },
+  "felix-auger-aliassime": {
+   "id": "felix-auger-aliassime",
+   "name": "Félix Auger-Aliassime",
+   "short": "F Auger-Aliassime",
+   "country": "CAN",
+   "seed": "3"
+  },
+  "alexander-shevchenko": {
+   "id": "alexander-shevchenko",
+   "name": "Alexander Shevchenko",
+   "short": "A Shevchenko",
+   "country": "KAZ",
+   "seed": null
+  },
+  "adam-walton": {
+   "id": "adam-walton",
+   "name": "Adam Walton",
+   "short": "A Walton",
+   "country": "AUS",
+   "seed": null
+  },
+  "dino-prizmic": {
+   "id": "dino-prizmic",
+   "name": "Dino Prižmić",
+   "short": "D Prižmić",
+   "country": "CRO",
+   "seed": null
+  },
+  "daniel-vallejo": {
+   "id": "daniel-vallejo",
+   "name": "Daniel Vallejo",
+   "short": "AD Vallejo",
+   "country": "PAR",
+   "seed": null
+  },
+  "nicolas-mejia": {
+   "id": "nicolas-mejia",
+   "name": "Nicolás Mejía",
+   "short": "N Mejía",
+   "country": "COL",
+   "seed": "Q"
+  },
+  "michael-zheng": {
+   "id": "michael-zheng",
+   "name": "Michael Zheng",
+   "short": "M Zheng",
+   "country": "USA",
+   "seed": "Q"
+  },
+  "cameron-norrie": {
+   "id": "cameron-norrie",
+   "name": "Cameron Norrie",
+   "short": "C Norrie",
+   "country": "GBR",
+   "seed": "26"
+  },
+  "alejandro-davidovich-fokina": {
+   "id": "alejandro-davidovich-fokina",
+   "name": "Alejandro Davidovich Fokina",
+   "short": "A Davidovich Fokina",
+   "country": "ESP",
+   "seed": "22"
+  },
+  "juan-manuel-cerundolo": {
+   "id": "juan-manuel-cerundolo",
+   "name": "Juan Manuel Cerúndolo",
+   "short": "JM Cerúndolo",
+   "country": "ARG",
+   "seed": null
+  },
+  "thiago-agustin-tirante": {
+   "id": "thiago-agustin-tirante",
+   "name": "Thiago Agustín Tirante",
+   "short": "TA Tírante",
+   "country": "ARG",
+   "seed": null
+  },
+  "fabian-marozsan": {
+   "id": "fabian-marozsan",
+   "name": "Fábián Marozsán",
+   "short": "F Marozsán",
+   "country": "HUN",
+   "seed": null
+  },
+  "luca-van-assche": {
+   "id": "luca-van-assche",
+   "name": "Luca Van Assche",
+   "short": "L Van Assche",
+   "country": "FRA",
+   "seed": null
+  },
+  "marton-fucsovics": {
+   "id": "marton-fucsovics",
+   "name": "Márton Fucsovics",
+   "short": "M Fucsovics",
+   "country": "HUN",
+   "seed": null
+  },
+  "dalibor-svrcina": {
+   "id": "dalibor-svrcina",
+   "name": "Dalibor Svrčina",
+   "short": "D Svrčina",
+   "country": "CZE",
+   "seed": null
+  },
+  "learner-tien": {
+   "id": "learner-tien",
+   "name": "Learner Tien",
+   "short": "L Tien",
+   "country": "USA",
+   "seed": "16"
+  },
+  "andrey-rublev": {
+   "id": "andrey-rublev",
+   "name": "Andrey Rublev",
+   "short": "A Rublev",
+   "country": null,
+   "seed": "12"
+  },
+  "roman-safiullin": {
+   "id": "roman-safiullin",
+   "name": "Roman Safiullin",
+   "short": "R Safiullin",
+   "country": null,
+   "seed": "Q"
+  },
+  "aleksandar-kovacevic": {
+   "id": "aleksandar-kovacevic",
+   "name": "Aleksandar Kovacevic",
+   "short": "A Kovacevic",
+   "country": "USA",
+   "seed": null
+  },
+  "botic-van-de-zandschulp": {
+   "id": "botic-van-de-zandschulp",
+   "name": "Botic van de Zandschulp",
+   "short": "B van de Zandschulp",
+   "country": "NED",
+   "seed": null
+  },
+  "jesper-de-jong": {
+   "id": "jesper-de-jong",
+   "name": "Jesper de Jong",
+   "short": "J de Jong",
+   "country": "NED",
+   "seed": null
+  },
+  "rinky-hijikata": {
+   "id": "rinky-hijikata",
+   "name": "Rinky Hijikata",
+   "short": "R Hijikata",
+   "country": "AUS",
+   "seed": null
+  },
+  "roberto-bautista-agut": {
+   "id": "roberto-bautista-agut",
+   "name": "Roberto Bautista Agut",
+   "short": "R Bautista Agut",
+   "country": "ESP",
+   "seed": null
+  },
+  "joao-fonseca": {
+   "id": "joao-fonseca",
+   "name": "João Fonseca",
+   "short": "J Fonseca",
+   "country": "BRA",
+   "seed": "24"
+  },
+  "arthur-rinderknech": {
+   "id": "arthur-rinderknech",
+   "name": "Arthur Rinderknech",
+   "short": "A Rinderknech",
+   "country": "FRA",
+   "seed": "25"
+  },
+  "oliver-tarvet": {
+   "id": "oliver-tarvet",
+   "name": "Oliver Tarvet",
+   "short": "O Tarvet",
+   "country": "GBR",
+   "seed": "Q"
+  },
+  "marco-trungelliti": {
+   "id": "marco-trungelliti",
+   "name": "Marco Trungelliti",
+   "short": "M Trungelliti",
+   "country": "ARG",
+   "seed": null
+  },
+  "martin-damm": {
+   "id": "martin-damm",
+   "name": "Martin Damm",
+   "short": "M Damm",
+   "country": "USA",
+   "seed": null
+  },
+  "hugo-gaston": {
+   "id": "hugo-gaston",
+   "name": "Hugo Gaston",
+   "short": "H Gaston",
+   "country": "FRA",
+   "seed": "Q"
+  },
+  "stefanos-tsitsipas": {
+   "id": "stefanos-tsitsipas",
+   "name": "Stefanos Tsitsipas",
+   "short": "S Tsitsipas",
+   "country": "GRE",
+   "seed": null
+  },
+  "wu-yibing": {
+   "id": "wu-yibing",
+   "name": "Wu Yibing",
+   "short": "Y Wu",
+   "country": "CHN",
+   "seed": null
+  },
+  "novak-djokovic": {
+   "id": "novak-djokovic",
+   "name": "Novak Djokovic",
+   "short": "N Djokovic",
+   "country": "SRB",
+   "seed": "7"
+  },
+  "alex-de-minaur": {
+   "id": "alex-de-minaur",
+   "name": "Alex de Minaur",
+   "short": "A de Minaur",
+   "country": "AUS",
+   "seed": "5"
+  },
+  "roman-andres-burruchaga": {
+   "id": "roman-andres-burruchaga",
+   "name": "Román Andrés Burruchaga",
+   "short": "RA Burruchaga",
+   "country": "ARG",
+   "seed": null
+  },
+  "adrian-mannarino": {
+   "id": "adrian-mannarino",
+   "name": "Adrian Mannarino",
+   "short": "A Mannarino",
+   "country": "FRA",
+   "seed": null
+  },
+  "titouan-droguet": {
+   "id": "titouan-droguet",
+   "name": "Titouan Droguet",
+   "short": "T Droguet",
+   "country": "FRA",
+   "seed": null
+  },
+  "pablo-llamas-ruiz": {
+   "id": "pablo-llamas-ruiz",
+   "name": "Pablo Llamas Ruiz",
+   "short": "P Llamas Ruiz",
+   "country": "ESP",
+   "seed": "LL"
+  },
+  "zachary-svajda": {
+   "id": "zachary-svajda",
+   "name": "Zachary Svajda",
+   "short": "Z Svajda",
+   "country": "USA",
+   "seed": null
+  },
+  "kamil-majchrzak": {
+   "id": "kamil-majchrzak",
+   "name": "Kamil Majchrzak",
+   "short": "K Majchrzak",
+   "country": "POL",
+   "seed": null
+  },
+  "alejandro-tabilo": {
+   "id": "alejandro-tabilo",
+   "name": "Alejandro Tabilo",
+   "short": "A Tabilo",
+   "country": "CHI",
+   "seed": "30"
+  },
+  "karen-khachanov": {
+   "id": "karen-khachanov",
+   "name": "Karen Khachanov",
+   "short": "K Khachanov",
+   "country": null,
+   "seed": "19"
+  },
+  "billy-harris": {
+   "id": "billy-harris",
+   "name": "Billy Harris",
+   "short": "B Harris",
+   "country": "GBR",
+   "seed": "Q"
+  },
+  "yannick-hanfmann": {
+   "id": "yannick-hanfmann",
+   "name": "Yannick Hanfmann",
+   "short": "Y Hanfmann",
+   "country": "GER",
+   "seed": null
+  },
+  "giovanni-mpetshi-perricard": {
+   "id": "giovanni-mpetshi-perricard",
+   "name": "Giovanni Mpetshi Perricard",
+   "short": "G Mpetshi Perricard",
+   "country": "FRA",
+   "seed": null
+  },
+  "tallon-griekspoor": {
+   "id": "tallon-griekspoor",
+   "name": "Tallon Griekspoor",
+   "short": "T Griekspoor",
+   "country": "NED",
+   "seed": null
+  },
+  "james-duckworth": {
+   "id": "james-duckworth",
+   "name": "James Duckworth",
+   "short": "J Duckworth",
+   "country": "AUS",
+   "seed": null
+  },
+  "mariano-navone": {
+   "id": "mariano-navone",
+   "name": "Mariano Navone",
+   "short": "M Navone",
+   "country": "ARG",
+   "seed": null
+  },
+  "flavio-cobolli": {
+   "id": "flavio-cobolli",
+   "name": "Flavio Cobolli",
+   "short": "F Cobolli",
+   "country": "ITA",
+   "seed": "9"
+  },
+  "jakub-mensik": {
+   "id": "jakub-mensik",
+   "name": "Jakub Menšík",
+   "short": "J Menšík",
+   "country": "CZE",
+   "seed": "15"
+  },
+  "toby-samuel": {
+   "id": "toby-samuel",
+   "name": "Toby Samuel",
+   "short": "T Samuel",
+   "country": "GBR",
+   "seed": "WC"
+  },
+  "dane-sweeny": {
+   "id": "dane-sweeny",
+   "name": "Dane Sweeny",
+   "short": "D Sweeny",
+   "country": "AUS",
+   "seed": "Q"
+  },
+  "grigor-dimitrov": {
+   "id": "grigor-dimitrov",
+   "name": "Grigor Dimitrov",
+   "short": "G Dimitrov",
+   "country": "BUL",
+   "seed": "WC"
+  },
+  "stan-wawrinka": {
+   "id": "stan-wawrinka",
+   "name": "Stan Wawrinka",
+   "short": "S Wawrinka",
+   "country": "SUI",
+   "seed": "WC"
+  },
+  "matteo-berrettini": {
+   "id": "matteo-berrettini",
+   "name": "Matteo Berrettini",
+   "short": "M Berrettini",
+   "country": "ITA",
+   "seed": null
+  },
+  "raphael-collignon": {
+   "id": "raphael-collignon",
+   "name": "Raphaël Collignon",
+   "short": "R Collignon",
+   "country": "BEL",
+   "seed": null
+  },
+  "arthur-fils": {
+   "id": "arthur-fils",
+   "name": "Arthur Fils",
+   "short": "A Fils",
+   "country": "FRA",
+   "seed": "20"
+  },
+  "ugo-humbert": {
+   "id": "ugo-humbert",
+   "name": "Ugo Humbert",
+   "short": "U Humbert",
+   "country": "FRA",
+   "seed": "27"
+  },
+  "zizou-bergs": {
+   "id": "zizou-bergs",
+   "name": "Zizou Bergs",
+   "short": "Z Bergs",
+   "country": "BEL",
+   "seed": null
+  },
+  "sho-shimabukuro": {
+   "id": "sho-shimabukuro",
+   "name": "Sho Shimabukuro",
+   "short": "S Shimabukuro",
+   "country": "JPN",
+   "seed": null
+  },
+  "jaime-faria": {
+   "id": "jaime-faria",
+   "name": "Jaime Faria",
+   "short": "J Faria",
+   "country": "POR",
+   "seed": "Q"
+  },
+  "damir-dzumhur": {
+   "id": "damir-dzumhur",
+   "name": "Damir Džumhur",
+   "short": "D Džumhur",
+   "country": "BIH",
+   "seed": null
+  },
+  "arthur-fery": {
+   "id": "arthur-fery",
+   "name": "Arthur Fery",
+   "short": "A Fery",
+   "country": "GBR",
+   "seed": "WC"
+  },
+  "otto-virtanen": {
+   "id": "otto-virtanen",
+   "name": "Otto Virtanen",
+   "short": "O Virtanen",
+   "country": "FIN",
+   "seed": "Q"
+  },
+  "ben-shelton": {
+   "id": "ben-shelton",
+   "name": "Ben Shelton",
+   "short": "B Shelton",
+   "country": "USA",
+   "seed": "4"
+  },
+  "taylor-fritz": {
+   "id": "taylor-fritz",
+   "name": "Taylor Fritz",
+   "short": "T Fritz",
+   "country": "USA",
+   "seed": "6"
+  },
+  "dusan-lajovic": {
+   "id": "dusan-lajovic",
+   "name": "Dušan Lajović",
+   "short": "D Lajović",
+   "country": "SRB",
+   "seed": "LL"
+  },
+  "patrick-kypson": {
+   "id": "patrick-kypson",
+   "name": "Patrick Kypson",
+   "short": "P Kypson",
+   "country": "USA",
+   "seed": null
+  },
+  "mackenzie-mcdonald": {
+   "id": "mackenzie-mcdonald",
+   "name": "Mackenzie McDonald",
+   "short": "M McDonald",
+   "country": "USA",
+   "seed": "Q"
+  },
+  "benjamin-bonzi": {
+   "id": "benjamin-bonzi",
+   "name": "Benjamin Bonzi",
+   "short": "B Bonzi",
+   "country": "FRA",
+   "seed": null
+  },
+  "gabriel-diallo": {
+   "id": "gabriel-diallo",
+   "name": "Gabriel Diallo",
+   "short": "G Diallo",
+   "country": "CAN",
+   "seed": null
+  },
+  "lorenzo-sonego": {
+   "id": "lorenzo-sonego",
+   "name": "Lorenzo Sonego",
+   "short": "L Sonego",
+   "country": "ITA",
+   "seed": null
+  },
+  "tomas-martin-etcheverry": {
+   "id": "tomas-martin-etcheverry",
+   "name": "Tomás Martín Etcheverry",
+   "short": "TM Etcheverry",
+   "country": "ARG",
+   "seed": "29"
+  },
+  "frances-tiafoe": {
+   "id": "frances-tiafoe",
+   "name": "Frances Tiafoe",
+   "short": "F Tiafoe",
+   "country": "USA",
+   "seed": "17"
+  },
+  "terence-atmane": {
+   "id": "terence-atmane",
+   "name": "Térence Atmane",
+   "short": "T Atmane",
+   "country": "FRA",
+   "seed": null
+  },
+  "vit-kopriva": {
+   "id": "vit-kopriva",
+   "name": "Vít Kopřiva",
+   "short": "V Kopřiva",
+   "country": "CZE",
+   "seed": null
+  },
+  "jan-choinski": {
+   "id": "jan-choinski",
+   "name": "Jan Choinski",
+   "short": "J Choinski",
+   "country": "GBR",
+   "seed": null
+  },
+  "kyrian-jacquet": {
+   "id": "kyrian-jacquet",
+   "name": "Kyrian Jacquet",
+   "short": "K Jacquet",
+   "country": "FRA",
+   "seed": "Q"
+  },
+  "vilius-gaubas": {
+   "id": "vilius-gaubas",
+   "name": "Vilius Gaubas",
+   "short": "V Gaubas",
+   "country": "LTU",
+   "seed": "Q"
+  },
+  "thanasi-kokkinakis": {
+   "id": "thanasi-kokkinakis",
+   "name": "Thanasi Kokkinakis",
+   "short": "T Kokkinakis",
+   "country": "AUS",
+   "seed": "PR"
+  },
+  "alexander-bublik": {
+   "id": "alexander-bublik",
+   "name": "Alexander Bublik",
+   "short": "A Bublik",
+   "country": "KAZ",
+   "seed": "10"
+  },
+  "jiri-lehecka": {
+   "id": "jiri-lehecka",
+   "name": "Jiří Lehečka",
+   "short": "J Lehečka",
+   "country": "CZE",
+   "seed": "13"
+  },
+  "alexei-popyrin": {
+   "id": "alexei-popyrin",
+   "name": "Alexei Popyrin",
+   "short": "A Popyrin",
+   "country": "AUS",
+   "seed": null
+  },
+  "alex-molcan": {
+   "id": "alex-molcan",
+   "name": "Alex Molčan",
+   "short": "A Molčan",
+   "country": "SVK",
+   "seed": null
+  },
+  "daniel-altmaier": {
+   "id": "daniel-altmaier",
+   "name": "Daniel Altmaier",
+   "short": "D Altmaier",
+   "country": "GER",
+   "seed": null
+  },
+  "alex-michelsen": {
+   "id": "alex-michelsen",
+   "name": "Alex Michelsen",
+   "short": "A Michelsen",
+   "country": "USA",
+   "seed": null
+  },
+  "jacob-fearnley": {
+   "id": "jacob-fearnley",
+   "name": "Jacob Fearnley",
+   "short": "J Fearnley",
+   "country": "GBR",
+   "seed": "WC"
+  },
+  "jaume-munar": {
+   "id": "jaume-munar",
+   "name": "Jaume Munar",
+   "short": "J Munar",
+   "country": "ESP",
+   "seed": null
+  },
+  "francisco-cerundolo": {
+   "id": "francisco-cerundolo",
+   "name": "Francisco Cerúndolo",
+   "short": "F Cerúndolo",
+   "country": "ARG",
+   "seed": "18"
+  },
+  "matteo-arnaldi": {
+   "id": "matteo-arnaldi",
+   "name": "Matteo Arnaldi",
+   "short": "M Arnaldi",
+   "country": "ITA",
+   "seed": "32"
+  },
+  "quentin-halys": {
+   "id": "quentin-halys",
+   "name": "Quentin Halys",
+   "short": "Q Halys",
+   "country": "FRA",
+   "seed": null
+  },
+  "corentin-moutet": {
+   "id": "corentin-moutet",
+   "name": "Corentin Moutet",
+   "short": "C Moutet",
+   "country": "FRA",
+   "seed": null
+  },
+  "marcos-giron": {
+   "id": "marcos-giron",
+   "name": "Marcos Giron",
+   "short": "M Giron",
+   "country": "USA",
+   "seed": null
+  },
+  "valentin-royer": {
+   "id": "valentin-royer",
+   "name": "Valentin Royer",
+   "short": "V Royer",
+   "country": "FRA",
+   "seed": null
+  },
+  "harry-wendelken": {
+   "id": "harry-wendelken",
+   "name": "Harry Wendelken",
+   "short": "H Wendelken",
+   "country": "GBR",
+   "seed": "WC"
+  },
+  "alexander-blockx": {
+   "id": "alexander-blockx",
+   "name": "Alexander Blockx",
+   "short": "A Blockx",
+   "country": "BEL",
+   "seed": null
+  },
+  "alexander-zverev": {
+   "id": "alexander-zverev",
+   "name": "Alexander Zverev",
+   "short": "A Zverev",
+   "country": "GER",
+   "seed": "2"
+  }
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "name": "First round",
+   "matches": [
+    {
+     "id": "r1m1",
+     "round": 1,
+     "position": 0,
+     "sides": [
+      {
+       "player": "jannik-sinner",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "miomir-kecmanovic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jannik-sinner"
+    },
+    {
+     "id": "r1m2",
+     "round": 1,
+     "position": 1,
+     "sides": [
+      {
+       "player": "nuno-borges",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "tristan-boyer",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "nuno-borges"
+    },
+    {
+     "id": "r1m3",
+     "round": 1,
+     "position": 2,
+     "sides": [
+      {
+       "player": "aleksandar-vukic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "jenson-brooksby",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "jenson-brooksby"
+    },
+    {
+     "id": "r1m4",
+     "round": 1,
+     "position": 3,
+     "sides": [
+      {
+       "player": "emilio-nava",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "ignacio-buse",
+       "seed": "31",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "ignacio-buse"
+    },
+    {
+     "id": "r1m5",
+     "round": 1,
+     "position": 4,
+     "sides": [
+      {
+       "player": "rafael-jodar",
+       "seed": "23",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "felix-gill",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "rafael-jodar"
+    },
+    {
+     "id": "r1m6",
+     "round": 1,
+     "position": 5,
+     "sides": [
+      {
+       "player": "denis-shapovalov",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        },
+        {
+         "games": null,
+         "tiebreak": null,
+         "won": false,
+         "note": "0<sup>r</sup>"
+        }
+       ]
+      },
+      {
+       "player": "pablo-carreno-busta",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "pablo-carreno-busta"
+    },
+    {
+     "id": "r1m7",
+     "round": 1,
+     "position": 6,
+     "sides": [
+      {
+       "player": "shintaro-mochizuki",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "max-basing",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "shintaro-mochizuki"
+    },
+    {
+     "id": "r1m8",
+     "round": 1,
+     "position": 7,
+     "sides": [
+      {
+       "player": "ethan-quinn",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "luciano-darderi",
+       "seed": "14",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "ethan-quinn"
+    },
+    {
+     "id": "r1m9",
+     "round": 1,
+     "position": 8,
+     "sides": [
+      {
+       "player": "casper-ruud",
+       "seed": "11",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "hubert-hurkacz",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "hubert-hurkacz"
+    },
+    {
+     "id": "r1m10",
+     "round": 1,
+     "position": 9,
+     "sides": [
+      {
+       "player": "hamad-medjedovic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "sebastian-ofner",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "sebastian-ofner"
+    },
+    {
+     "id": "r1m11",
+     "round": 1,
+     "position": 10,
+     "sides": [
+      {
+       "player": "kwon-soon-woo",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "martin-landaluce",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "kwon-soon-woo"
+    },
+    {
+     "id": "r1m12",
+     "round": 1,
+     "position": 11,
+     "sides": [
+      {
+       "player": "alexandre-muller",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "tommy-paul",
+       "seed": "21",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "tommy-paul"
+    },
+    {
+     "id": "r1m13",
+     "round": 1,
+     "position": 12,
+     "sides": [
+      {
+       "player": "brandon-nakashima",
+       "seed": "28",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jack-pinnington-jones",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "brandon-nakashima"
+    },
+    {
+     "id": "r1m14",
+     "round": 1,
+     "position": 13,
+     "sides": [
+      {
+       "player": "jan-lennard-struff",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "sebastian-baez",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jan-lennard-struff"
+    },
+    {
+     "id": "r1m15",
+     "round": 1,
+     "position": 14,
+     "sides": [
+      {
+       "player": "camilo-ugo-carabelli",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": null,
+         "tiebreak": null,
+         "won": false,
+         "note": "0<sup>r</sup>"
+        }
+       ]
+      },
+      {
+       "player": "daniel-merida",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "daniel-merida"
+    },
+    {
+     "id": "r1m16",
+     "round": 1,
+     "position": 15,
+     "sides": [
+      {
+       "player": "marin-cilic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "daniil-medvedev",
+       "seed": "8",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "daniil-medvedev"
+    },
+    {
+     "id": "r1m17",
+     "round": 1,
+     "position": 16,
+     "sides": [
+      {
+       "player": "felix-auger-aliassime",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "alexander-shevchenko",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "felix-auger-aliassime"
+    },
+    {
+     "id": "r1m18",
+     "round": 1,
+     "position": 17,
+     "sides": [
+      {
+       "player": "adam-walton",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "dino-prizmic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "dino-prizmic"
+    },
+    {
+     "id": "r1m19",
+     "round": 1,
+     "position": 18,
+     "sides": [
+      {
+       "player": "daniel-vallejo",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "nicolas-mejia",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "nicolas-mejia"
+    },
+    {
+     "id": "r1m20",
+     "round": 1,
+     "position": 19,
+     "sides": [
+      {
+       "player": "michael-zheng",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "cameron-norrie",
+       "seed": "26",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "michael-zheng"
+    },
+    {
+     "id": "r1m21",
+     "round": 1,
+     "position": 20,
+     "sides": [
+      {
+       "player": "alejandro-davidovich-fokina",
+       "seed": "22",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "juan-manuel-cerundolo",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "alejandro-davidovich-fokina"
+    },
+    {
+     "id": "r1m22",
+     "round": 1,
+     "position": 21,
+     "sides": [
+      {
+       "player": "thiago-agustin-tirante",
+       "seed": null,
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "fabian-marozsan",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "fabian-marozsan"
+    },
+    {
+     "id": "r1m23",
+     "round": 1,
+     "position": 22,
+     "sides": [
+      {
+       "player": "luca-van-assche",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": null,
+         "tiebreak": null,
+         "won": false,
+         "note": "0<sup>r</sup>"
+        }
+       ]
+      },
+      {
+       "player": "marton-fucsovics",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "marton-fucsovics"
+    },
+    {
+     "id": "r1m24",
+     "round": 1,
+     "position": 23,
+     "sides": [
+      {
+       "player": "dalibor-svrcina",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "learner-tien",
+       "seed": "16",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "learner-tien"
+    },
+    {
+     "id": "r1m25",
+     "round": 1,
+     "position": 24,
+     "sides": [
+      {
+       "player": "andrey-rublev",
+       "seed": "12",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 12,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "roman-safiullin",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 14,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "roman-safiullin"
+    },
+    {
+     "id": "r1m26",
+     "round": 1,
+     "position": 25,
+     "sides": [
+      {
+       "player": "aleksandar-kovacevic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "botic-van-de-zandschulp",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "botic-van-de-zandschulp"
+    },
+    {
+     "id": "r1m27",
+     "round": 1,
+     "position": 26,
+     "sides": [
+      {
+       "player": "jesper-de-jong",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "rinky-hijikata",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jesper-de-jong"
+    },
+    {
+     "id": "r1m28",
+     "round": 1,
+     "position": 27,
+     "sides": [
+      {
+       "player": "roberto-bautista-agut",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "joao-fonseca",
+       "seed": "24",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "joao-fonseca"
+    },
+    {
+     "id": "r1m29",
+     "round": 1,
+     "position": 28,
+     "sides": [
+      {
+       "player": "arthur-rinderknech",
+       "seed": "25",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "oliver-tarvet",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "arthur-rinderknech"
+    },
+    {
+     "id": "r1m30",
+     "round": 1,
+     "position": 29,
+     "sides": [
+      {
+       "player": "marco-trungelliti",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "martin-damm",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "martin-damm"
+    },
+    {
+     "id": "r1m31",
+     "round": 1,
+     "position": 30,
+     "sides": [
+      {
+       "player": "hugo-gaston",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "stefanos-tsitsipas",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "stefanos-tsitsipas"
+    },
+    {
+     "id": "r1m32",
+     "round": 1,
+     "position": 31,
+     "sides": [
+      {
+       "player": "wu-yibing",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "novak-djokovic",
+       "seed": "7",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "novak-djokovic"
+    },
+    {
+     "id": "r1m33",
+     "round": 1,
+     "position": 32,
+     "sides": [
+      {
+       "player": "alex-de-minaur",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "roman-andres-burruchaga",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "alex-de-minaur"
+    },
+    {
+     "id": "r1m34",
+     "round": 1,
+     "position": 33,
+     "sides": [
+      {
+       "player": "adrian-mannarino",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "titouan-droguet",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "adrian-mannarino"
+    },
+    {
+     "id": "r1m35",
+     "round": 1,
+     "position": 34,
+     "sides": [
+      {
+       "player": "pablo-llamas-ruiz",
+       "seed": "LL",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "zachary-svajda",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "zachary-svajda"
+    },
+    {
+     "id": "r1m36",
+     "round": 1,
+     "position": 35,
+     "sides": [
+      {
+       "player": "kamil-majchrzak",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "alejandro-tabilo",
+       "seed": "30",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "kamil-majchrzak"
+    },
+    {
+     "id": "r1m37",
+     "round": 1,
+     "position": 36,
+     "sides": [
+      {
+       "player": "karen-khachanov",
+       "seed": "19",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "billy-harris",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "karen-khachanov"
+    },
+    {
+     "id": "r1m38",
+     "round": 1,
+     "position": 37,
+     "sides": [
+      {
+       "player": "yannick-hanfmann",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 11,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "giovanni-mpetshi-perricard",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 9,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "yannick-hanfmann"
+    },
+    {
+     "id": "r1m39",
+     "round": 1,
+     "position": 38,
+     "sides": [
+      {
+       "player": "tallon-griekspoor",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "james-duckworth",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "james-duckworth"
+    },
+    {
+     "id": "r1m40",
+     "round": 1,
+     "position": 39,
+     "sides": [
+      {
+       "player": "mariano-navone",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 8,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "flavio-cobolli",
+       "seed": "9",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "flavio-cobolli"
+    },
+    {
+     "id": "r1m41",
+     "round": 1,
+     "position": 40,
+     "sides": [
+      {
+       "player": "jakub-mensik",
+       "seed": "15",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "toby-samuel",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jakub-mensik"
+    },
+    {
+     "id": "r1m42",
+     "round": 1,
+     "position": 41,
+     "sides": [
+      {
+       "player": "dane-sweeny",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "grigor-dimitrov",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "grigor-dimitrov"
+    },
+    {
+     "id": "r1m43",
+     "round": 1,
+     "position": 42,
+     "sides": [
+      {
+       "player": "stan-wawrinka",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 16,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "matteo-berrettini",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 18,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "matteo-berrettini"
+    },
+    {
+     "id": "r1m44",
+     "round": 1,
+     "position": 43,
+     "sides": [
+      {
+       "player": "raphael-collignon",
+       "seed": null,
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "arthur-fils",
+       "seed": "20",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "arthur-fils"
+    },
+    {
+     "id": "r1m45",
+     "round": 1,
+     "position": 44,
+     "sides": [
+      {
+       "player": "ugo-humbert",
+       "seed": "27",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "zizou-bergs",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "zizou-bergs"
+    },
+    {
+     "id": "r1m46",
+     "round": 1,
+     "position": 45,
+     "sides": [
+      {
+       "player": "sho-shimabukuro",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "jaime-faria",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "jaime-faria"
+    },
+    {
+     "id": "r1m47",
+     "round": 1,
+     "position": 46,
+     "sides": [
+      {
+       "player": "damir-dzumhur",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "arthur-fery",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "arthur-fery"
+    },
+    {
+     "id": "r1m48",
+     "round": 1,
+     "position": 47,
+     "sides": [
+      {
+       "player": "otto-virtanen",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 8,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 11,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "ben-shelton",
+       "seed": "4",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 9,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "otto-virtanen"
+    },
+    {
+     "id": "r1m49",
+     "round": 1,
+     "position": 48,
+     "sides": [
+      {
+       "player": "taylor-fritz",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "dusan-lajovic",
+       "seed": "LL",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "taylor-fritz"
+    },
+    {
+     "id": "r1m50",
+     "round": 1,
+     "position": 49,
+     "sides": [
+      {
+       "player": "patrick-kypson",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "mackenzie-mcdonald",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "patrick-kypson"
+    },
+    {
+     "id": "r1m51",
+     "round": 1,
+     "position": 50,
+     "sides": [
+      {
+       "player": "benjamin-bonzi",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": null,
+         "tiebreak": null,
+         "won": false,
+         "note": "1<sup>r</sup>"
+        }
+       ]
+      },
+      {
+       "player": "gabriel-diallo",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "gabriel-diallo"
+    },
+    {
+     "id": "r1m52",
+     "round": 1,
+     "position": 51,
+     "sides": [
+      {
+       "player": "lorenzo-sonego",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "tomas-martin-etcheverry",
+       "seed": "29",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "lorenzo-sonego"
+    },
+    {
+     "id": "r1m53",
+     "round": 1,
+     "position": 52,
+     "sides": [
+      {
+       "player": "frances-tiafoe",
+       "seed": "17",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "terence-atmane",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "frances-tiafoe"
+    },
+    {
+     "id": "r1m54",
+     "round": 1,
+     "position": 53,
+     "sides": [
+      {
+       "player": "vit-kopriva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "jan-choinski",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "jan-choinski"
+    },
+    {
+     "id": "r1m55",
+     "round": 1,
+     "position": 54,
+     "sides": [
+      {
+       "player": "kyrian-jacquet",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "vilius-gaubas",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "kyrian-jacquet"
+    },
+    {
+     "id": "r1m56",
+     "round": 1,
+     "position": 55,
+     "sides": [
+      {
+       "player": "thanasi-kokkinakis",
+       "seed": "PR",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 12,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "alexander-bublik",
+       "seed": "10",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 10,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "alexander-bublik"
+    },
+    {
+     "id": "r1m57",
+     "round": 1,
+     "position": 56,
+     "sides": [
+      {
+       "player": "jiri-lehecka",
+       "seed": "13",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "alexei-popyrin",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jiri-lehecka"
+    },
+    {
+     "id": "r1m58",
+     "round": 1,
+     "position": 57,
+     "sides": [
+      {
+       "player": "alex-molcan",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "daniel-altmaier",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "alex-molcan"
+    },
+    {
+     "id": "r1m59",
+     "round": 1,
+     "position": 58,
+     "sides": [
+      {
+       "player": "alex-michelsen",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "jacob-fearnley",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "jacob-fearnley"
+    },
+    {
+     "id": "r1m60",
+     "round": 1,
+     "position": 59,
+     "sides": [
+      {
+       "player": "jaume-munar",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "francisco-cerundolo",
+       "seed": "18",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jaume-munar"
+    },
+    {
+     "id": "r1m61",
+     "round": 1,
+     "position": 60,
+     "sides": [
+      {
+       "player": "matteo-arnaldi",
+       "seed": "32",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "quentin-halys",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "quentin-halys"
+    },
+    {
+     "id": "r1m62",
+     "round": 1,
+     "position": 61,
+     "sides": [
+      {
+       "player": "corentin-moutet",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "marcos-giron",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "marcos-giron"
+    },
+    {
+     "id": "r1m63",
+     "round": 1,
+     "position": 62,
+     "sides": [
+      {
+       "player": "valentin-royer",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "harry-wendelken",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "valentin-royer"
+    },
+    {
+     "id": "r1m64",
+     "round": 1,
+     "position": 63,
+     "sides": [
+      {
+       "player": "alexander-blockx",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 0,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "alexander-zverev",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 8,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "alexander-zverev"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "name": "Second round",
+   "matches": [
+    {
+     "id": "r2m1",
+     "round": 2,
+     "position": 0,
+     "sides": [
+      {
+       "player": "jannik-sinner",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "nuno-borges",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jannik-sinner"
+    },
+    {
+     "id": "r2m2",
+     "round": 2,
+     "position": 1,
+     "sides": [
+      {
+       "player": "jenson-brooksby",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "ignacio-buse",
+       "seed": "31",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jenson-brooksby"
+    },
+    {
+     "id": "r2m3",
+     "round": 2,
+     "position": 2,
+     "sides": [
+      {
+       "player": "rafael-jodar",
+       "seed": "23",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "pablo-carreno-busta",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "rafael-jodar"
+    },
+    {
+     "id": "r2m4",
+     "round": 2,
+     "position": 3,
+     "sides": [
+      {
+       "player": "shintaro-mochizuki",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "ethan-quinn",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "shintaro-mochizuki"
+    },
+    {
+     "id": "r2m5",
+     "round": 2,
+     "position": 4,
+     "sides": [
+      {
+       "player": "hubert-hurkacz",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "sebastian-ofner",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 8,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "hubert-hurkacz"
+    },
+    {
+     "id": "r2m6",
+     "round": 2,
+     "position": 5,
+     "sides": [
+      {
+       "player": "kwon-soon-woo",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "tommy-paul",
+       "seed": "21",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "tommy-paul"
+    },
+    {
+     "id": "r2m7",
+     "round": 2,
+     "position": 6,
+     "sides": [
+      {
+       "player": "brandon-nakashima",
+       "seed": "28",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "jan-lennard-struff",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "jan-lennard-struff"
+    },
+    {
+     "id": "r2m8",
+     "round": 2,
+     "position": 7,
+     "sides": [
+      {
+       "player": "daniel-merida",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "daniil-medvedev",
+       "seed": "8",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "daniil-medvedev"
+    },
+    {
+     "id": "r2m9",
+     "round": 2,
+     "position": 8,
+     "sides": [
+      {
+       "player": "felix-auger-aliassime",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "dino-prizmic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "felix-auger-aliassime"
+    },
+    {
+     "id": "r2m10",
+     "round": 2,
+     "position": 9,
+     "sides": [
+      {
+       "player": "nicolas-mejia",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 8,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "michael-zheng",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "michael-zheng"
+    },
+    {
+     "id": "r2m11",
+     "round": 2,
+     "position": 10,
+     "sides": [
+      {
+       "player": "alejandro-davidovich-fokina",
+       "seed": "22",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "fabian-marozsan",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "alejandro-davidovich-fokina"
+    },
+    {
+     "id": "r2m12",
+     "round": 2,
+     "position": 11,
+     "sides": [
+      {
+       "player": "marton-fucsovics",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "learner-tien",
+       "seed": "16",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "marton-fucsovics"
+    },
+    {
+     "id": "r2m13",
+     "round": 2,
+     "position": 12,
+     "sides": [
+      {
+       "player": "roman-safiullin",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "botic-van-de-zandschulp",
+       "seed": null,
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "roman-safiullin"
+    },
+    {
+     "id": "r2m14",
+     "round": 2,
+     "position": 13,
+     "sides": [
+      {
+       "player": "jesper-de-jong",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "joao-fonseca",
+       "seed": "24",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "joao-fonseca"
+    },
+    {
+     "id": "r2m15",
+     "round": 2,
+     "position": 14,
+     "sides": [
+      {
+       "player": "arthur-rinderknech",
+       "seed": "25",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "martin-damm",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 1,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "arthur-rinderknech"
+    },
+    {
+     "id": "r2m16",
+     "round": 2,
+     "position": 15,
+     "sides": [
+      {
+       "player": "stefanos-tsitsipas",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "novak-djokovic",
+       "seed": "7",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "novak-djokovic"
+    },
+    {
+     "id": "r2m17",
+     "round": 2,
+     "position": 16,
+     "sides": [
+      {
+       "player": "alex-de-minaur",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "adrian-mannarino",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "alex-de-minaur"
+    },
+    {
+     "id": "r2m18",
+     "round": 2,
+     "position": 17,
+     "sides": [
+      {
+       "player": "zachary-svajda",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "kamil-majchrzak",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "zachary-svajda"
+    },
+    {
+     "id": "r2m19",
+     "round": 2,
+     "position": 18,
+     "sides": [
+      {
+       "player": "karen-khachanov",
+       "seed": "19",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "yannick-hanfmann",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "karen-khachanov"
+    },
+    {
+     "id": "r2m20",
+     "round": 2,
+     "position": 19,
+     "sides": [
+      {
+       "player": "james-duckworth",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "flavio-cobolli",
+       "seed": "9",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "flavio-cobolli"
+    },
+    {
+     "id": "r2m21",
+     "round": 2,
+     "position": 20,
+     "sides": [
+      {
+       "player": "jakub-mensik",
+       "seed": "15",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "grigor-dimitrov",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "grigor-dimitrov"
+    },
+    {
+     "id": "r2m22",
+     "round": 2,
+     "position": 21,
+     "sides": [
+      {
+       "player": "matteo-berrettini",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "arthur-fils",
+       "seed": "20",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "matteo-berrettini"
+    },
+    {
+     "id": "r2m23",
+     "round": 2,
+     "position": 22,
+     "sides": [
+      {
+       "player": "zizou-bergs",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jaime-faria",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "zizou-bergs"
+    },
+    {
+     "id": "r2m24",
+     "round": 2,
+     "position": 23,
+     "sides": [
+      {
+       "player": "arthur-fery",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "otto-virtanen",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "arthur-fery"
+    },
+    {
+     "id": "r2m25",
+     "round": 2,
+     "position": 24,
+     "sides": [
+      {
+       "player": "taylor-fritz",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "patrick-kypson",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "taylor-fritz"
+    },
+    {
+     "id": "r2m26",
+     "round": 2,
+     "position": 25,
+     "sides": [
+      {
+       "player": "gabriel-diallo",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "lorenzo-sonego",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "lorenzo-sonego"
+    },
+    {
+     "id": "r2m27",
+     "round": 2,
+     "position": 26,
+     "sides": [
+      {
+       "player": "frances-tiafoe",
+       "seed": "17",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jan-choinski",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "frances-tiafoe"
+    },
+    {
+     "id": "r2m28",
+     "round": 2,
+     "position": 27,
+     "sides": [
+      {
+       "player": "kyrian-jacquet",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "alexander-bublik",
+       "seed": "10",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "alexander-bublik"
+    },
+    {
+     "id": "r2m29",
+     "round": 2,
+     "position": 28,
+     "sides": [
+      {
+       "player": "jiri-lehecka",
+       "seed": "13",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "alex-molcan",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jiri-lehecka"
+    },
+    {
+     "id": "r2m30",
+     "round": 2,
+     "position": 29,
+     "sides": [
+      {
+       "player": "jacob-fearnley",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "jaume-munar",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "jaume-munar"
+    },
+    {
+     "id": "r2m31",
+     "round": 2,
+     "position": 30,
+     "sides": [
+      {
+       "player": "quentin-halys",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "marcos-giron",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "marcos-giron"
+    },
+    {
+     "id": "r2m32",
+     "round": 2,
+     "position": 31,
+     "sides": [
+      {
+       "player": "valentin-royer",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "alexander-zverev",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "alexander-zverev"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "name": "Third round",
+   "matches": [
+    {
+     "id": "r3m1",
+     "round": 3,
+     "position": 0,
+     "sides": [
+      {
+       "player": "jannik-sinner",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jenson-brooksby",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jannik-sinner"
+    },
+    {
+     "id": "r3m2",
+     "round": 3,
+     "position": 1,
+     "sides": [
+      {
+       "player": "rafael-jodar",
+       "seed": "23",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "shintaro-mochizuki",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "shintaro-mochizuki"
+    },
+    {
+     "id": "r3m3",
+     "round": 3,
+     "position": 2,
+     "sides": [
+      {
+       "player": "hubert-hurkacz",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "tommy-paul",
+       "seed": "21",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "hubert-hurkacz"
+    },
+    {
+     "id": "r3m4",
+     "round": 3,
+     "position": 3,
+     "sides": [
+      {
+       "player": "jan-lennard-struff",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "daniil-medvedev",
+       "seed": "8",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jan-lennard-struff"
+    },
+    {
+     "id": "r3m5",
+     "round": 3,
+     "position": 4,
+     "sides": [
+      {
+       "player": "felix-auger-aliassime",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "michael-zheng",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 1,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "felix-auger-aliassime"
+    },
+    {
+     "id": "r3m6",
+     "round": 3,
+     "position": 5,
+     "sides": [
+      {
+       "player": "alejandro-davidovich-fokina",
+       "seed": "22",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "marton-fucsovics",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "alejandro-davidovich-fokina"
+    },
+    {
+     "id": "r3m7",
+     "round": 3,
+     "position": 6,
+     "sides": [
+      {
+       "player": "roman-safiullin",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "joao-fonseca",
+       "seed": "24",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "roman-safiullin"
+    },
+    {
+     "id": "r3m8",
+     "round": 3,
+     "position": 7,
+     "sides": [
+      {
+       "player": "arthur-rinderknech",
+       "seed": "25",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "novak-djokovic",
+       "seed": "7",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "novak-djokovic"
+    },
+    {
+     "id": "r3m9",
+     "round": 3,
+     "position": 8,
+     "sides": [
+      {
+       "player": "alex-de-minaur",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "zachary-svajda",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "alex-de-minaur"
+    },
+    {
+     "id": "r3m10",
+     "round": 3,
+     "position": 9,
+     "sides": [
+      {
+       "player": "karen-khachanov",
+       "seed": "19",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "flavio-cobolli",
+       "seed": "9",
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "flavio-cobolli"
+    },
+    {
+     "id": "r3m11",
+     "round": 3,
+     "position": 10,
+     "sides": [
+      {
+       "player": "grigor-dimitrov",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "matteo-berrettini",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "grigor-dimitrov"
+    },
+    {
+     "id": "r3m12",
+     "round": 3,
+     "position": 11,
+     "sides": [
+      {
+       "player": "zizou-bergs",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "arthur-fery",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "arthur-fery"
+    },
+    {
+     "id": "r3m13",
+     "round": 3,
+     "position": 12,
+     "sides": [
+      {
+       "player": "taylor-fritz",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "lorenzo-sonego",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "taylor-fritz"
+    },
+    {
+     "id": "r3m14",
+     "round": 3,
+     "position": 13,
+     "sides": [
+      {
+       "player": "frances-tiafoe",
+       "seed": "17",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 11,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "alexander-bublik",
+       "seed": "10",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 13,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "alexander-bublik"
+    },
+    {
+     "id": "r3m15",
+     "round": 3,
+     "position": 14,
+     "sides": [
+      {
+       "player": "jiri-lehecka",
+       "seed": "13",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jaume-munar",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jiri-lehecka"
+    },
+    {
+     "id": "r3m16",
+     "round": 3,
+     "position": 15,
+     "sides": [
+      {
+       "player": "marcos-giron",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "alexander-zverev",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "alexander-zverev"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "name": "Fourth round",
+   "matches": [
+    {
+     "id": "r4m1",
+     "round": 4,
+     "position": 0,
+     "sides": [
+      {
+       "player": "jannik-sinner",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "shintaro-mochizuki",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 0,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jannik-sinner"
+    },
+    {
+     "id": "r4m2",
+     "round": 4,
+     "position": 1,
+     "sides": [
+      {
+       "player": "hubert-hurkacz",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": null,
+         "tiebreak": null,
+         "won": false,
+         "note": "2<sup>r</sup>"
+        }
+       ]
+      },
+      {
+       "player": "jan-lennard-struff",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jan-lennard-struff"
+    },
+    {
+     "id": "r4m3",
+     "round": 4,
+     "position": 2,
+     "sides": [
+      {
+       "player": "felix-auger-aliassime",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "alejandro-davidovich-fokina",
+       "seed": "22",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "felix-auger-aliassime"
+    },
+    {
+     "id": "r4m4",
+     "round": 4,
+     "position": 3,
+     "sides": [
+      {
+       "player": "roman-safiullin",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "novak-djokovic",
+       "seed": "7",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "novak-djokovic"
+    },
+    {
+     "id": "r4m5",
+     "round": 4,
+     "position": 4,
+     "sides": [
+      {
+       "player": "alex-de-minaur",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "flavio-cobolli",
+       "seed": "9",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "flavio-cobolli"
+    },
+    {
+     "id": "r4m6",
+     "round": 4,
+     "position": 5,
+     "sides": [
+      {
+       "player": "grigor-dimitrov",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "arthur-fery",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "arthur-fery"
+    },
+    {
+     "id": "r4m7",
+     "round": 4,
+     "position": 6,
+     "sides": [
+      {
+       "player": "taylor-fritz",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "alexander-bublik",
+       "seed": "10",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 1,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "taylor-fritz"
+    },
+    {
+     "id": "r4m8",
+     "round": 4,
+     "position": 7,
+     "sides": [
+      {
+       "player": "jiri-lehecka",
+       "seed": "13",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "alexander-zverev",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "alexander-zverev"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "name": "Quarterfinals",
+   "matches": [
+    {
+     "id": "r5m1",
+     "round": 5,
+     "position": 0,
+     "sides": [
+      {
+       "player": "jannik-sinner",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jan-lennard-struff",
+       "seed": null,
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jannik-sinner"
+    },
+    {
+     "id": "r5m2",
+     "round": 5,
+     "position": 1,
+     "sides": [
+      {
+       "player": "felix-auger-aliassime",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 10,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "novak-djokovic",
+       "seed": "7",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 12,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "novak-djokovic"
+    },
+    {
+     "id": "r5m3",
+     "round": 5,
+     "position": 2,
+     "sides": [
+      {
+       "player": "flavio-cobolli",
+       "seed": "9",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "arthur-fery",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "arthur-fery"
+    },
+    {
+     "id": "r5m4",
+     "round": 5,
+     "position": 3,
+     "sides": [
+      {
+       "player": "taylor-fritz",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "alexander-zverev",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "alexander-zverev"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "name": "Semifinals",
+   "matches": [
+    {
+     "id": "r6m1",
+     "round": 6,
+     "position": 0,
+     "sides": [
+      {
+       "player": "jannik-sinner",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "novak-djokovic",
+       "seed": "7",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jannik-sinner"
+    },
+    {
+     "id": "r6m2",
+     "round": 6,
+     "position": 1,
+     "sides": [
+      {
+       "player": "arthur-fery",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 0,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "alexander-zverev",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "alexander-zverev"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "name": "Final",
+   "matches": [
+    {
+     "id": "r7m1",
+     "round": 7,
+     "position": 0,
+     "sides": [
+      {
+       "player": "jannik-sinner",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "alexander-zverev",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 2,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jannik-sinner"
+    }
+   ]
+  }
+ ]
+}

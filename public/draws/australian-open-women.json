@@ -1,0 +1,6403 @@
+{
+ "id": "australian-open-women",
+ "tournament": "Australian Open",
+ "year": 2026,
+ "event": "Women's Singles",
+ "surface": "Hard",
+ "venue": "Melbourne Park",
+ "city": "Melbourne",
+ "bestOf": 3,
+ "source": {
+  "wikipedia": "2026 Australian Open – Women's singles",
+  "url": "https://en.wikipedia.org/wiki/2026_Australian_Open_%E2%80%93_Women%27s_singles"
+ },
+ "players": {
+  "aryna-sabalenka": {
+   "id": "aryna-sabalenka",
+   "name": "Aryna Sabalenka",
+   "short": "A Sabalenka",
+   "country": null,
+   "seed": "1"
+  },
+  "tiantsoa-rakotomanga-rajaonah": {
+   "id": "tiantsoa-rakotomanga-rajaonah",
+   "name": "Tiantsoa Rakotomanga Rajaonah",
+   "short": "T Rakotomanga Rajaonah",
+   "country": "FRA",
+   "seed": "WC"
+  },
+  "anastasia-pavlyuchenkova": {
+   "id": "anastasia-pavlyuchenkova",
+   "name": "Anastasia Pavlyuchenkova",
+   "short": "A Pavlyuchenkova",
+   "country": null,
+   "seed": null
+  },
+  "bai-zhuoxuan": {
+   "id": "bai-zhuoxuan",
+   "name": "Bai Zhuoxuan",
+   "short": "Z Bai",
+   "country": "CHN",
+   "seed": "Q"
+  },
+  "suzan-lamens": {
+   "id": "suzan-lamens",
+   "name": "Suzan Lamens",
+   "short": "S Lamens",
+   "country": "NED",
+   "seed": null
+  },
+  "anastasia-potapova": {
+   "id": "anastasia-potapova",
+   "name": "Anastasia Potapova",
+   "short": "A Potapova",
+   "country": "AUT",
+   "seed": null
+  },
+  "mananchaya-sawangkaew": {
+   "id": "mananchaya-sawangkaew",
+   "name": "Mananchaya Sawangkaew",
+   "short": "M Sawangkaew",
+   "country": "THA",
+   "seed": "PR"
+  },
+  "emma-raducanu": {
+   "id": "emma-raducanu",
+   "name": "Emma Raducanu",
+   "short": "E Raducanu",
+   "country": "GBR",
+   "seed": "28"
+  },
+  "victoria-mboko": {
+   "id": "victoria-mboko",
+   "name": "Victoria Mboko",
+   "short": "V Mboko",
+   "country": "CAN",
+   "seed": "17"
+  },
+  "emerson-jones": {
+   "id": "emerson-jones",
+   "name": "Emerson Jones",
+   "short": "E Jones",
+   "country": "AUS",
+   "seed": "WC"
+  },
+  "caty-mcnally": {
+   "id": "caty-mcnally",
+   "name": "Caty McNally",
+   "short": "C McNally",
+   "country": "USA",
+   "seed": null
+  },
+  "himeno-sakatsume": {
+   "id": "himeno-sakatsume",
+   "name": "Himeno Sakatsume",
+   "short": "H Sakatsume",
+   "country": "JPN",
+   "seed": "Q"
+  },
+  "polina-kudermetova": {
+   "id": "polina-kudermetova",
+   "name": "Polina Kudermetova",
+   "short": "P Kudermetova",
+   "country": "UZB",
+   "seed": null
+  },
+  "guiomar-maristany": {
+   "id": "guiomar-maristany",
+   "name": "Guiomar Maristany",
+   "short": "G Maristany",
+   "country": "ESP",
+   "seed": "Q"
+  },
+  "dalma-galfi": {
+   "id": "dalma-galfi",
+   "name": "Dalma Gálfi",
+   "short": "D Gálfi",
+   "country": "HUN",
+   "seed": null
+  },
+  "clara-tauson": {
+   "id": "clara-tauson",
+   "name": "Clara Tauson",
+   "short": "C Tauson",
+   "country": "DEN",
+   "seed": "14"
+  },
+  "ekaterina-alexandrova": {
+   "id": "ekaterina-alexandrova",
+   "name": "Ekaterina Alexandrova",
+   "short": "E Alexandrova",
+   "country": null,
+   "seed": "11"
+  },
+  "zeynep-sonmez": {
+   "id": "zeynep-sonmez",
+   "name": "Zeynep Sönmez",
+   "short": "Z Sönmez",
+   "country": "TUR",
+   "seed": "Q"
+  },
+  "anna-bondar": {
+   "id": "anna-bondar",
+   "name": "Anna Bondár",
+   "short": "A Bondár",
+   "country": "HUN",
+   "seed": null
+  },
+  "elizabeth-mandlik": {
+   "id": "elizabeth-mandlik",
+   "name": "Elizabeth Mandlik",
+   "short": "E Mandlik",
+   "country": "USA",
+   "seed": "WC"
+  },
+  "yulia-putintseva": {
+   "id": "yulia-putintseva",
+   "name": "Yulia Putintseva",
+   "short": "Y Putintseva",
+   "country": "KAZ",
+   "seed": null
+  },
+  "beatriz-haddad-maia": {
+   "id": "beatriz-haddad-maia",
+   "name": "Beatriz Haddad Maia",
+   "short": "B Haddad Maia",
+   "country": "BRA",
+   "seed": null
+  },
+  "elsa-jacquemot": {
+   "id": "elsa-jacquemot",
+   "name": "Elsa Jacquemot",
+   "short": "E Jacquemot",
+   "country": "FRA",
+   "seed": null
+  },
+  "marta-kostyuk": {
+   "id": "marta-kostyuk",
+   "name": "Marta Kostyuk",
+   "short": "M Kostyuk",
+   "country": "UKR",
+   "seed": "20"
+  },
+  "iva-jovic": {
+   "id": "iva-jovic",
+   "name": "Iva Jovic",
+   "short": "I Jovic",
+   "country": "USA",
+   "seed": "29"
+  },
+  "katie-volynets": {
+   "id": "katie-volynets",
+   "name": "Katie Volynets",
+   "short": "K Volynets",
+   "country": "USA",
+   "seed": null
+  },
+  "priscilla-hon": {
+   "id": "priscilla-hon",
+   "name": "Priscilla Hon",
+   "short": "P Hon",
+   "country": "AUS",
+   "seed": "WC"
+  },
+  "marina-stakusic": {
+   "id": "marina-stakusic",
+   "name": "Marina Stakusic",
+   "short": "M Stakusic",
+   "country": "CAN",
+   "seed": "Q"
+  },
+  "veronika-erjavec": {
+   "id": "veronika-erjavec",
+   "name": "Veronika Erjavec",
+   "short": "V Erjavec",
+   "country": "SLO",
+   "seed": null
+  },
+  "magdalena-frech": {
+   "id": "magdalena-frech",
+   "name": "Magdalena Fręch",
+   "short": "M Fręch",
+   "country": "POL",
+   "seed": null
+  },
+  "aliaksandra-sasnovich": {
+   "id": "aliaksandra-sasnovich",
+   "name": "Aliaksandra Sasnovich",
+   "short": "A Sasnovich",
+   "country": null,
+   "seed": "Q"
+  },
+  "jasmine-paolini": {
+   "id": "jasmine-paolini",
+   "name": "Jasmine Paolini",
+   "short": "J Paolini",
+   "country": "ITA",
+   "seed": "7"
+  },
+  "coco-gauff": {
+   "id": "coco-gauff",
+   "name": "Coco Gauff",
+   "short": "C Gauff",
+   "country": "USA",
+   "seed": "3"
+  },
+  "kamilla-rakhimova": {
+   "id": "kamilla-rakhimova",
+   "name": "Kamilla Rakhimova",
+   "short": "K Rakhimova",
+   "country": "UZB",
+   "seed": null
+  },
+  "olga-danilovic": {
+   "id": "olga-danilovic",
+   "name": "Olga Danilović",
+   "short": "O Danilović",
+   "country": "SRB",
+   "seed": null
+  },
+  "venus-williams": {
+   "id": "venus-williams",
+   "name": "Venus Williams",
+   "short": "V Williams",
+   "country": "USA",
+   "seed": "WC"
+  },
+  "storm-hunter": {
+   "id": "storm-hunter",
+   "name": "Storm Hunter",
+   "short": "S Hunter",
+   "country": "AUS",
+   "seed": "Q"
+  },
+  "jessica-bouzas-maneiro": {
+   "id": "jessica-bouzas-maneiro",
+   "name": "Jéssica Bouzas Maneiro",
+   "short": "J Bouzas Maneiro",
+   "country": "ESP",
+   "seed": null
+  },
+  "hailey-baptiste": {
+   "id": "hailey-baptiste",
+   "name": "Hailey Baptiste",
+   "short": "H Baptiste",
+   "country": "USA",
+   "seed": null
+  },
+  "taylor-townsend": {
+   "id": "taylor-townsend",
+   "name": "Taylor Townsend",
+   "short": "T Townsend",
+   "country": "USA",
+   "seed": "LL"
+  },
+  "karolina-muchova": {
+   "id": "karolina-muchova",
+   "name": "Karolína Muchová",
+   "short": "K Muchová",
+   "country": "CZE",
+   "seed": "19"
+  },
+  "jaqueline-cristian": {
+   "id": "jaqueline-cristian",
+   "name": "Jaqueline Cristian",
+   "short": "J Cristian",
+   "country": "ROU",
+   "seed": null
+  },
+  "alycia-parks": {
+   "id": "alycia-parks",
+   "name": "Alycia Parks",
+   "short": "A Parks",
+   "country": "USA",
+   "seed": null
+  },
+  "alexandra-eala": {
+   "id": "alexandra-eala",
+   "name": "Alexandra Eala",
+   "short": "A Eala",
+   "country": "PHI",
+   "seed": null
+  },
+  "ann-li": {
+   "id": "ann-li",
+   "name": "Ann Li",
+   "short": "A Li",
+   "country": "USA",
+   "seed": null
+  },
+  "camila-osorio": {
+   "id": "camila-osorio",
+   "name": "Camila Osorio",
+   "short": "C Osorio",
+   "country": "COL",
+   "seed": null
+  },
+  "magda-linette": {
+   "id": "magda-linette",
+   "name": "Magda Linette",
+   "short": "M Linette",
+   "country": "POL",
+   "seed": null
+  },
+  "emma-navarro": {
+   "id": "emma-navarro",
+   "name": "Emma Navarro",
+   "short": "E Navarro",
+   "country": "USA",
+   "seed": "15"
+  },
+  "elina-svitolina": {
+   "id": "elina-svitolina",
+   "name": "Elina Svitolina",
+   "short": "E Svitolina",
+   "country": "UKR",
+   "seed": "12"
+  },
+  "cristina-bucsa": {
+   "id": "cristina-bucsa",
+   "name": "Cristina Bucșa",
+   "short": "C Bucșa",
+   "country": "ESP",
+   "seed": null
+  },
+  "linda-klimovicova": {
+   "id": "linda-klimovicova",
+   "name": "Linda Klimovičová",
+   "short": "L Klimovičová",
+   "country": "POL",
+   "seed": "Q"
+  },
+  "francesca-jones": {
+   "id": "francesca-jones",
+   "name": "Francesca Jones",
+   "short": "F Jones",
+   "country": "GBR",
+   "seed": null
+  },
+  "talia-gibson": {
+   "id": "talia-gibson",
+   "name": "Talia Gibson",
+   "short": "T Gibson",
+   "country": "AUS",
+   "seed": "WC"
+  },
+  "anna-blinkova": {
+   "id": "anna-blinkova",
+   "name": "Anna Blinkova",
+   "short": "A Blinkova",
+   "country": null,
+   "seed": null
+  },
+  "barbora-krejcikova": {
+   "id": "barbora-krejcikova",
+   "name": "Barbora Krejčíková",
+   "short": "B Krejčíková",
+   "country": "CZE",
+   "seed": null
+  },
+  "diana-shnaider": {
+   "id": "diana-shnaider",
+   "name": "Diana Shnaider",
+   "short": "D Shnaider",
+   "country": null,
+   "seed": "23"
+  },
+  "dayana-yastremska": {
+   "id": "dayana-yastremska",
+   "name": "Dayana Yastremska",
+   "short": "D Yastremska",
+   "country": "UKR",
+   "seed": "26"
+  },
+  "elena-gabriela-ruse": {
+   "id": "elena-gabriela-ruse",
+   "name": "Elena-Gabriela Ruse",
+   "short": "E-G Ruse",
+   "country": "ROU",
+   "seed": null
+  },
+  "yuliia-starodubtseva": {
+   "id": "yuliia-starodubtseva",
+   "name": "Yuliia Starodubtseva",
+   "short": "Y Starodubtseva",
+   "country": "UKR",
+   "seed": "Q"
+  },
+  "ajla-tomljanovic": {
+   "id": "ajla-tomljanovic",
+   "name": "Ajla Tomljanović",
+   "short": "A Tomljanović",
+   "country": "AUS",
+   "seed": null
+  },
+  "maria-sakkari": {
+   "id": "maria-sakkari",
+   "name": "Maria Sakkari",
+   "short": "M Sakkari",
+   "country": "GRE",
+   "seed": null
+  },
+  "leolia-jeanjean": {
+   "id": "leolia-jeanjean",
+   "name": "Léolia Jeanjean",
+   "short": "L Jeanjean",
+   "country": "FRA",
+   "seed": null
+  },
+  "donna-vekic": {
+   "id": "donna-vekic",
+   "name": "Donna Vekić",
+   "short": "D Vekić",
+   "country": "CRO",
+   "seed": null
+  },
+  "mirra-andreeva": {
+   "id": "mirra-andreeva",
+   "name": "Mirra Andreeva",
+   "short": "M Andreeva",
+   "country": null,
+   "seed": "8"
+  },
+  "jessica-pegula": {
+   "id": "jessica-pegula",
+   "name": "Jessica Pegula",
+   "short": "J Pegula",
+   "country": "USA",
+   "seed": "6"
+  },
+  "anastasia-zakharova": {
+   "id": "anastasia-zakharova",
+   "name": "Anastasia Zakharova",
+   "short": "A Zakharova",
+   "country": null,
+   "seed": null
+  },
+  "emiliana-arango": {
+   "id": "emiliana-arango",
+   "name": "Emiliana Arango",
+   "short": "E Arango",
+   "country": "COL",
+   "seed": null
+  },
+  "mccartney-kessler": {
+   "id": "mccartney-kessler",
+   "name": "McCartney Kessler",
+   "short": "M Kessler",
+   "country": "USA",
+   "seed": null
+  },
+  "oksana-selekhmeteva": {
+   "id": "oksana-selekhmeteva",
+   "name": "Oksana Selekhmeteva",
+   "short": "O Selekhmeteva",
+   "country": null,
+   "seed": null
+  },
+  "ella-seidel": {
+   "id": "ella-seidel",
+   "name": "Ella Seidel",
+   "short": "E Seidel",
+   "country": "GER",
+   "seed": null
+  },
+  "zarina-diyas": {
+   "id": "zarina-diyas",
+   "name": "Zarina Diyas",
+   "short": "Z Diyas",
+   "country": "KAZ",
+   "seed": "WC"
+  },
+  "paula-badosa": {
+   "id": "paula-badosa",
+   "name": "Paula Badosa",
+   "short": "P Badosa",
+   "country": "ESP",
+   "seed": "25"
+  },
+  "leylah-fernandez": {
+   "id": "leylah-fernandez",
+   "name": "Leylah Fernandez",
+   "short": "L Fernandez",
+   "country": "CAN",
+   "seed": "22"
+  },
+  "janice-tjen": {
+   "id": "janice-tjen",
+   "name": "Janice Tjen",
+   "short": "J Tjen",
+   "country": "INA",
+   "seed": null
+  },
+  "karolina-pliskova": {
+   "id": "karolina-pliskova",
+   "name": "Karolína Plíšková",
+   "short": "Ka Plíšková",
+   "country": "CZE",
+   "seed": "PR"
+  },
+  "sloane-stephens": {
+   "id": "sloane-stephens",
+   "name": "Sloane Stephens",
+   "short": "S Stephens",
+   "country": "USA",
+   "seed": "Q"
+  },
+  "ashlyn-krueger": {
+   "id": "ashlyn-krueger",
+   "name": "Ashlyn Krueger",
+   "short": "A Krueger",
+   "country": "USA",
+   "seed": null
+  },
+  "sara-bejlek": {
+   "id": "sara-bejlek",
+   "name": "Sára Bejlek",
+   "short": "S Bejlek",
+   "country": "CZE",
+   "seed": null
+  },
+  "oleksandra-oliynykova": {
+   "id": "oleksandra-oliynykova",
+   "name": "Oleksandra Oliynykova",
+   "short": "O Oliynykova",
+   "country": "UKR",
+   "seed": null
+  },
+  "madison-keys": {
+   "id": "madison-keys",
+   "name": "Madison Keys",
+   "short": "M Keys",
+   "country": "USA",
+   "seed": "9"
+  },
+  "linda-noskova": {
+   "id": "linda-noskova",
+   "name": "Linda Nosková",
+   "short": "L Nosková",
+   "country": "CZE",
+   "seed": "13"
+  },
+  "darja-semenistaja": {
+   "id": "darja-semenistaja",
+   "name": "Darja Semeņistaja",
+   "short": "D Semeņistaja",
+   "country": "LAT",
+   "seed": null
+  },
+  "zhang-shuai": {
+   "id": "zhang-shuai",
+   "name": "Zhang Shuai",
+   "short": "S Zhang",
+   "country": "CHN",
+   "seed": null
+  },
+  "taylah-preston": {
+   "id": "taylah-preston",
+   "name": "Taylah Preston",
+   "short": "T Preston",
+   "country": "AUS",
+   "seed": "WC"
+  },
+  "wang-xinyu": {
+   "id": "wang-xinyu",
+   "name": "Wang Xinyu",
+   "short": "Xin Wang",
+   "country": "CHN",
+   "seed": null
+  },
+  "anhelina-kalinina": {
+   "id": "anhelina-kalinina",
+   "name": "Anhelina Kalinina",
+   "short": "A Kalinina",
+   "country": "UKR",
+   "seed": "Q"
+  },
+  "rebecca-sramkova": {
+   "id": "rebecca-sramkova",
+   "name": "Rebecca Šramková",
+   "short": "R Šramková",
+   "country": "SVK",
+   "seed": null
+  },
+  "jelena-ostapenko": {
+   "id": "jelena-ostapenko",
+   "name": "Jeļena Ostapenko",
+   "short": "J Ostapenko",
+   "country": "LAT",
+   "seed": "24"
+  },
+  "sofia-kenin": {
+   "id": "sofia-kenin",
+   "name": "Sofia Kenin",
+   "short": "S Kenin",
+   "country": "USA",
+   "seed": "27"
+  },
+  "peyton-stearns": {
+   "id": "peyton-stearns",
+   "name": "Peyton Stearns",
+   "short": "P Stearns",
+   "country": "USA",
+   "seed": null
+  },
+  "petra-marcinko": {
+   "id": "petra-marcinko",
+   "name": "Petra Marčinko",
+   "short": "P Marčinko",
+   "country": "CRO",
+   "seed": null
+  },
+  "tatjana-maria": {
+   "id": "tatjana-maria",
+   "name": "Tatjana Maria",
+   "short": "T Maria",
+   "country": "GER",
+   "seed": null
+  },
+  "panna-udvardy": {
+   "id": "panna-udvardy",
+   "name": "Panna Udvardy",
+   "short": "P Udvardy",
+   "country": "HUN",
+   "seed": null
+  },
+  "katerina-siniakova": {
+   "id": "katerina-siniakova",
+   "name": "Kateřina Siniaková",
+   "short": "K Siniaková",
+   "country": "CZE",
+   "seed": null
+  },
+  "simona-waltert": {
+   "id": "simona-waltert",
+   "name": "Simona Waltert",
+   "short": "S Waltert",
+   "country": "SUI",
+   "seed": null
+  },
+  "amanda-anisimova": {
+   "id": "amanda-anisimova",
+   "name": "Amanda Anisimova",
+   "short": "A Anisimova",
+   "country": "USA",
+   "seed": "4"
+  },
+  "elena-rybakina": {
+   "id": "elena-rybakina",
+   "name": "Elena Rybakina",
+   "short": "E Rybakina",
+   "country": "KAZ",
+   "seed": "5"
+  },
+  "kaja-juvan": {
+   "id": "kaja-juvan",
+   "name": "Kaja Juvan",
+   "short": "K Juvan",
+   "country": "SLO",
+   "seed": null
+  },
+  "varvara-gracheva": {
+   "id": "varvara-gracheva",
+   "name": "Varvara Gracheva",
+   "short": "V Gracheva",
+   "country": "FRA",
+   "seed": null
+  },
+  "viktorija-golubic": {
+   "id": "viktorija-golubic",
+   "name": "Viktorija Golubic",
+   "short": "V Golubic",
+   "country": "SUI",
+   "seed": null
+  },
+  "lulu-sun": {
+   "id": "lulu-sun",
+   "name": "Lulu Sun",
+   "short": "L Sun",
+   "country": "NZL",
+   "seed": null
+  },
+  "linda-fruhvirtova": {
+   "id": "linda-fruhvirtova",
+   "name": "Linda Fruhvirtová",
+   "short": "L Fruhvirtová",
+   "country": "CZE",
+   "seed": "Q"
+  },
+  "tereza-valentova": {
+   "id": "tereza-valentova",
+   "name": "Tereza Valentová",
+   "short": "T Valentová",
+   "country": "CZE",
+   "seed": null
+  },
+  "maya-joint": {
+   "id": "maya-joint",
+   "name": "Maya Joint",
+   "short": "M Joint",
+   "country": "AUS",
+   "seed": "30"
+  },
+  "elise-mertens": {
+   "id": "elise-mertens",
+   "name": "Elise Mertens",
+   "short": "E Mertens",
+   "country": "BEL",
+   "seed": "21"
+  },
+  "lanlana-tararudee": {
+   "id": "lanlana-tararudee",
+   "name": "Lanlana Tararudee",
+   "short": "L Tararudee",
+   "country": "THA",
+   "seed": "Q"
+  },
+  "solana-sierra": {
+   "id": "solana-sierra",
+   "name": "Solana Sierra",
+   "short": "S Sierra",
+   "country": "ARG",
+   "seed": null
+  },
+  "moyuka-uchijima": {
+   "id": "moyuka-uchijima",
+   "name": "Moyuka Uchijima",
+   "short": "M Uchijima",
+   "country": "JPN",
+   "seed": null
+  },
+  "daria-kasatkina": {
+   "id": "daria-kasatkina",
+   "name": "Daria Kasatkina",
+   "short": "D Kasatkina",
+   "country": "AUS",
+   "seed": null
+  },
+  "nikola-bartunkova": {
+   "id": "nikola-bartunkova",
+   "name": "Nikola Bartůňková",
+   "short": "N Bartůňková",
+   "country": "CZE",
+   "seed": "Q"
+  },
+  "katie-boulter": {
+   "id": "katie-boulter",
+   "name": "Katie Boulter",
+   "short": "K Boulter",
+   "country": "GBR",
+   "seed": null
+  },
+  "belinda-bencic": {
+   "id": "belinda-bencic",
+   "name": "Belinda Bencic",
+   "short": "B Bencic",
+   "country": "SUI",
+   "seed": "10"
+  },
+  "naomi-osaka": {
+   "id": "naomi-osaka",
+   "name": "Naomi Osaka",
+   "short": "N Osaka",
+   "country": "JPN",
+   "seed": "16"
+  },
+  "antonia-ruzic": {
+   "id": "antonia-ruzic",
+   "name": "Antonia Ružić",
+   "short": "A Ružić",
+   "country": "CRO",
+   "seed": null
+  },
+  "sorana-cirstea": {
+   "id": "sorana-cirstea",
+   "name": "Sorana Cîrstea",
+   "short": "S Cîrstea",
+   "country": "ROU",
+   "seed": null
+  },
+  "eva-lys": {
+   "id": "eva-lys",
+   "name": "Eva Lys",
+   "short": "E Lys",
+   "country": "GER",
+   "seed": null
+  },
+  "maddison-inglis": {
+   "id": "maddison-inglis",
+   "name": "Maddison Inglis",
+   "short": "M Inglis",
+   "country": "AUS",
+   "seed": "Q"
+  },
+  "kimberly-birrell": {
+   "id": "kimberly-birrell",
+   "name": "Kimberly Birrell",
+   "short": "K Birrell",
+   "country": "AUS",
+   "seed": null
+  },
+  "laura-siegemund": {
+   "id": "laura-siegemund",
+   "name": "Laura Siegemund",
+   "short": "L Siegemund",
+   "country": "GER",
+   "seed": null
+  },
+  "liudmila-samsonova": {
+   "id": "liudmila-samsonova",
+   "name": "Liudmila Samsonova",
+   "short": "L Samsonova",
+   "country": null,
+   "seed": "18"
+  },
+  "anna-kalinskaya": {
+   "id": "anna-kalinskaya",
+   "name": "Anna Kalinskaya",
+   "short": "A Kalinskaya",
+   "country": null,
+   "seed": "31"
+  },
+  "sonay-kartal": {
+   "id": "sonay-kartal",
+   "name": "Sonay Kartal",
+   "short": "S Kartal",
+   "country": "GBR",
+   "seed": null
+  },
+  "julia-grabher": {
+   "id": "julia-grabher",
+   "name": "Julia Grabher",
+   "short": "J Grabher",
+   "country": "AUT",
+   "seed": null
+  },
+  "elisabetta-cocciaretto": {
+   "id": "elisabetta-cocciaretto",
+   "name": "Elisabetta Cocciaretto",
+   "short": "E Cocciaretto",
+   "country": "ITA",
+   "seed": null
+  },
+  "renata-zarazua": {
+   "id": "renata-zarazua",
+   "name": "Renata Zarazúa",
+   "short": "R Zarazúa",
+   "country": "MEX",
+   "seed": null
+  },
+  "marie-bouzkova": {
+   "id": "marie-bouzkova",
+   "name": "Marie Bouzková",
+   "short": "M Bouzková",
+   "country": "CZE",
+   "seed": null
+  },
+  "yuan-yue": {
+   "id": "yuan-yue",
+   "name": "Yuan Yue",
+   "short": "Y Yuan",
+   "country": "CHN",
+   "seed": "Q"
+  },
+  "iga-swiatek": {
+   "id": "iga-swiatek",
+   "name": "Iga Świątek",
+   "short": "I Świątek",
+   "country": "POL",
+   "seed": "2"
+  }
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "name": "First round",
+   "matches": [
+    {
+     "id": "r1m1",
+     "round": 1,
+     "position": 0,
+     "sides": [
+      {
+       "player": "aryna-sabalenka",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "tiantsoa-rakotomanga-rajaonah",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "aryna-sabalenka"
+    },
+    {
+     "id": "r1m2",
+     "round": 1,
+     "position": 1,
+     "sides": [
+      {
+       "player": "anastasia-pavlyuchenkova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 10,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "bai-zhuoxuan",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 12,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "bai-zhuoxuan"
+    },
+    {
+     "id": "r1m3",
+     "round": 1,
+     "position": 2,
+     "sides": [
+      {
+       "player": "suzan-lamens",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "anastasia-potapova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "anastasia-potapova"
+    },
+    {
+     "id": "r1m4",
+     "round": 1,
+     "position": 3,
+     "sides": [
+      {
+       "player": "mananchaya-sawangkaew",
+       "seed": "PR",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "emma-raducanu",
+       "seed": "28",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "emma-raducanu"
+    },
+    {
+     "id": "r1m5",
+     "round": 1,
+     "position": 4,
+     "sides": [
+      {
+       "player": "victoria-mboko",
+       "seed": "17",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "emerson-jones",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "victoria-mboko"
+    },
+    {
+     "id": "r1m6",
+     "round": 1,
+     "position": 5,
+     "sides": [
+      {
+       "player": "caty-mcnally",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "himeno-sakatsume",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "caty-mcnally"
+    },
+    {
+     "id": "r1m7",
+     "round": 1,
+     "position": 6,
+     "sides": [
+      {
+       "player": "polina-kudermetova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "guiomar-maristany",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "polina-kudermetova"
+    },
+    {
+     "id": "r1m8",
+     "round": 1,
+     "position": 7,
+     "sides": [
+      {
+       "player": "dalma-galfi",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "clara-tauson",
+       "seed": "14",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "clara-tauson"
+    },
+    {
+     "id": "r1m9",
+     "round": 1,
+     "position": 8,
+     "sides": [
+      {
+       "player": "ekaterina-alexandrova",
+       "seed": "11",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "zeynep-sonmez",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "zeynep-sonmez"
+    },
+    {
+     "id": "r1m10",
+     "round": 1,
+     "position": 9,
+     "sides": [
+      {
+       "player": "anna-bondar",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "elizabeth-mandlik",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "anna-bondar"
+    },
+    {
+     "id": "r1m11",
+     "round": 1,
+     "position": 10,
+     "sides": [
+      {
+       "player": "yulia-putintseva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "beatriz-haddad-maia",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "yulia-putintseva"
+    },
+    {
+     "id": "r1m12",
+     "round": 1,
+     "position": 11,
+     "sides": [
+      {
+       "player": "elsa-jacquemot",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "marta-kostyuk",
+       "seed": "20",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elsa-jacquemot"
+    },
+    {
+     "id": "r1m13",
+     "round": 1,
+     "position": 12,
+     "sides": [
+      {
+       "player": "iva-jovic",
+       "seed": "29",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "katie-volynets",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "iva-jovic"
+    },
+    {
+     "id": "r1m14",
+     "round": 1,
+     "position": 13,
+     "sides": [
+      {
+       "player": "priscilla-hon",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "marina-stakusic",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": null,
+         "tiebreak": null,
+         "won": false,
+         "note": "3<sup>r</sup>"
+        }
+       ]
+      }
+     ],
+     "winner": "priscilla-hon"
+    },
+    {
+     "id": "r1m15",
+     "round": 1,
+     "position": 14,
+     "sides": [
+      {
+       "player": "veronika-erjavec",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "magdalena-frech",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "magdalena-frech"
+    },
+    {
+     "id": "r1m16",
+     "round": 1,
+     "position": 15,
+     "sides": [
+      {
+       "player": "aliaksandra-sasnovich",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "jasmine-paolini",
+       "seed": "7",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "jasmine-paolini"
+    },
+    {
+     "id": "r1m17",
+     "round": 1,
+     "position": 16,
+     "sides": [
+      {
+       "player": "coco-gauff",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "kamilla-rakhimova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "coco-gauff"
+    },
+    {
+     "id": "r1m18",
+     "round": 1,
+     "position": 17,
+     "sides": [
+      {
+       "player": "olga-danilovic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "venus-williams",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "olga-danilovic"
+    },
+    {
+     "id": "r1m19",
+     "round": 1,
+     "position": 18,
+     "sides": [
+      {
+       "player": "storm-hunter",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jessica-bouzas-maneiro",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "storm-hunter"
+    },
+    {
+     "id": "r1m20",
+     "round": 1,
+     "position": 19,
+     "sides": [
+      {
+       "player": "hailey-baptiste",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "taylor-townsend",
+       "seed": "LL",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "hailey-baptiste"
+    },
+    {
+     "id": "r1m21",
+     "round": 1,
+     "position": 20,
+     "sides": [
+      {
+       "player": "karolina-muchova",
+       "seed": "19",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jaqueline-cristian",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "karolina-muchova"
+    },
+    {
+     "id": "r1m22",
+     "round": 1,
+     "position": 21,
+     "sides": [
+      {
+       "player": "alycia-parks",
+       "seed": null,
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "alexandra-eala",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "alycia-parks"
+    },
+    {
+     "id": "r1m23",
+     "round": 1,
+     "position": 22,
+     "sides": [
+      {
+       "player": "ann-li",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "camila-osorio",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "ann-li"
+    },
+    {
+     "id": "r1m24",
+     "round": 1,
+     "position": 23,
+     "sides": [
+      {
+       "player": "magda-linette",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "emma-navarro",
+       "seed": "15",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "magda-linette"
+    },
+    {
+     "id": "r1m25",
+     "round": 1,
+     "position": 24,
+     "sides": [
+      {
+       "player": "elina-svitolina",
+       "seed": "12",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "cristina-bucsa",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elina-svitolina"
+    },
+    {
+     "id": "r1m26",
+     "round": 1,
+     "position": 25,
+     "sides": [
+      {
+       "player": "linda-klimovicova",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "francesca-jones",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": null,
+         "tiebreak": null,
+         "won": false,
+         "note": "2<sup>r</sup>"
+        }
+       ]
+      }
+     ],
+     "winner": "linda-klimovicova"
+    },
+    {
+     "id": "r1m27",
+     "round": 1,
+     "position": 26,
+     "sides": [
+      {
+       "player": "talia-gibson",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "anna-blinkova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "talia-gibson"
+    },
+    {
+     "id": "r1m28",
+     "round": 1,
+     "position": 27,
+     "sides": [
+      {
+       "player": "barbora-krejcikova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "diana-shnaider",
+       "seed": "23",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "diana-shnaider"
+    },
+    {
+     "id": "r1m29",
+     "round": 1,
+     "position": 28,
+     "sides": [
+      {
+       "player": "dayana-yastremska",
+       "seed": "26",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "elena-gabriela-ruse",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "elena-gabriela-ruse"
+    },
+    {
+     "id": "r1m30",
+     "round": 1,
+     "position": 29,
+     "sides": [
+      {
+       "player": "yuliia-starodubtseva",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "ajla-tomljanovic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "ajla-tomljanovic"
+    },
+    {
+     "id": "r1m31",
+     "round": 1,
+     "position": 30,
+     "sides": [
+      {
+       "player": "maria-sakkari",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "leolia-jeanjean",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "maria-sakkari"
+    },
+    {
+     "id": "r1m32",
+     "round": 1,
+     "position": 31,
+     "sides": [
+      {
+       "player": "donna-vekic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "mirra-andreeva",
+       "seed": "8",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "mirra-andreeva"
+    },
+    {
+     "id": "r1m33",
+     "round": 1,
+     "position": 32,
+     "sides": [
+      {
+       "player": "jessica-pegula",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "anastasia-zakharova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jessica-pegula"
+    },
+    {
+     "id": "r1m34",
+     "round": 1,
+     "position": 33,
+     "sides": [
+      {
+       "player": "emiliana-arango",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "mccartney-kessler",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "mccartney-kessler"
+    },
+    {
+     "id": "r1m35",
+     "round": 1,
+     "position": 34,
+     "sides": [
+      {
+       "player": "oksana-selekhmeteva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "ella-seidel",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "oksana-selekhmeteva"
+    },
+    {
+     "id": "r1m36",
+     "round": 1,
+     "position": 35,
+     "sides": [
+      {
+       "player": "zarina-diyas",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "paula-badosa",
+       "seed": "25",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "paula-badosa"
+    },
+    {
+     "id": "r1m37",
+     "round": 1,
+     "position": 36,
+     "sides": [
+      {
+       "player": "leylah-fernandez",
+       "seed": "22",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 1,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "janice-tjen",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "janice-tjen"
+    },
+    {
+     "id": "r1m38",
+     "round": 1,
+     "position": 37,
+     "sides": [
+      {
+       "player": "karolina-pliskova",
+       "seed": "PR",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "sloane-stephens",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "karolina-pliskova"
+    },
+    {
+     "id": "r1m39",
+     "round": 1,
+     "position": 38,
+     "sides": [
+      {
+       "player": "ashlyn-krueger",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "sara-bejlek",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "ashlyn-krueger"
+    },
+    {
+     "id": "r1m40",
+     "round": 1,
+     "position": 39,
+     "sides": [
+      {
+       "player": "oleksandra-oliynykova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "madison-keys",
+       "seed": "9",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "madison-keys"
+    },
+    {
+     "id": "r1m41",
+     "round": 1,
+     "position": 40,
+     "sides": [
+      {
+       "player": "linda-noskova",
+       "seed": "13",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "darja-semenistaja",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "linda-noskova"
+    },
+    {
+     "id": "r1m42",
+     "round": 1,
+     "position": 41,
+     "sides": [
+      {
+       "player": "zhang-shuai",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "taylah-preston",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "taylah-preston"
+    },
+    {
+     "id": "r1m43",
+     "round": 1,
+     "position": 42,
+     "sides": [
+      {
+       "player": "wang-xinyu",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "anhelina-kalinina",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "wang-xinyu"
+    },
+    {
+     "id": "r1m44",
+     "round": 1,
+     "position": 43,
+     "sides": [
+      {
+       "player": "rebecca-sramkova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "jelena-ostapenko",
+       "seed": "24",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "jelena-ostapenko"
+    },
+    {
+     "id": "r1m45",
+     "round": 1,
+     "position": 44,
+     "sides": [
+      {
+       "player": "sofia-kenin",
+       "seed": "27",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "peyton-stearns",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "peyton-stearns"
+    },
+    {
+     "id": "r1m46",
+     "round": 1,
+     "position": 45,
+     "sides": [
+      {
+       "player": "petra-marcinko",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "tatjana-maria",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "petra-marcinko"
+    },
+    {
+     "id": "r1m47",
+     "round": 1,
+     "position": 46,
+     "sides": [
+      {
+       "player": "panna-udvardy",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "katerina-siniakova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "katerina-siniakova"
+    },
+    {
+     "id": "r1m48",
+     "round": 1,
+     "position": 47,
+     "sides": [
+      {
+       "player": "simona-waltert",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "amanda-anisimova",
+       "seed": "4",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "amanda-anisimova"
+    },
+    {
+     "id": "r1m49",
+     "round": 1,
+     "position": 48,
+     "sides": [
+      {
+       "player": "elena-rybakina",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "kaja-juvan",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elena-rybakina"
+    },
+    {
+     "id": "r1m50",
+     "round": 1,
+     "position": 49,
+     "sides": [
+      {
+       "player": "varvara-gracheva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "viktorija-golubic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "varvara-gracheva"
+    },
+    {
+     "id": "r1m51",
+     "round": 1,
+     "position": 50,
+     "sides": [
+      {
+       "player": "lulu-sun",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "linda-fruhvirtova",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "linda-fruhvirtova"
+    },
+    {
+     "id": "r1m52",
+     "round": 1,
+     "position": 51,
+     "sides": [
+      {
+       "player": "tereza-valentova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "maya-joint",
+       "seed": "30",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "tereza-valentova"
+    },
+    {
+     "id": "r1m53",
+     "round": 1,
+     "position": 52,
+     "sides": [
+      {
+       "player": "elise-mertens",
+       "seed": "21",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "lanlana-tararudee",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elise-mertens"
+    },
+    {
+     "id": "r1m54",
+     "round": 1,
+     "position": 53,
+     "sides": [
+      {
+       "player": "solana-sierra",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "moyuka-uchijima",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "moyuka-uchijima"
+    },
+    {
+     "id": "r1m55",
+     "round": 1,
+     "position": 54,
+     "sides": [
+      {
+       "player": "daria-kasatkina",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "nikola-bartunkova",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "nikola-bartunkova"
+    },
+    {
+     "id": "r1m56",
+     "round": 1,
+     "position": 55,
+     "sides": [
+      {
+       "player": "katie-boulter",
+       "seed": null,
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "belinda-bencic",
+       "seed": "10",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "belinda-bencic"
+    },
+    {
+     "id": "r1m57",
+     "round": 1,
+     "position": 56,
+     "sides": [
+      {
+       "player": "naomi-osaka",
+       "seed": "16",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "antonia-ruzic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "naomi-osaka"
+    },
+    {
+     "id": "r1m58",
+     "round": 1,
+     "position": 57,
+     "sides": [
+      {
+       "player": "sorana-cirstea",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "eva-lys",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "sorana-cirstea"
+    },
+    {
+     "id": "r1m59",
+     "round": 1,
+     "position": 58,
+     "sides": [
+      {
+       "player": "maddison-inglis",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 8,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 9,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "kimberly-birrell",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 6,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 11,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "maddison-inglis"
+    },
+    {
+     "id": "r1m60",
+     "round": 1,
+     "position": 59,
+     "sides": [
+      {
+       "player": "laura-siegemund",
+       "seed": null,
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "liudmila-samsonova",
+       "seed": "18",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "laura-siegemund"
+    },
+    {
+     "id": "r1m61",
+     "round": 1,
+     "position": 60,
+     "sides": [
+      {
+       "player": "anna-kalinskaya",
+       "seed": "31",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "sonay-kartal",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "anna-kalinskaya"
+    },
+    {
+     "id": "r1m62",
+     "round": 1,
+     "position": 61,
+     "sides": [
+      {
+       "player": "julia-grabher",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "elisabetta-cocciaretto",
+       "seed": null,
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "julia-grabher"
+    },
+    {
+     "id": "r1m63",
+     "round": 1,
+     "position": 62,
+     "sides": [
+      {
+       "player": "renata-zarazua",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "marie-bouzkova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "marie-bouzkova"
+    },
+    {
+     "id": "r1m64",
+     "round": 1,
+     "position": 63,
+     "sides": [
+      {
+       "player": "yuan-yue",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "iga-swiatek",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "iga-swiatek"
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "name": "Second round",
+   "matches": [
+    {
+     "id": "r2m1",
+     "round": 2,
+     "position": 0,
+     "sides": [
+      {
+       "player": "aryna-sabalenka",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "bai-zhuoxuan",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "aryna-sabalenka"
+    },
+    {
+     "id": "r2m2",
+     "round": 2,
+     "position": 1,
+     "sides": [
+      {
+       "player": "anastasia-potapova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "emma-raducanu",
+       "seed": "28",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "anastasia-potapova"
+    },
+    {
+     "id": "r2m3",
+     "round": 2,
+     "position": 2,
+     "sides": [
+      {
+       "player": "victoria-mboko",
+       "seed": "17",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "caty-mcnally",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "victoria-mboko"
+    },
+    {
+     "id": "r2m4",
+     "round": 2,
+     "position": 3,
+     "sides": [
+      {
+       "player": "polina-kudermetova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "clara-tauson",
+       "seed": "14",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "clara-tauson"
+    },
+    {
+     "id": "r2m5",
+     "round": 2,
+     "position": 4,
+     "sides": [
+      {
+       "player": "zeynep-sonmez",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "anna-bondar",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "zeynep-sonmez"
+    },
+    {
+     "id": "r2m6",
+     "round": 2,
+     "position": 5,
+     "sides": [
+      {
+       "player": "yulia-putintseva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "elsa-jacquemot",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "yulia-putintseva"
+    },
+    {
+     "id": "r2m7",
+     "round": 2,
+     "position": 6,
+     "sides": [
+      {
+       "player": "iva-jovic",
+       "seed": "29",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "priscilla-hon",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "iva-jovic"
+    },
+    {
+     "id": "r2m8",
+     "round": 2,
+     "position": 7,
+     "sides": [
+      {
+       "player": "magdalena-frech",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "jasmine-paolini",
+       "seed": "7",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "jasmine-paolini"
+    },
+    {
+     "id": "r2m9",
+     "round": 2,
+     "position": 8,
+     "sides": [
+      {
+       "player": "coco-gauff",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "olga-danilovic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "coco-gauff"
+    },
+    {
+     "id": "r2m10",
+     "round": 2,
+     "position": 9,
+     "sides": [
+      {
+       "player": "storm-hunter",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "hailey-baptiste",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "hailey-baptiste"
+    },
+    {
+     "id": "r2m11",
+     "round": 2,
+     "position": 10,
+     "sides": [
+      {
+       "player": "karolina-muchova",
+       "seed": "19",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "alycia-parks",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "karolina-muchova"
+    },
+    {
+     "id": "r2m12",
+     "round": 2,
+     "position": 11,
+     "sides": [
+      {
+       "player": "ann-li",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "magda-linette",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "magda-linette"
+    },
+    {
+     "id": "r2m13",
+     "round": 2,
+     "position": 12,
+     "sides": [
+      {
+       "player": "elina-svitolina",
+       "seed": "12",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "linda-klimovicova",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elina-svitolina"
+    },
+    {
+     "id": "r2m14",
+     "round": 2,
+     "position": 13,
+     "sides": [
+      {
+       "player": "talia-gibson",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "diana-shnaider",
+       "seed": "23",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "diana-shnaider"
+    },
+    {
+     "id": "r2m15",
+     "round": 2,
+     "position": 14,
+     "sides": [
+      {
+       "player": "elena-gabriela-ruse",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "ajla-tomljanovic",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elena-gabriela-ruse"
+    },
+    {
+     "id": "r2m16",
+     "round": 2,
+     "position": 15,
+     "sides": [
+      {
+       "player": "maria-sakkari",
+       "seed": null,
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "mirra-andreeva",
+       "seed": "8",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "mirra-andreeva"
+    },
+    {
+     "id": "r2m17",
+     "round": 2,
+     "position": 16,
+     "sides": [
+      {
+       "player": "jessica-pegula",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "mccartney-kessler",
+       "seed": null,
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jessica-pegula"
+    },
+    {
+     "id": "r2m18",
+     "round": 2,
+     "position": 17,
+     "sides": [
+      {
+       "player": "oksana-selekhmeteva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "paula-badosa",
+       "seed": "25",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "oksana-selekhmeteva"
+    },
+    {
+     "id": "r2m19",
+     "round": 2,
+     "position": 18,
+     "sides": [
+      {
+       "player": "janice-tjen",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "karolina-pliskova",
+       "seed": "PR",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "karolina-pliskova"
+    },
+    {
+     "id": "r2m20",
+     "round": 2,
+     "position": 19,
+     "sides": [
+      {
+       "player": "ashlyn-krueger",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "madison-keys",
+       "seed": "9",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "madison-keys"
+    },
+    {
+     "id": "r2m21",
+     "round": 2,
+     "position": 20,
+     "sides": [
+      {
+       "player": "linda-noskova",
+       "seed": "13",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "taylah-preston",
+       "seed": "WC",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "linda-noskova"
+    },
+    {
+     "id": "r2m22",
+     "round": 2,
+     "position": 21,
+     "sides": [
+      {
+       "player": "wang-xinyu",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jelena-ostapenko",
+       "seed": "24",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "wang-xinyu"
+    },
+    {
+     "id": "r2m23",
+     "round": 2,
+     "position": 22,
+     "sides": [
+      {
+       "player": "peyton-stearns",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "petra-marcinko",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "peyton-stearns"
+    },
+    {
+     "id": "r2m24",
+     "round": 2,
+     "position": 23,
+     "sides": [
+      {
+       "player": "katerina-siniakova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "amanda-anisimova",
+       "seed": "4",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "amanda-anisimova"
+    },
+    {
+     "id": "r2m25",
+     "round": 2,
+     "position": 24,
+     "sides": [
+      {
+       "player": "elena-rybakina",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "varvara-gracheva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elena-rybakina"
+    },
+    {
+     "id": "r2m26",
+     "round": 2,
+     "position": 25,
+     "sides": [
+      {
+       "player": "linda-fruhvirtova",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "tereza-valentova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "tereza-valentova"
+    },
+    {
+     "id": "r2m27",
+     "round": 2,
+     "position": 26,
+     "sides": [
+      {
+       "player": "elise-mertens",
+       "seed": "21",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "moyuka-uchijima",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elise-mertens"
+    },
+    {
+     "id": "r2m28",
+     "round": 2,
+     "position": 27,
+     "sides": [
+      {
+       "player": "nikola-bartunkova",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "belinda-bencic",
+       "seed": "10",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "nikola-bartunkova"
+    },
+    {
+     "id": "r2m29",
+     "round": 2,
+     "position": 28,
+     "sides": [
+      {
+       "player": "naomi-osaka",
+       "seed": "16",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "sorana-cirstea",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "naomi-osaka"
+    },
+    {
+     "id": "r2m30",
+     "round": 2,
+     "position": 29,
+     "sides": [
+      {
+       "player": "maddison-inglis",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 10,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "laura-siegemund",
+       "seed": null,
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "maddison-inglis"
+    },
+    {
+     "id": "r2m31",
+     "round": 2,
+     "position": 30,
+     "sides": [
+      {
+       "player": "anna-kalinskaya",
+       "seed": "31",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "julia-grabher",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "anna-kalinskaya"
+    },
+    {
+     "id": "r2m32",
+     "round": 2,
+     "position": 31,
+     "sides": [
+      {
+       "player": "marie-bouzkova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "iga-swiatek",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "iga-swiatek"
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "name": "Third round",
+   "matches": [
+    {
+     "id": "r3m1",
+     "round": 3,
+     "position": 0,
+     "sides": [
+      {
+       "player": "aryna-sabalenka",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "anastasia-potapova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "aryna-sabalenka"
+    },
+    {
+     "id": "r3m2",
+     "round": 3,
+     "position": 1,
+     "sides": [
+      {
+       "player": "victoria-mboko",
+       "seed": "17",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "clara-tauson",
+       "seed": "14",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 5,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "victoria-mboko"
+    },
+    {
+     "id": "r3m3",
+     "round": 3,
+     "position": 2,
+     "sides": [
+      {
+       "player": "zeynep-sonmez",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "yulia-putintseva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "yulia-putintseva"
+    },
+    {
+     "id": "r3m4",
+     "round": 3,
+     "position": 3,
+     "sides": [
+      {
+       "player": "iva-jovic",
+       "seed": "29",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "jasmine-paolini",
+       "seed": "7",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 3,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "iva-jovic"
+    },
+    {
+     "id": "r3m5",
+     "round": 3,
+     "position": 4,
+     "sides": [
+      {
+       "player": "coco-gauff",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "hailey-baptiste",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "coco-gauff"
+    },
+    {
+     "id": "r3m6",
+     "round": 3,
+     "position": 5,
+     "sides": [
+      {
+       "player": "karolina-muchova",
+       "seed": "19",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "magda-linette",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "karolina-muchova"
+    },
+    {
+     "id": "r3m7",
+     "round": 3,
+     "position": 6,
+     "sides": [
+      {
+       "player": "elina-svitolina",
+       "seed": "12",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "diana-shnaider",
+       "seed": "23",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elina-svitolina"
+    },
+    {
+     "id": "r3m8",
+     "round": 3,
+     "position": 7,
+     "sides": [
+      {
+       "player": "elena-gabriela-ruse",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "mirra-andreeva",
+       "seed": "8",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "mirra-andreeva"
+    },
+    {
+     "id": "r3m9",
+     "round": 3,
+     "position": 8,
+     "sides": [
+      {
+       "player": "jessica-pegula",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "oksana-selekhmeteva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jessica-pegula"
+    },
+    {
+     "id": "r3m10",
+     "round": 3,
+     "position": 9,
+     "sides": [
+      {
+       "player": "karolina-pliskova",
+       "seed": "PR",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "madison-keys",
+       "seed": "9",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "madison-keys"
+    },
+    {
+     "id": "r3m11",
+     "round": 3,
+     "position": 10,
+     "sides": [
+      {
+       "player": "linda-noskova",
+       "seed": "13",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "wang-xinyu",
+       "seed": null,
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "wang-xinyu"
+    },
+    {
+     "id": "r3m12",
+     "round": 3,
+     "position": 11,
+     "sides": [
+      {
+       "player": "peyton-stearns",
+       "seed": null,
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "amanda-anisimova",
+       "seed": "4",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "amanda-anisimova"
+    },
+    {
+     "id": "r3m13",
+     "round": 3,
+     "position": 12,
+     "sides": [
+      {
+       "player": "elena-rybakina",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "tereza-valentova",
+       "seed": null,
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elena-rybakina"
+    },
+    {
+     "id": "r3m14",
+     "round": 3,
+     "position": 13,
+     "sides": [
+      {
+       "player": "elise-mertens",
+       "seed": "21",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "nikola-bartunkova",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elise-mertens"
+    },
+    {
+     "id": "r3m15",
+     "round": 3,
+     "position": 14,
+     "sides": [
+      {
+       "player": "naomi-osaka",
+       "seed": "16",
+       "sets": []
+      },
+      {
+       "player": "maddison-inglis",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": null,
+         "tiebreak": null,
+         "won": false,
+         "note": "<small>w/o</small>"
+        }
+       ]
+      }
+     ],
+     "winner": "maddison-inglis"
+    },
+    {
+     "id": "r3m16",
+     "round": 3,
+     "position": 15,
+     "sides": [
+      {
+       "player": "anna-kalinskaya",
+       "seed": "31",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "iga-swiatek",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "iga-swiatek"
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "name": "Fourth round",
+   "matches": [
+    {
+     "id": "r4m1",
+     "round": 4,
+     "position": 0,
+     "sides": [
+      {
+       "player": "aryna-sabalenka",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "victoria-mboko",
+       "seed": "17",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 1,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "aryna-sabalenka"
+    },
+    {
+     "id": "r4m2",
+     "round": 4,
+     "position": 1,
+     "sides": [
+      {
+       "player": "yulia-putintseva",
+       "seed": null,
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "iva-jovic",
+       "seed": "29",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "iva-jovic"
+    },
+    {
+     "id": "r4m3",
+     "round": 4,
+     "position": 2,
+     "sides": [
+      {
+       "player": "coco-gauff",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "karolina-muchova",
+       "seed": "19",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "coco-gauff"
+    },
+    {
+     "id": "r4m4",
+     "round": 4,
+     "position": 3,
+     "sides": [
+      {
+       "player": "elina-svitolina",
+       "seed": "12",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "mirra-andreeva",
+       "seed": "8",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elina-svitolina"
+    },
+    {
+     "id": "r4m5",
+     "round": 4,
+     "position": 4,
+     "sides": [
+      {
+       "player": "jessica-pegula",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "madison-keys",
+       "seed": "9",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jessica-pegula"
+    },
+    {
+     "id": "r4m6",
+     "round": 4,
+     "position": 5,
+     "sides": [
+      {
+       "player": "wang-xinyu",
+       "seed": null,
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": 4,
+         "won": false
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "amanda-anisimova",
+       "seed": "4",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "amanda-anisimova"
+    },
+    {
+     "id": "r4m7",
+     "round": 4,
+     "position": 6,
+     "sides": [
+      {
+       "player": "elena-rybakina",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "elise-mertens",
+       "seed": "21",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elena-rybakina"
+    },
+    {
+     "id": "r4m8",
+     "round": 4,
+     "position": 7,
+     "sides": [
+      {
+       "player": "maddison-inglis",
+       "seed": "Q",
+       "sets": [
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "iga-swiatek",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "iga-swiatek"
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "name": "Quarterfinals",
+   "matches": [
+    {
+     "id": "r5m1",
+     "round": 5,
+     "position": 0,
+     "sides": [
+      {
+       "player": "aryna-sabalenka",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "iva-jovic",
+       "seed": "29",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 0,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "aryna-sabalenka"
+    },
+    {
+     "id": "r5m2",
+     "round": 5,
+     "position": 1,
+     "sides": [
+      {
+       "player": "coco-gauff",
+       "seed": "3",
+       "sets": [
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "elina-svitolina",
+       "seed": "12",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "elina-svitolina"
+    },
+    {
+     "id": "r5m3",
+     "round": 5,
+     "position": 2,
+     "sides": [
+      {
+       "player": "jessica-pegula",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 7,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "amanda-anisimova",
+       "seed": "4",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 1,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "jessica-pegula"
+    },
+    {
+     "id": "r5m4",
+     "round": 5,
+     "position": 3,
+     "sides": [
+      {
+       "player": "elena-rybakina",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 7,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "iga-swiatek",
+       "seed": "2",
+       "sets": [
+        {
+         "games": 5,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 1,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "elena-rybakina"
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "name": "Semifinals",
+   "matches": [
+    {
+     "id": "r6m1",
+     "round": 6,
+     "position": 0,
+     "sides": [
+      {
+       "player": "aryna-sabalenka",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      },
+      {
+       "player": "elina-svitolina",
+       "seed": "12",
+       "sets": [
+        {
+         "games": 2,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      }
+     ],
+     "winner": "aryna-sabalenka"
+    },
+    {
+     "id": "r6m2",
+     "round": 6,
+     "position": 1,
+     "sides": [
+      {
+       "player": "jessica-pegula",
+       "seed": "6",
+       "sets": [
+        {
+         "games": 3,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": 7,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "elena-rybakina",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 7,
+         "tiebreak": 9,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "elena-rybakina"
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "name": "Final",
+   "matches": [
+    {
+     "id": "r7m1",
+     "round": 7,
+     "position": 0,
+     "sides": [
+      {
+       "player": "aryna-sabalenka",
+       "seed": "1",
+       "sets": [
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        }
+       ]
+      },
+      {
+       "player": "elena-rybakina",
+       "seed": "5",
+       "sets": [
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        },
+        {
+         "games": 4,
+         "tiebreak": null,
+         "won": false
+        },
+        {
+         "games": 6,
+         "tiebreak": null,
+         "won": true
+        }
+       ]
+      }
+     ],
+     "winner": "elena-rybakina"
+    }
+   ]
+  }
+ ]
+}

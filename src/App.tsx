@@ -1,0 +1,224 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Draw, SlamId } from './data/types';
+import { indexDraw, upsetMatchIds } from './data/analysis';
+import { buildGeometry } from './bracket/geometry';
+import { Bracket, CENTER, SCALE } from './bracket/Bracket';
+import { Rail } from './ui/Rail';
+import { Forthcoming } from './ui/Forthcoming';
+import { HollowBracket } from './bracket/HollowBracket';
+import { SLAM_ORDER, SLAM_ORDER_WOMEN, themeFor } from './ui/theme';
+import { Search } from './ui/Search';
+
+type Tour = 'men' | 'women';
+
+export function App() {
+  const [slam, setSlam] = useState<SlamId>('wimbledon-men');
+  const [tour, setTour] = useState<Tour>('men');
+  const [draw, setDraw] = useState<Draw | null>(null);
+  const [hover, setHover] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [prediction, setPrediction] = useState<string | null>(null);
+  const [pendingName, setPendingName] = useState<string | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+
+  const forthcoming = slam.startsWith('us-open');
+
+  const handleHover = useCallback((id: string | null) => setHover(id), []);
+  const handleSelect = useCallback((id: string) => setPicked((p) => (p === id ? null : id)), []);
+
+  useEffect(() => {
+    setPicked(null);
+    setHover(null);
+    if (forthcoming) { setDraw(null); setLoadFailed(false); return; }
+    let live = true;
+    setLoadFailed(false);
+    fetch(`${import.meta.env.BASE_URL}draws/${slam}.json`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`${slam} unavailable`);
+        return r.json();
+      })
+      .then((d) => { if (live) setDraw(d); })
+      .catch(() => { if (live) { setDraw(null); setLoadFailed(true); } });
+    return () => { live = false; };
+  }, [slam, forthcoming]);
+
+  const geo = useMemo(() => (draw ? buildGeometry(draw, SCALE, CENTER) : null), [draw]);
+  const index = useMemo(() => (draw ? indexDraw(draw) : null), [draw]);
+  const theme = useMemo(() => themeFor(slam), [slam]);
+  const upsets = useMemo(() => (index ? upsetMatchIds(index) : []), [index]);
+
+  const activeId = hover ?? picked;
+  const shownId = activeId ?? index?.champion?.id ?? null;
+  const shown = shownId && draw ? (draw.players[shownId] ?? null) : null;
+
+  const slams = tour === 'men' ? SLAM_ORDER : SLAM_ORDER_WOMEN;
+
+  return (
+    <main
+      className="stage"
+      style={
+        {
+          background: theme.groundDeep,
+          color: theme.chalk,
+          '--ground': theme.ground,
+          '--ground-deep': theme.groundDeep,
+        } as React.CSSProperties
+      }
+    >
+      <header className="mark">
+        <span className="mark-word">The Draw</span>
+        <h1 className="mark-slam">{theme.label}</h1>
+        <p className="mark-meta">
+          2026 <span className="dot">·</span> {forthcoming ? 'Not yet drawn' : draw ? draw.event : ' '}
+          {draw && !forthcoming && (
+            <>
+              <span className="dot">·</span>{' '}
+              {draw.rounds.reduce((n, r) => n + r.matches.length, 0)} matches
+            </>
+          )}
+        </p>
+        <p className="mark-claim">
+          {forthcoming ? (
+            <>
+              128 places await.
+              <br />
+              Pick who takes the title.
+            </>
+          ) : (
+            <>
+              {draw ? `${draw.rounds.reduce((n, r) => n + r.matches.length, 0)} matches.` : '127 matches.'}
+              <br />
+              One thread takes the title.
+            </>
+          )}
+        </p>
+      </header>
+
+      {forthcoming && (
+        <>
+          <Forthcoming
+            theme={theme}
+            tour={tour}
+            pick={prediction}
+            onPick={(id, name) => { setPrediction(id); setPendingName(name); }}
+          />
+          <div className="field">
+            <HollowBracket slam={slam} theme={theme} pickName={pendingName} />
+          </div>
+        </>
+      )}
+
+      {!forthcoming && !draw && !loadFailed && (
+        <div className="rail">
+          <p className="eyebrow">Loading</p>
+          <h1 className="player-name">Reading the draw</h1>
+        </div>
+      )}
+
+      {loadFailed && !forthcoming && (
+        <div className="rail">
+          <p className="eyebrow">Unavailable</p>
+          <h1 className="player-name">This draw did not load</h1>
+          <p className="forth-note">
+            The data for this tournament could not be fetched, so nothing is shown rather
+            than something approximate. Try another tournament.
+          </p>
+        </div>
+      )}
+
+      {draw && geo && index && (
+        <>
+          <Rail index={index} theme={theme} player={shown} traced={activeId !== null} />
+          <div className="field">
+            <Bracket
+              draw={draw}
+              geo={geo}
+              theme={theme}
+              upsets={upsets}
+              championId={index.champion?.id ?? null}
+              activeId={activeId}
+              focused={activeId !== null}
+              onHoverPlayer={setHover}
+              onSelectPlayer={(id) => setPicked((p) => (p === id ? null : id))}
+            />
+          </div>
+        </>
+      )}
+
+      {!forthcoming && draw && (
+        <div className="legend">
+          <span className="legend-item">
+            <svg className="legend-glyph" viewBox="0 0 30 10" aria-hidden="true">
+              <path d="M1 4.7 Q15 4.4 29 2.2 L29 7.8 Q15 5.6 1 5.3 Z" fill="currentColor" />
+            </svg>
+            Thicker thread, more decisive the win
+          </span>
+          <span className="legend-item">
+            <svg className="legend-glyph" viewBox="0 0 12 12" aria-hidden="true">
+              <circle cx="6" cy="6" r="3.4" stroke="currentColor" strokeWidth="1" fill="none" />
+            </svg>
+            A seed falling early
+          </span>
+          <span className="legend-item legend-act">Hover or search any name to trace all seven rounds</span>
+        </div>
+      )}
+
+      {draw && !forthcoming && (
+        <p className="colophon">
+          Every score reconciled against{' '}
+          <a href={draw.source.url} target="_blank" rel="noreferrer">
+            the official draw sheet
+          </a>
+          . 762 matches across the 2026 majors.
+        </p>
+      )}
+
+      {!forthcoming && draw && (
+        <p className="compact-note">Search a name to trace their tournament</p>
+      )}
+
+      {!forthcoming && draw && (
+        <Search
+          draw={draw}
+          flare={theme.flare}
+          onHover={handleHover}
+          onSelect={handleSelect}
+        />
+      )}
+
+      <nav className="switch" aria-label="Choose a tournament">
+        <div className="switch-tour">
+          {(['men', 'women'] as Tour[]).map((t) => (
+            <button
+              key={t}
+              className={`tour-btn${tour === t ? ' is-on' : ''}`}
+              onClick={() => {
+                setTour(t);
+                setSlam(slam.replace(/-(men|women)$/, `-${t}`) as SlamId);
+              }}
+            >
+              {t === 'men' ? "Men's" : "Women's"}
+            </button>
+          ))}
+        </div>
+        <ul className="switch-list">
+          {slams.map((id) => {
+            const t = themeFor(id);
+            return (
+              <li key={id}>
+                <button
+                  className={`slam-btn${slam === id ? ' is-on' : ''}`}
+                  style={{ '--swatch': t.flare } as React.CSSProperties}
+                  onClick={() => setSlam(id)}
+                >
+                  <span className="slam-swatch" />
+                  <span className="slam-label">{t.label}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </main>
+  );
+}
