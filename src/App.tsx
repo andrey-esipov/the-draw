@@ -165,11 +165,21 @@ export function App() {
 
       {draw && !forthcoming && (
         <p className="colophon">
-          Every score reconciled against{' '}
-          <a href={draw.source.url} target="_blank" rel="noreferrer">
-            the official draw sheet
+          <a
+            className="colophon-link"
+            href="https://github.com/andrey-esipov/the-draw/blob/main/PROCESS.md"
+            target="_blank"
+            rel="noreferrer"
+          >
+            How 762 matches were reconciled ↗
           </a>
-          . 762 matches across the 2026 majors.
+          <span className="colophon-sub">
+            Parsed from{' '}
+            <a href={draw.source.url} target="_blank" rel="noreferrer">
+              the official draw sheet
+            </a>
+            . Nothing ships that fails the tree check.
+          </span>
         </p>
       )}
 
