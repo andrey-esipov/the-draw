@@ -1,9 +1,9 @@
 run = "npm run dev"
 entrypoint = "src/main.tsx"
-modules = ["nodejs-20"]
+modules = ["nodejs-20", "web", "python-3.12"]
 
 [nix]
-channel = "stable-24_05"
+channel = "stable-25_05"
 
 # The Draw is a static Vite app with no server and no database.
 [deployment]
