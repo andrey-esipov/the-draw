@@ -7,8 +7,11 @@ import { createStage } from '../three/stage';
 import { createWorld } from '../three/world';
 import { createPlates, createConnectors } from '../three/plates';
 import { createRoute, type Route } from '../three/route';
-import { buildCinematic, idleDrift, ESTABLISH, type Cinematic } from '../three/cinema';
-import { createPodium } from '../three/podium';
+import { CARD_ASPECT } from '../three/matchcard';
+import { sound } from '../audio/sound';
+import { buildCinematic, idleDrift, type Cinematic } from '../three/cinema';
+import { createPodium, PLINTH_TOP, PODIUM_SCALE } from '../three/podium';
+import { createControls, drawControlsBus, type CameraPose } from '../three/controls';
 
 interface Props {
   slam: SlamId;
@@ -43,6 +46,10 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
     const stage = createStage(canvas, w, h);
     const world = createWorld(stage.scene, stage.renderer);
     world.setSlam(slam, theme);
+    // Reveal the freshly-built slam through a light-wipe rather than a hard
+    // cut. The world is already set above, so the wash resolves straight into
+    // it, hiding both the palette swap and 127 plates changing their text.
+    void stage.beginTransition(reduced ? 300 : 760, { reduced });
 
     const layout = buildBracketLayout(draw);
     const plates = createPlates(layout, draw, theme);
@@ -53,22 +60,73 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
     const finalMatch = draw.rounds[draw.rounds.length - 1]?.matches[0];
     const championId = finalMatch?.winner ?? null;
     const championName = championId ? (draw.players[championId]?.short ?? '') : '';
-    const podium = createPodium(slam, theme, championName, { year: draw.year, event: draw.event });
+    const podium = createPodium(
+      slam,
+      theme,
+      championName,
+      { year: draw.year, event: draw.event, reduced },
+      stage.renderer,
+    );
     podium.group.position.set(layout.podium.x, layout.podium.y, layout.podium.z);
-    podium.group.scale.setScalar(2.15);
+    podium.group.scale.setScalar(PODIUM_SCALE);
     stage.scene.add(podium.group);
     podium.setReveal(1);
+
+    const controls = createControls(stage.camera, host, layout.bounds);
+    controls.fit(w / h);
+    drawControlsBus.set(controls);
 
     let route: Route | null = null;
     let cinema: Cinematic | null = null;
     let runStart = 0;
     let running = false;
+    let litRounds = 0;
+    let advancedTo = 0;
+    let crowned = false;
+    let championRun = false;
     let litId: string | null = null;
 
     const pointer = new THREE.Vector2();
     const ndc = new THREE.Vector2();
     const ray = new THREE.Raycaster();
     let hovering = false;
+    /** The rig pose to return to when an opened match card is dismissed. */
+    let restorePose: CameraPose | null = null;
+
+    /** Frame one match so its expanded card fills a comfortable part of frame. */
+    function inspectPose(n: PlateNode): CameraPose {
+      // Close enough that every set score is legible, far enough that the plates
+      // either side and the trophy above stay in frame. Reading one match should
+      // never cost you your place in the draw.
+      // The card opens rightward from the plate's left edge, so frame its centre
+      // rather than the plate's, or half the score sits outside the shot.
+      const cardW = Math.max(1.86, n.h * 1.12) * CARD_ASPECT;
+      const cx = n.x - n.w / 2 + cardW / 2;
+      return {
+        pos: new THREE.Vector3(cx, n.y + 0.9, n.z + 7.4 + cardW * 0.92),
+        look: new THREE.Vector3(cx, n.y + 0.1, n.z),
+      };
+    }
+
+    function openCard(n: PlateNode) {
+      if (plates.expanded()?.match.id === n.match.id) return;
+      if (!restorePose) restorePose = controls.pose();
+      plates.setExpanded(n);
+      sound.select();
+      if (!reduced) sound.glide(0.85, true);
+      void controls.flyTo(inspectPose(n), reduced ? 0 : 0.85);
+    }
+
+    function closeCard() {
+      if (!plates.expanded()) return;
+      plates.closeExpanded();
+      sound.dismiss();
+      if (restorePose) {
+        if (!reduced) sound.glide(0.9, false);
+        void controls.flyTo(restorePose, reduced ? 0 : 0.9);
+        restorePose = null;
+      }
+    }
 
     function clearRoute() {
       route?.dispose();
@@ -86,22 +144,45 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
       }
       const path: PlateNode[] = routeOf(layout, draw, id);
       plates.setHighlight(new Set(path.map((n) => n.match.id)), id);
+      litRounds = path.length;
       if (path.length === 0) return;
       const champion = draw.rounds[draw.rounds.length - 1]?.matches[0]?.winner === id;
-      route = createRoute(path, theme, champion, w, h);
+      championRun = champion;
+      // Only the winner's thread climbs to the plinth. Everyone else's route
+      // stops where their tournament stopped, which is the whole point.
+      const apex = champion
+        ? { x: layout.podium.x, y: layout.podium.y + PLINTH_TOP * PODIUM_SCALE, z: layout.podium.z + 1.75 }
+        : undefined;
+      route = createRoute(path, theme, champion, w, h, apex);
       stage.scene.add(route.group);
       route.setProgress(reduced ? 1 : 0);
-      cinema = buildCinematic(path, layout.podium);
+      cinema = buildCinematic(path, layout.podium, {
+        isChampion: champion,
+        rest: controls.restPose(),
+      });
       if (reduced) route.setProgress(1);
     }
 
     function play() {
       if (!cinema) return;
+      advancedTo = 0;
+      crowned = false;
+      plates.closeExpanded();
+      restorePose = null;
       if (reduced) {
+        // No travel, but the run must still deliver its ending. Cut straight to
+        // the held payoff frame — the trophy, or the match they lost — with the
+        // route already drawn. The destination is the point; the flight was only
+        // ever the way of getting there.
         route?.setProgress(1);
+        podium.setReveal(championRun ? 1 : 0);
+        void controls.flyTo(cinema.payoffPose, 0);
+        sound.crown();
         onRunEnd();
         return;
       }
+      sound.runStart();
+      controls.enabled = false;
       runStart = performance.now();
       running = true;
     }
@@ -122,7 +203,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
     function frame() {
       raf = requestAnimationFrame(frame);
       const now = performance.now();
-      clock.getDelta();
+      const dt = clock.getDelta();
 
       if (camOverride) {
         stage.camera.position.copy(camOverride.pos);
@@ -131,19 +212,34 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
         const t = (now - runStart) / 1000;
         const p = cinema.seek(t, stage.camera);
         route?.setProgress(p);
-        podium.setReveal(p);
+        podium.setReveal(championRun ? p : 0);
+        // The thread's own progress drives the build, so a pip fires as it
+        // crosses each round and the crown lands the instant it arrives.
+        const roundNow = Math.min(litRounds, Math.floor(p * litRounds) + 1);
+        while (advancedTo < roundNow) { advancedTo++; sound.advance(advancedTo, litRounds); }
+        if (!crowned && p >= 0.999) { crowned = true; sound.crown(); }
         if (t >= cinema.duration) {
           running = false;
           route?.setProgress(1);
           podium.setReveal(1);
+          controls.adopt();
+          controls.enabled = true;
           onRunEnd();
         }
+      } else if (controls.hasMoved) {
+        controls.update(dt);
+        route?.setProgress(1);
       } else if (!reduced) {
-        idleDrift(stage.camera, now, pointer);
+        // Until the viewer takes the camera, keep the board breathing. A dead
+        // still frame is the difference between a render and a live broadcast,
+        // and this is the frame most people will only ever see.
+        idleDrift(stage.camera, now, pointer, cinema?.endPose ?? controls.restPose());
+        controls.adopt();
         route?.setProgress(1);
       } else {
-        stage.camera.position.copy(ESTABLISH.pos);
-        stage.camera.lookAt(ESTABLISH.look);
+        const rest = controls.restPose();
+        stage.camera.position.copy(rest.pos);
+        stage.camera.lookAt(rest.look);
       }
 
       podium.update(now);
@@ -159,18 +255,38 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
       if (running) return;
       ray.setFromCamera(ndc, stage.camera);
       const hit = plates.pick(ray);
+      // The stroke is what tells you a plate is a thing you may touch. Without it
+      // the board looks like a picture rather than a surface.
+      plates.setHover(hit);
       const next = hit !== null;
       if (next !== hovering) {
         hovering = next;
         host!.style.cursor = next ? 'pointer' : 'default';
+        if (next) sound.hover();
       }
     }
 
     function onClick() {
       if (running) return;
       ray.setFromCamera(ndc, stage.camera);
+      // A click on the open card itself is not a dismissal — it is the viewer
+      // reading it. Only a click on the board beyond the card closes it.
+      if (plates.pickExpanded(ray)) return;
       const hit = plates.pick(ray);
-      onPick(hit ? hit.match.id : null);
+      if (hit) {
+        openCard(hit);
+        onPick(hit.match.id);
+        return;
+      }
+      closeCard();
+      onPick(null);
+    }
+
+    function onEscape(e: KeyboardEvent) {
+      if (e.key !== 'Escape') return;
+      if (!plates.expanded()) return;
+      closeCard();
+      onPick(null);
     }
 
     function resize() {
@@ -178,10 +294,12 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
       h = host!.clientHeight;
       stage.resize(w, h);
       route?.resize(w, h);
+      controls.fit(w / h);
     }
 
     host.addEventListener('pointermove', onMove);
     host.addEventListener('click', onClick);
+    window.addEventListener('keydown', onEscape);
     const ro = new ResizeObserver(resize);
     ro.observe(host);
 
@@ -193,7 +311,9 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
       ro.disconnect();
       host.removeEventListener('pointermove', onMove);
       host.removeEventListener('click', onClick);
+      window.removeEventListener('keydown', onEscape);
       clearRoute();
+      controls.dispose();
       podium.dispose();
       plates.dispose();
       connectors.geometry.dispose();

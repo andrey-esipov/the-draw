@@ -130,7 +130,7 @@ export function buildBracketLayout(draw: Draw): BracketLayout {
     plates,
     byMatch,
     connectors,
-    podium: { x: 0, y: SPAN / 2 - 9.4, z: 1.6 },
+    podium: { x: 0, y: SPAN / 2 - 11.8, z: 1.6 },
     bounds: { width: outermost * 2, height: SPAN, depth: (ROUNDS - 1) * DEPTH_STEP },
   };
 }

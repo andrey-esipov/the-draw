@@ -101,9 +101,45 @@ const ALL: SlamId[] = [
 
 const params = new URLSearchParams(location.search);
 const only = params.get('only') as SlamId | null;
+const silhouette = params.get('silhouette') === '1';
+const dark = params.get('dark') === '1';
+
+if (silhouette) {
+  const white = new THREE.CanvasTexture((() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 4;
+    const x = c.getContext('2d')!;
+    x.fillStyle = '#ffffff';
+    x.fillRect(0, 0, 4, 4);
+    return c;
+  })());
+  white.colorSpace = THREE.SRGBColorSpace;
+  scene.background = white;
+  scene.environment = null;
+  ground.visible = false;
+} else if (dark) {
+  // Mimic the production stage: near-black field, one local key on the cup,
+  // faint fill. Polished metal should still read by form, not by hot specular.
+  const black = new THREE.CanvasTexture((() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 4;
+    const x = c.getContext('2d')!;
+    x.fillStyle = '#050608';
+    x.fillRect(0, 0, 4, 4);
+    return c;
+  })());
+  black.colorSpace = THREE.SRGBColorSpace;
+  scene.background = black;
+  key.intensity = 1.1;
+  fill.intensity = 0.15;
+  rim.intensity = 0.8;
+  (ground.material as THREE.MeshStandardMaterial).color.set('#040507');
+}
 
 const vessels: THREE.Group[] = [];
 let spin = true;
+
+const silhouetteMat = new THREE.MeshBasicMaterial({ color: '#000000' });
 
 function addVessel(slam: SlamId, x: number, z = 0) {
   const g = createVessel(slam, { ...OPTS[slam], envMap });
@@ -113,6 +149,7 @@ function addVessel(slam: SlamId, x: number, z = 0) {
     if (m.isMesh) {
       m.castShadow = true;
       m.receiveShadow = true;
+      if (silhouette) m.material = silhouetteMat;
     }
   });
   scene.add(g);

@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { themeFor } from '../ui/theme';
 
 /** The board's lower edge is at -SPAN/2; the court sits just below it. */
 export const FLOOR_Y = -14.4;
 import type { SlamId } from '../data/types';
 import type { SlamTheme } from '../ui/theme';
+import { createCourt } from './court';
 
 /** Texture folders are named for the tournament, not the event. */
 export function surfaceKey(slam: SlamId): string {
@@ -32,56 +34,68 @@ interface Feel {
   rim: number;
   normal: number;
   sky: number;
+  /** Skylight opposite the key. Warm sun wants a cool fill or the place reads flat. */
+  fill: number;
+  fillCool: number;
 }
 
 const FEEL: Record<string, Feel> = {
   // Bright high-summer Melbourne day: cool light, but the field stays dark.
   'australian-open': {
-    fogDensity: 0.02,
-    ambient: 0.16,
+    fogDensity: 0.0128,
+    ambient: 0.3,
     ambientTint: 0x4d76a0,
-    key: 0.62,
+    key: 0.92,
     keyWarm: 0xbfe0ff,
     keyPos: [-12, 30, 20],
-    rim: 44,
+    rim: 58,
     normal: 0.06,
-    sky: 2.05,
+    sky: 2.6,
+    fill: 0.42,
+    fillCool: 0x9fc4ef,
   },
   // Warm late-afternoon Paris clay: low raking sun, warm dust in near-black.
   'roland-garros': {
-    fogDensity: 0.02,
-    ambient: 0.15,
+    fogDensity: 0.0128,
+    ambient: 0.29,
     ambientTint: 0x8a5334,
-    key: 0.56,
+    key: 0.86,
     keyWarm: 0xffcf87,
     keyPos: [-24, 17, 20],
-    rim: 40,
+    rim: 54,
     normal: 0.07,
-    sky: 1.85,
+    sky: 2.4,
+    fill: 0.56,
+    fillCool: 0x5f8fd6,
   },
-  // Cool overcast London green: soft flat light, no hard sun, dark field.
+  // Cool overcast London green: soft flat light, no hard sun. Overcast is flat
+  // and bright, not flat and dim, so the level sits high and the contrast low.
   wimbledon: {
-    fogDensity: 0.021,
-    ambient: 0.16,
+    fogDensity: 0.0104,
+    ambient: 0.46,
     ambientTint: 0x5c8a6c,
-    key: 0.44,
+    key: 1.12,
     keyWarm: 0xdff0e4,
     keyPos: [-14, 27, 22],
-    rim: 36,
+    rim: 68,
     normal: 0.05,
-    sky: 2.0,
+    sky: 2.55,
+    fill: 0.48,
+    fillCool: 0xa8c2e8,
   },
   // Floodlit New York night session: dark field, one hard cold key.
   'us-open': {
-    fogDensity: 0.022,
-    ambient: 0.13,
+    fogDensity: 0.014,
+    ambient: 0.26,
     ambientTint: 0x3f628a,
-    key: 0.64,
+    key: 0.94,
     keyWarm: 0xeaf1ff,
     keyPos: [-14, 29, 18],
-    rim: 46,
+    rim: 60,
     normal: 0.06,
-    sky: 2.0,
+    sky: 2.5,
+    fill: 0.4,
+    fillCool: 0x7fa6e0,
   },
 };
 
@@ -98,6 +112,7 @@ export interface World {
 export function createWorld(scene: THREE.Scene, renderer: THREE.WebGLRenderer): World {
   const group = new THREE.Group();
   scene.add(group);
+  const court = createCourt(scene, renderer);
 
   const loader = new THREE.TextureLoader();
   const cache = new Map<string, THREE.Texture>();
@@ -154,17 +169,17 @@ export function createWorld(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
     },
   );
 
-  const fog = new THREE.FogExp2(0x000000, 0.0175);
+  const fog = new THREE.FogExp2(0x000000, 0.0115);
   scene.fog = fog;
 
-  function setSlam(slam: SlamId, theme: SlamTheme) {
-    const k = surfaceKey(slam);
+  function setSlam(slam: SlamId, theme: SlamTheme) {    const k = surfaceKey(slam);
     const feel = FEEL[k] ?? FEEL.wimbledon!;
+    court.setSlam(slam, theme);
 
     groundMat.normalMap = load(`surfaces/${k}-normal.jpg`, false);
     groundMat.roughnessMap = null;
     groundMat.normalScale.set(feel.normal, feel.normal);
-    groundMat.color.set(theme.groundDeep).multiplyScalar(0.6);
+    groundMat.color.set(theme.groundDeep).multiplyScalar(0.92);
     groundMat.needsUpdate = true;
 
     const deep = new THREE.Color(theme.groundDeep);
@@ -188,13 +203,26 @@ export function createWorld(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
     rimL.intensity = feel.rim;
     rimR.color.copy(heritage).lerp(deep, 0.18);
     rimR.intensity = feel.rim;
+
+    fill.color.set(feel.fillCool);
+    fill.intensity = feel.fill;
   }
+
+  // Debug hook mirroring stage.ts's __cam: lets a harness drive an in-place
+  // palette swap (theme resolved from the id) so the transition can be judged
+  // without a full remount. Overwritten each mount, cleared on dispose.
+  (window as unknown as Record<string, unknown>).__worldSetSlam = (id: SlamId) =>
+    setSlam(id, themeFor(id));
 
   return {
     group,
     setSlam,
     dispose: () => {
-      ground.geometry.dispose();
+      if ((window as unknown as Record<string, unknown>).__worldSetSlam) {
+        delete (window as unknown as Record<string, unknown>).__worldSetSlam;
+      }
+      court.dispose();
+    ground.geometry.dispose();
       groundMat.dispose();
       cache.forEach((t) => t.dispose());
       envRT?.dispose();

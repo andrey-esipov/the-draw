@@ -1,9 +1,55 @@
 :root {
-  --serif: 'Fraunces Variable', Georgia, serif;
+  --serif: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --sans: 'Geist Sans', system-ui, -apple-system, sans-serif;
   --mono: 'Geist Mono', ui-monospace, 'SF Mono', monospace;
   --rail: clamp(260px, 24vw, 380px);
   --pad: clamp(24px, 3.4vw, 56px);
+
+  --track-display: -0.014em;
+  --track-title: -0.008em;
+  --track-name: 0.002em;
+  --track-body: 0.012em;
+  --track-datum: 0.032em;
+  --track-label: 0.058em;
+  --track-caption: 0.025em;
+  --track-caps: 0.105em;
+
+  --type-display-family: var(--serif);
+  --type-display-size: clamp(40px, 4.15vw, 60px);
+  --type-display-leading: 0.96;
+  --type-display-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 1, 'wght' 470;
+
+  --type-title-family: var(--serif);
+  --type-title-size: clamp(29px, 2.95vw, 44px);
+  --type-title-leading: 1.06;
+  --type-title-settings: 'opsz' 72, 'SOFT' 0, 'WONK' 1, 'wght' 450;
+
+  --type-name-family: var(--sans);
+  --type-name-size: 16px;
+  --type-name-leading: 1.2;
+  --type-name-settings: normal;
+
+  --type-body-family: var(--sans);
+  --type-body-size: 13.5px;
+  --type-body-leading: 1.64;
+  --type-body-weight: 400;
+
+  --type-datum-family: var(--mono);
+  --type-datum-size: 11px;
+  --type-datum-leading: 1.35;
+
+  --type-label-family: var(--sans);
+  --type-label-size: 12px;
+  --type-label-leading: 1.28;
+  --type-label-settings: normal;
+  --type-label-weight: 500;
+
+  --type-caption-family: var(--sans);
+  --type-caption-size: 11.5px;
+  --type-caption-leading: 1.48;
+  --type-caption-weight: 450;
+
+  --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,6 +63,7 @@ body {
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 
 .stage {
+  --flare: #d8c56a;
   height: 100%;
   display: grid;
   grid-template-columns: var(--rail) 1fr;
@@ -44,6 +91,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   display: block;
 }
 
+/* The radial shares the frame with a centred masthead above and a legend below,
+   so it gives up the height those need instead of overprinting them. */
+.is-radial .bracket {
+  height: min(68vh, 100%);
+  width: min(68vh, 100%);
+  margin-top: 2vh;
+}
+
 /* ── The draw ─────────────────────────────────────────────────── */
 
 .thread { transition: stroke-opacity 260ms ease-out, stroke-width 260ms ease-out; }
@@ -52,22 +107,24 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .lit-thread { transition: stroke-width 220ms ease-out; }
 
 .rim-name {
-  font-family: var(--sans);
-  font-size: 7.6px;
-  letter-spacing: 0.015em;
+  font-family: var(--type-name-family);
+  font-variation-settings: var(--type-name-settings);
+  font-size: calc(var(--type-name-size) * 0.49);
+  letter-spacing: var(--track-name);
   cursor: pointer;
   transition: fill 200ms ease-out, opacity 220ms ease-out;
 }
-.rim-name.is-seed { font-weight: 500; font-size: 8.4px; }
+.rim-name.is-seed { font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 14, 'wght' 500; font-size: calc(var(--type-name-size) * 0.54); }
 .is-focused .rim-name { opacity: 0.25; }
 .is-focused .rim-name.is-lit { opacity: 1; }
 .rim-name:hover { opacity: 1; }
 
 .ring-label {
-  font-family: var(--mono);
-  font-size: 8.6px;
-  letter-spacing: 0.12em;
+  font-family: var(--type-datum-family);
+  font-size: calc(var(--type-datum-size) * 0.78);
+  letter-spacing: var(--track-datum);
   fill-opacity: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .upset { stroke-opacity: 0.5; }
@@ -78,49 +135,69 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ── Identity ─────────────────────────────────────────────────── */
 
+/* The title sits over the trophy, centred on the field the board is drawn in.
+   The tournament is the subject of the page, so it holds the middle rather than
+   hiding in a corner. */
 .mark {
   position: fixed;
-  top: var(--pad);
-  left: var(--pad);
+  top: calc(var(--pad) - 4px);
+  left: 0;
+  right: 0;
   display: grid;
+  justify-items: center;
   gap: 3px;
+  text-align: center;
   z-index: 5;
+  pointer-events: none;
 }
 .mark-word {
-  font-family: var(--serif);
-  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 20, 'wght' 500;
-  font-size: 17px;
-  letter-spacing: -0.005em;
+  font-family: var(--type-datum-family);
+  font-size: calc(var(--type-datum-size) * 0.94);
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  opacity: 0.52;
 }
 .mark-slam {
-  font-family: var(--serif);
-  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 96, 'wght' 460;
-  font-size: clamp(38px, 4vw, 58px);
-  line-height: 0.94;
-  letter-spacing: -0.022em;
-  margin-top: 10px;
-  max-width: 11ch;
+  font-family: var(--type-display-family);
+  font-variation-settings: var(--type-display-settings);
+  font-size: var(--type-display-size);
+  line-height: var(--type-display-leading);
+  letter-spacing: var(--track-display);
+  margin-top: 7px;
   text-wrap: balance;
 }
 
-.mark-meta {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  opacity: 0.78;
-  margin-top: 9px;
+/* One hairline in the tournament's own colour under the title: the accent is
+   earned by the object it names, and it changes as the room changes. */
+.mark-rule {
+  width: 58px;
+  height: 1px;
+  margin-top: 13px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--flare) 22%,
+    var(--flare) 78%,
+    transparent
+  );
+  transition: background 700ms var(--ease-soft);
 }
-.mark-claim {
-  font-family: var(--serif);
-  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 30, 'wght' 300;
-  font-size: clamp(21px, 1.95vw, 30px);
-  line-height: 1.22;
-  letter-spacing: -0.012em;
-  max-width: 24ch;
-  margin-top: 20px;
-  opacity: 0.94;
-  text-wrap: balance;
+
+.mark-meta {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  opacity: 0.6;
+  margin-top: 8px;
+}
+.mark-meta .dot { opacity: 0.5; padding: 0 2px; }
+
+/* A player card is on screen almost always (the champion is shown by default),
+   so this is the real resting state of the subtitle, not an exception. It has to
+   clear AA rather than dim to a decorative grey. */
+.has-player-detail .mark-meta {
+  opacity: 0.62;
 }
 
 .hint {
@@ -128,9 +205,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   left: 50%;
   bottom: calc(var(--pad) - 6px);
   transform: translateX(-50%);
-  font-size: 11px;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
   opacity: 0.38;
   pointer-events: none;
 }
@@ -145,21 +224,23 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 .eyebrow {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  text-transform: none;
   opacity: 0.55;
   margin-bottom: 18px;
 }
 .dot { opacity: 0.4; margin: 0 0.45em; }
 
 .player-name {
-  font-family: var(--serif);
-  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 60, 'wght' 300;
-  font-size: clamp(28px, 2.9vw, 43px);
-  line-height: 1.02;
-  letter-spacing: -0.015em;
+  font-family: var(--type-title-family);
+  font-variation-settings: var(--type-title-settings);
+  font-size: var(--type-title-size);
+  line-height: var(--type-title-leading);
+  letter-spacing: var(--track-title);
   margin-bottom: 14px;
   text-wrap: balance;
 }
@@ -168,14 +249,16 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   display: flex;
   flex-wrap: wrap;
   gap: 0 14px;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
   opacity: 0.7;
   margin-bottom: 30px;
 }
 .player-meta .outcome { opacity: 1; font-weight: 500; }
-.player-meta .country { font-family: var(--mono); }
+.player-meta .country { font-family: var(--type-datum-family); letter-spacing: var(--track-datum); }
 
 .path { list-style: none; display: grid; gap: 13px; }
 .step {
@@ -187,18 +270,21 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
 }
 .step-round {
-  font-family: var(--mono);
-  font-size: 9.5px;
-  letter-spacing: 0.08em;
+  font-family: var(--type-datum-family);
+  font-size: calc(var(--type-datum-size) * 0.88);
+  line-height: var(--type-datum-leading);
+  letter-spacing: var(--track-datum);
+  font-variant-numeric: tabular-nums;
   opacity: 0.5;
 }
-.step-opponent { font-size: 14px; letter-spacing: -0.005em; }
+.step-opponent { font-family: var(--type-name-family); font-variation-settings: var(--type-name-settings); font-size: calc(var(--type-name-size) * 0.88); line-height: var(--type-name-leading); letter-spacing: var(--track-name); }
 .step-score {
   grid-column: 2;
-  font-family: var(--mono);
-  font-size: 11px;
+  font-family: var(--type-datum-family);
+  font-size: var(--type-datum-size);
+  line-height: var(--type-datum-leading);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--track-datum);
   opacity: 0.62;
   margin-top: 3px;
 }
@@ -207,65 +293,224 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .tally {
   margin-top: 22px;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  text-transform: none;
   opacity: 0.55;
 }
-.tally-n { font-family: var(--mono); font-size: 12px; opacity: 1; }
+.tally-n { font-family: var(--type-datum-family); font-size: var(--type-datum-size); letter-spacing: var(--track-datum); font-variant-numeric: tabular-nums; opacity: 1; }
 
 /* ── Tournament switch ────────────────────────────────────────── */
 
-.switch {
+/* The control cluster: sound and tournament, together in one corner, so the
+   board itself is never interrupted by chrome scattered along three edges. */
+.cluster {
   position: fixed;
   top: var(--pad);
   right: var(--pad);
-  display: grid;
-  gap: 14px;
-  justify-items: end;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  z-index: 7;
 }
 
-.switch-tour {
+.snd,
+.slammenu-btn {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ground-deep) 66%, transparent);
+  backdrop-filter: blur(16px);
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color 260ms var(--ease-soft),
+    background 260ms var(--ease-soft),
+    transform 320ms var(--ease-soft);
+}
+.snd:hover,
+.slammenu-btn:hover {
+  border-color: color-mix(in srgb, currentColor 42%, transparent);
+  transform: translateY(-1px);
+}
+.snd:focus-visible,
+.slammenu-btn:focus-visible {
+  outline: 2px solid var(--flare);
+  outline-offset: 3px;
+}
+
+.snd-mark { width: 21px; height: 21px; overflow: visible; }
+.snd-sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Off: the arcs retract into the stem and a single cut stroke draws across.
+   On: the cut retracts and the arcs return. Two signals, never colour alone. */
+.snd-arc,
+.snd-cut {
+  transition:
+    opacity 300ms var(--ease-soft),
+    transform 380ms var(--ease-soft);
+  transform-origin: 14px 12px;
+}
+.snd-arc { opacity: 0; transform: scaleX(0.3); }
+.snd-cut { opacity: 0.9; }
+.snd.is-on .snd-arc { opacity: 0.9; transform: none; }
+.snd.is-on .snd-arc-2 { transition-delay: 60ms; }
+.snd.is-on .snd-cut { opacity: 0; transform: scaleX(0.2); }
+.snd.is-on { color: var(--flare); border-color: color-mix(in srgb, var(--flare) 34%, transparent); }
+
+/* Live playback breathes the outer arc. Intent alone never animates: the visitor
+   is told the difference between "on" and "actually sounding". */
+.snd.is-on.is-live .snd-arc-2 { animation: snd-breathe 3.6s ease-in-out infinite; }
+@keyframes snd-breathe {
+  0%, 100% { opacity: 0.42; }
+  50% { opacity: 0.95; }
+}
+
+.slammenu { position: relative; }
+.slammenu .cup { width: 23px; height: 23px; overflow: visible; }
+.cup-lid,
+.cup-handle {
+  transition: opacity 300ms var(--ease-soft), transform 460ms var(--ease-soft);
+  transform-origin: 12px 12px;
+}
+.cup-handle { opacity: 0.78; }
+.slammenu-btn:hover .cup-handle { opacity: 1; }
+.slammenu-btn:hover .cup-lid { transform: translateY(-0.6px); }
+.slammenu.is-open .slammenu-btn {
+  border-color: color-mix(in srgb, var(--flare) 46%, transparent);
+  color: var(--flare);
+}
+.slammenu.is-open .cup-lid { transform: translateY(-2px); }
+.slammenu.is-open .cup-handle-l { transform: translateX(-1px); }
+.slammenu.is-open .cup-handle-r { transform: translateX(1px); }
+
+/* The panel grows out of the cup: clipped open from the top-right corner the
+   button occupies, so the list reads as unfolding from the mark rather than
+   appearing beside it. */
+.slammenu-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 244px;
+  padding: 9px 9px 7px;
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--ground-deep) 88%, black);
+  box-shadow: 0 26px 60px -28px rgb(0 0 0 / 0.95);
+  transform-origin: calc(100% - 21px) 0;
+  transform: scale(0.9) translateY(-8px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 220ms var(--ease-soft),
+    transform 380ms var(--ease-soft),
+    visibility 0s linear 400ms;
+}
+.slammenu.is-open .slammenu-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s, 0s, 0s;
+}
+
+.slammenu-tour {
   display: flex;
   gap: 2px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgb(255 255 255 / 0.14);
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
 }
 .tour-btn {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 6px 11px;
-  opacity: 0.6;
-  transition: opacity 200ms ease-out;
+  flex: 1;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: var(--track-body);
+  padding: 6px 10px;
+  border-radius: 7px;
+  opacity: 0.5;
+  transition: opacity 200ms ease-out, background 200ms ease-out;
 }
-.tour-btn.is-on { opacity: 1; }
+.tour-btn.is-on {
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 9%, transparent);
+}
 .tour-btn:hover { opacity: 0.85; }
 
-.switch-list { list-style: none; display: grid; gap: 3px; justify-items: end; }
+.slammenu-list { list-style: none; display: grid; gap: 1px; margin: 0; padding: 0; }
+.slammenu-list li {
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 260ms var(--ease-soft), transform 320ms var(--ease-soft);
+}
+.slammenu.is-open .slammenu-list li {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(60ms + var(--i) * 38ms);
+}
+
 .slam-btn {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 10px;
-  padding: 7px 0 7px 14px;
-  opacity: 0.62;
-  transition: opacity 220ms ease-out;
+  padding: 7px 9px;
+  border-radius: 8px;
+  text-align: left;
+  opacity: 0.66;
+  transition: opacity 200ms ease-out, background 200ms ease-out;
 }
-.slam-btn:hover { opacity: 0.8; }
-.slam-btn.is-on { opacity: 1; }
-.slam-swatch {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--swatch);
-  opacity: 0.35;
-  transition: opacity 220ms ease-out, box-shadow 220ms ease-out;
+.slam-btn:hover { opacity: 0.92; background: color-mix(in srgb, currentColor 6%, transparent); }
+.slam-btn.is-on { opacity: 1; background: color-mix(in srgb, currentColor 9%, transparent); }
+
+/* The court from above, in that tournament's two colours: surround, surface,
+   service boxes, net. Unmistakably tennis at this size, which a chip is not. */
+.slam-court {
+  width: 26px;
+  height: 18px;
+  flex: none;
+  border-radius: 3px;
+  overflow: visible;
 }
-.slam-btn.is-on .slam-swatch { opacity: 1; box-shadow: 0 0 10px var(--swatch); }
-.slam-label { font-size: 12px; letter-spacing: 0.02em; }
-.slam-btn.is-on .slam-label { font-weight: 500; }
+.slam-court-surround { fill: var(--heritage); stroke: rgb(255 255 255 / 0.16); stroke-width: 1; }
+.slam-court-surface { fill: var(--surface); }
+.slam-court-lines { fill: none; stroke: rgb(255 255 255 / 0.5); stroke-width: 0.7; }
+.slam-court-net { stroke: rgb(255 255 255 / 0.78); stroke-width: 0.9; }
+.slam-btn.is-on .slam-court-surround { stroke: color-mix(in srgb, var(--swatch) 78%, transparent); stroke-width: 1.4; }
+
+.slam-label {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 550;
+  letter-spacing: -0.004em;
+  white-space: nowrap;
+}
+.slam-city {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: var(--track-body);
+  opacity: 0.52;
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+  .slammenu-panel { transition: opacity 1ms, visibility 1ms; }
+  .snd.is-on.is-live .snd-arc-2 { animation: none; opacity: 0.95; }
 }
 
 /* ── The draw that has not been made ──────────────────────────── */
@@ -283,18 +528,21 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 .forth-title {
-  font-family: var(--serif);
-  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 60, 'wght' 300;
-  font-size: clamp(28px, 2.9vw, 43px);
-  line-height: 1.02;
-  letter-spacing: -0.015em;
+  font-family: var(--type-title-family);
+  font-variation-settings: var(--type-title-settings);
+  font-size: var(--type-title-size);
+  line-height: var(--type-title-leading);
+  letter-spacing: var(--track-title);
   margin-bottom: 14px;
   text-wrap: balance;
 }
 
 .forth-note {
-  font-size: 13.5px;
-  line-height: 1.62;
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  letter-spacing: var(--track-body);
+  font-weight: var(--type-body-weight);
   opacity: 0.62;
   max-width: 34ch;
   text-wrap: pretty;
@@ -311,10 +559,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .forth-loading,
 .forth-error,
 .forth-foot {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  text-transform: none;
   opacity: 0.42;
 }
 
@@ -324,9 +574,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   border-color: color-mix(in oklab, currentColor 14%, transparent);
 }
 
-.forth-error { text-transform: none; letter-spacing: 0.01em; font-size: 12px; opacity: 0.68; line-height: 1.6; padding-top: 14px; }
+.forth-error { font-family: var(--type-body-family); font-size: var(--type-body-size); letter-spacing: var(--track-body); opacity: 0.68; line-height: var(--type-body-leading); padding-top: 14px; }
 .forth-loading { padding-top: 14px; }
-.forth-foot { text-transform: none; letter-spacing: 0.03em; font-size: 11px; padding-top: 14px; opacity: 0.34; line-height: 1.6; }
+.forth-foot { font-family: var(--type-caption-family); font-variation-settings: normal; letter-spacing: var(--track-caption); font-size: var(--type-caption-size); padding-top: 14px; opacity: 0.34; line-height: var(--type-caption-leading); }
 
 .form-list {
   list-style: none;
@@ -374,12 +624,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .form-row:focus-visible .form-name { text-decoration: underline; text-underline-offset: 4px; }
 
 .form-row.is-picked::before { transform: scaleX(1); }
-.form-row.is-picked .form-name { opacity: 1; font-variation-settings: 'opsz' 20, 'wght' 500; }
+.form-row.is-picked .form-name { opacity: 1; font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 16, 'wght' 500; }
 
 .form-name {
-  font-family: var(--serif);
-  font-variation-settings: 'opsz' 20, 'wght' 400;
-  font-size: 16px;
+  font-family: var(--type-name-family);
+  font-variation-settings: var(--type-name-settings);
+  font-size: var(--type-name-size);
+  line-height: var(--type-name-leading);
+  letter-spacing: var(--track-name);
   opacity: 0.84;
 }
 
@@ -387,9 +639,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   display: flex;
   align-items: baseline;
   gap: 10px;
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.06em;
+  font-family: var(--type-datum-family);
+  font-size: var(--type-datum-size);
+  line-height: var(--type-datum-leading);
+  letter-spacing: var(--track-datum);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
@@ -414,9 +668,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px 30px;
-  font-size: 11.5px;
-  letter-spacing: 0.075em;
-  text-transform: uppercase;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
   opacity: 0.72;
   pointer-events: none;
 }
@@ -431,54 +687,80 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   border-color: color-mix(in oklab, currentColor 22%, transparent);
 }
 
+/* Clear of the search pill that sits on the baseline beneath the mandala. */
+.is-radial .legend {
+  bottom: calc(var(--pad) + 128px);
+}
+
+/* In the radial view the mandala is centred in the field column so it clears the
+   editorial rail, so the masthead follows it rather than the viewport. */
+.is-radial .mark {
+  left: var(--rail);
+  right: 0;
+}
+.is-radial .search {
+  left: calc(var(--rail) / 2 + 50%);
+}
+
 /* ── Search ───────────────────────────────────────────────────── */
 
+/* Sat on the court's baseline, centred: the one place on this board a viewer's
+   eye already returns to, and the thing we most want them to do. */
 .search {
   position: fixed;
-  top: var(--pad);
-  right: calc(var(--pad) + 190px);
-  width: 210px;
-  z-index: 4;
+  left: 50%;
+  bottom: calc(var(--pad) + 74px);
+  transform: translateX(-50%);
+  width: min(320px, calc(100vw - var(--pad) * 2));
+  z-index: 9;
 }
 
 .search-input {
   width: 100%;
-
-  background: none;
-  border: 0;
-  border-bottom: 1px solid color-mix(in oklab, currentColor 20%, transparent);
+  text-align: center;
+  background: color-mix(in srgb, var(--ground-deep) 60%, transparent);
+  backdrop-filter: blur(14px);
+  border: 1px solid color-mix(in oklab, currentColor 20%, transparent);
+  border-radius: 999px;
   color: inherit;
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  padding: 14px 2px 13px 28px;
-  transition: border-color 220ms ease-out;
+  font-family: var(--type-label-family);
+  font-weight: var(--type-label-weight);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  padding: 12px 18px 12px 34px;
+  transition: border-color 220ms ease-out, background 220ms ease-out;
 }
 .search-input::placeholder {
   color: currentColor;
-  opacity: 0.58;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  opacity: 0.62;
+  text-transform: none;
+  letter-spacing: var(--track-label);
 }
-.search-input:hover { border-color: color-mix(in oklab, currentColor 36%, transparent); }
+.search-input:hover { border-color: color-mix(in oklab, currentColor 38%, transparent); }
 .search-input:focus {
-  outline: none;
   border-color: var(--flare);
+  background: color-mix(in srgb, var(--ground-deep) 82%, black);
 }
 .search-input::-webkit-search-cancel-button { filter: invert(1); opacity: 0.4; }
 
 .search-results {
   list-style: none;
-  margin: 6px 0 0;
-  padding: 0;
-  background: color-mix(in oklab, var(--ground-deep) 88%, black);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 6px;
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--ground-deep) 92%, black);
   border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
-  box-shadow: 0 18px 40px -20px rgb(0 0 0 / 0.9);
+  box-shadow: 0 26px 56px -26px rgb(0 0 0 / 0.95);
   animation: search-in 180ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @keyframes search-in {
-  from { opacity: 0; transform: translateY(-4px); }
+  from { opacity: 0; transform: translateY(4px); }
 }
 
 .search-hit {
@@ -488,38 +770,59 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   justify-content: space-between;
   gap: 10px;
   padding: 8px 11px;
+  border-radius: 8px;
   background: none;
   border: 0;
   color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  border-left: 2px solid transparent;
-  transition: border-color 160ms ease-out, background-color 160ms ease-out;
+  transition: background-color 160ms ease-out;
 }
 .search-hit.is-cursor,
 .search-hit:focus-visible {
-  border-left-color: var(--flare);
-  background: color-mix(in oklab, currentColor 6%, transparent);
-  outline: none;
+  background: color-mix(in oklab, currentColor 9%, transparent);
+}
+.search-hit.is-cursor .search-hit-name { opacity: 1; }
+.search-hit.is-cursor .search-hit-name::before {
+  opacity: 1;
+  transform: none;
+}
+.search-hit-name::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--flare);
+  margin-right: 8px;
+  vertical-align: middle;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 160ms ease-out, transform 200ms var(--ease-soft);
 }
 .search-hit-name {
-  font-family: var(--serif);
-  font-variation-settings: 'opsz' 20, 'wght' 400;
-  font-size: 14px;
+  font-family: var(--type-name-family);
+  font-variation-settings: var(--type-name-settings);
+  font-size: calc(var(--type-name-size) * 0.88);
+  line-height: var(--type-name-leading);
+  letter-spacing: var(--track-name);
   opacity: 0.9;
 }
 .search-hit-seed {
-  font-family: var(--mono);
-  font-size: 9.5px;
-  letter-spacing: 0.1em;
+  font-family: var(--type-datum-family);
+  font-size: calc(var(--type-datum-size) * 0.88);
+  line-height: var(--type-datum-leading);
+  letter-spacing: var(--track-datum);
+  font-variant-numeric: tabular-nums;
   opacity: 0.42;
 }
 .search-none {
   padding: 10px 11px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
   opacity: 0.42;
 }
 
@@ -527,7 +830,88 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .search-results { animation: none; }
 }
 
+/* ── Mid widths: the rail costs more than it carries ──────────────────── */
+
+/* Below this, a 260px editorial column is a quarter of the screen holding one
+   card, and its wash crushes the outer rounds of a board that already runs
+   full width underneath it. The rail becomes an overlay instead, so loading and
+   failure states are still spoken plainly and the board keeps the whole frame. */
+@media (max-width: 1180px) {
+  .stage { grid-template-columns: 1fr; }
+  .stage::before { display: none; }
+
+  .rail {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: min(300px, 62vw);
+    padding-top: 0;
+    display: grid;
+    align-content: center;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
+    /* Radial, not linear: a rectangle of tinted black against true black leaves
+       a visible corner seam wherever it ends. This has no edge to find. */
+    background: radial-gradient(
+      120% 78% at 0% 50%,
+      color-mix(in srgb, var(--ground-deep) 82%, #000) 0%,
+      color-mix(in srgb, var(--ground-deep) 34%, transparent) 46%,
+      transparent 78%
+    );
+  }
+
+  .is-radial .mark { left: 0; right: 0; }
+  .is-radial .search { left: 50%; }
+
+  /* The rail overlays the left edge here, so the mandala gives up a little
+     radius rather than letting its rim names graze the champion card. */
+  .is-radial .bracket {
+    height: min(60vh, 100%);
+    width: min(60vh, 100%);
+  }
+}
+
+/* ── The run owns the frame ───────────────────────────────────── */
+
+/* While the draw is running, the board is telling a story and every piece of
+   standing chrome is something printed over it. The trophy engraving is the
+   payoff; nothing may sit on top of it. */
+.is-running .camctl-hint,
+.is-running .camctl-rack,
+.is-running .search,
+.is-running .compact-note,
+.is-running .legend {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms var(--ease-soft);
+}
+
 /* ── Focus ────────────────────────────────────────────────────── */
+
+/* One ring, in the tournament's own colour, on everything that takes focus.
+   Anything that sets outline:none for its resting state must still show this. */
+.snd:focus-visible,
+.slammenu-btn:focus-visible,
+.slam-btn:focus-visible,
+.tour-btn:focus-visible,
+.run:focus-visible,
+.viewswap button:focus-visible,
+.search-input:focus-visible,
+.search-hit:focus-visible,
+.camctl-preset:focus-visible,
+.camctl-reset:focus-visible {
+  outline: 2px solid var(--flare, #d8c56a);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.snd:focus-visible,
+.slammenu-btn:focus-visible { border-radius: 50%; }
+
+.search-input:focus-visible,
+.run:focus-visible,
+.viewswap button:focus-visible { border-radius: 999px; }
 
 .rim:focus { outline: none; }
 .rim:focus-visible {
@@ -542,7 +926,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .slam-btn:focus-visible,
 .tour-btn:focus-visible {
-  outline: none;
   opacity: 1;
 }
 .slam-btn:focus-visible .slam-label,
@@ -551,7 +934,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;
 }
-.slam-btn:focus-visible .slam-swatch { opacity: 1; box-shadow: 0 0 10px var(--swatch); }
 
 .skip {
   position: fixed;
@@ -559,10 +941,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   left: var(--pad);
   z-index: 10;
   padding: 9px 14px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  text-transform: none;
   background: color-mix(in oklab, var(--ground-deep) 90%, black);
   border: 1px solid color-mix(in oklab, currentColor 24%, transparent);
   color: inherit;
@@ -577,10 +961,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   right: var(--pad);
   bottom: calc(var(--pad) + 26px);
   text-align: center;
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
   opacity: 0.72;
   pointer-events: none;
   z-index: 5;
@@ -589,30 +974,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 @keyframes cue-in { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .rim-cue { animation: none; } }
 
-.search::before {
-  content: '';
+.search-icon {
   position: absolute;
-  left: 2px;
-  top: 10px;
-  width: 9px;
-  height: 9px;
-  border: 1.2px solid currentColor;
-  border-radius: 50%;
+  left: 16px;
+  top: 50%;
+  width: 15px;
+  height: 15px;
+  transform: translateY(-50%);
   opacity: 0.5;
   pointer-events: none;
+  transition: opacity 200ms ease-out, color 200ms ease-out;
 }
-.search::after {
-  content: '';
-  position: absolute;
-  left: 10px;
-  top: 18px;
-  width: 5px;
-  border-top: 1.2px solid currentColor;
-  transform: rotate(45deg);
-  transform-origin: left center;
-  opacity: 0.5;
-  pointer-events: none;
-}
+.search:focus-within .search-icon { opacity: 1; color: var(--flare); }
 
 /* ── Compact: the mandala becomes a mark, the reading moves below ── */
 
@@ -620,10 +993,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .compact-note {
   display: none;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
   opacity: 0.42;
 }
 
@@ -641,56 +1015,48 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     padding-bottom: 56px;
   }
 
-  .mark { position: static; order: 1; padding: 20px var(--pad) 0; }
+  .mark { position: static; order: 1; left: auto; right: auto; padding: 20px var(--pad) 0; }
 
-  .switch {
-    position: static;
-    order: 5;
-    display: block;
-    justify-items: start;
-    padding: 20px var(--pad) 0;
+  /* The cluster stays pinned on small screens: it is two round buttons, and a
+     panel that opens over the board reads better than a list pushed to the end
+     of a scroll. */
+  .cluster {
+    position: fixed;
+    top: 14px;
+    right: var(--pad);
   }
-  .switch-tour {
-    justify-content: flex-start;
-    margin-bottom: 14px;
-    padding-bottom: 0;
-    border-bottom: 0;
+  .slammenu-panel {
+    min-width: min(280px, calc(100vw - var(--pad) * 2));
   }
-  .tour-btn { padding: 8px 16px 8px 0; }
-  .switch-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-items: start;
-  }
-  .slam-btn {
-    padding: 10px 15px;
-    white-space: nowrap;
-    opacity: 0.6;
-    border: 1px solid color-mix(in oklab, currentColor 14%, transparent);
-    border-radius: 999px;
-  }
-  .slam-btn.is-on { opacity: 1; border-color: var(--swatch); }
 
   .search {
     position: relative;
-    top: auto;
+    left: auto;
     right: auto;
+    bottom: auto;
+    transform: none;
     order: 4;
     width: auto;
     padding: 10px var(--pad) 0;
   }
   .search-input {
-    font-size: 13px;
+    font-size: calc(var(--type-label-size) * 1.08);
     padding: 13px 12px 13px 34px;
     border: 1px solid color-mix(in oklab, currentColor 18%, transparent);
     border-radius: 999px;
   }
-  .search::before { left: calc(var(--pad) + 15px); top: 26px; }
-  .search::after { left: calc(var(--pad) + 23px); top: 34px; }
-  .search-results { position: absolute; left: var(--pad); right: var(--pad); z-index: 6; }
+  .search-icon { left: calc(var(--pad) + 15px); top: 32px; transform: none; }
+  .search-results {
+    position: absolute;
+    top: calc(100% + 4px);
+    bottom: auto;
+    left: var(--pad);
+    right: var(--pad);
+    z-index: 6;
+  }
 
   .field {
+    position: relative;
     order: 2;
     height: auto;
     aspect-ratio: 1;
@@ -705,6 +1071,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       transparent 76%
     );
   }
+  .broadcast {
+    position: absolute;
+    inset: 0;
+  }
   .bracket { width: 100%; height: auto; }
 
   /* Names cannot be read at this size, so the draw shows its shape instead. */
@@ -714,14 +1084,23 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
   .compact-note { display: none; }
 
+  /* The mid-width block turns the rail into a fixed overlay. On a phone the page
+     is a scroll column, so it has to become an ordinary block again — left fixed
+     it printed over the masthead and left a dead band where its flow used to be. */
   .rail,
   .forthcoming {
+    position: static;
     order: 6;
     padding: 30px var(--pad) 0;
+    width: auto;
     height: auto;
     display: block;
+    align-content: normal;
+    background: none;
+    pointer-events: auto;
+    z-index: auto;
   }
-  .player-name, .forth-title { font-size: clamp(32px, 9vw, 46px); }
+  .player-name, .forth-title { --type-title-size: clamp(32px, 9vw, 46px); --type-title-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 46, 'wght' 335; }
   .forth-note { max-width: none; }
   .form-list { overflow: visible; }
   .forth-form { margin-top: 26px; }
@@ -739,9 +1118,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .field { height: 100%; }
 
   /* No vertical room for the claim; the object has to carry it alone. */
-  .mark-claim { display: none; }
-  .mark-slam { font-size: 27px; margin-top: 6px; max-width: 14ch; }
-  .mark-meta { font-size: 8px; margin-top: 5px; }
+  .mark-slam { --type-display-size: 27px; --type-display-settings: 'opsz' 40, 'wght' 500; margin-top: 6px; }
+  .mark-meta { --type-caption-size: 10px; margin-top: 5px; }
 
   .rail,
   .forthcoming {
@@ -752,12 +1130,28 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     scrollbar-width: thin;
   }
 
-  .player-name, .forth-title { font-size: clamp(24px, 4vw, 34px); }
+  /* 390px of height cannot hold a masthead, a hint, a camera rack, a search and
+     a run bar over the board. Keep the board, the search and the run; the camera
+     presets and the teaching hint are the first things a viewer can live without,
+     and the rail narrows to a name rather than a paragraph. */
+  .rail {
+    padding-top: 0;
+    width: min(200px, 30vw);
+  }
+  .mark-slam { --type-display-size: 23px; }
+  .mark-meta { display: none; }
+
+  .search {
+    bottom: calc(var(--pad) + 34px);
+    width: min(250px, 42vw);
+  }
+
+  .player-name, .forth-title { --type-title-size: clamp(24px, 4vw, 34px); --type-title-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 34, 'wght' 340; }
   .path { gap: 8px; }
   .step { padding-bottom: 7px; }
-  .step-opponent { font-size: 12.5px; }
-  .step-score { font-size: 10px; }
-  .rim-name { font-size: 5.6px; }
+  .step-opponent { font-size: calc(var(--type-name-size) * 0.78); }
+  .step-score { font-size: calc(var(--type-datum-size) * 0.92); }
+  .rim-name { font-size: calc(var(--type-name-size) * 0.35); }
   .legend { display: none; }
 }
 
@@ -794,16 +1188,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 .hollow-ask {
-  font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: 0.26em;
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: calc(var(--type-label-size) * 1.08);
+  letter-spacing: var(--track-label);
+  text-transform: lowercase;
   fill-opacity: 0.95;
 }
 
 .hollow-name {
-  font-family: var(--serif);
-  font-size: 20px;
-  letter-spacing: 0.01em;
+  font-family: var(--type-name-family);
+  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 20, 'wght' 420;
+  font-size: calc(var(--type-name-size) * 1.25);
+  letter-spacing: var(--track-name);
   animation: hollow-land 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
 }
 
@@ -825,16 +1222,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 .core-title {
-  font-family: var(--mono);
-  font-size: 7.4px;
-  letter-spacing: 0.34em;
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: calc(var(--type-label-size) * 0.62);
+  letter-spacing: var(--track-label);
+  text-transform: lowercase;
   fill-opacity: 0.85;
 }
 
 .core-surname {
-  font-family: var(--serif);
-  font-size: 26px;
-  letter-spacing: 0.005em;
+  font-family: var(--type-display-family);
+  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 26, 'wght' 470;
+  font-size: calc(var(--type-display-size) * 0.44);
+  letter-spacing: var(--track-display);
   fill-opacity: 0.96;
   paint-order: stroke;
   stroke: var(--ground-deep);
@@ -850,11 +1250,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   left: var(--pad);
   bottom: calc(var(--pad) - 8px);
   max-width: calc(var(--rail) - 8px);
-  font-family: var(--mono);
-  font-size: 11.5px;
-  line-height: 1.5;
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
   opacity: 0.62;
   transition: opacity 200ms ease-out;
   display: grid;
@@ -863,11 +1263,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .colophon-link {
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--track-caption);
 }
 
 .colophon-sub {
-  font-size: 9.8px;
+  font-size: calc(var(--type-caption-size) * 0.85);
   opacity: 0.66;
 }
 
@@ -898,10 +1298,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   margin-top: 30px;
   padding-top: 26px;
   border-top: 1px solid color-mix(in oklab, currentColor 12%, transparent);
-  font-family: var(--serif);
-  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 20, 'wght' 300;
-  font-size: 15.5px;
-  line-height: 1.45;
+  font-family: var(--type-name-family);
+  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 16, 'wght' 330;
+  font-size: calc(var(--type-name-size) * 0.97);
+  line-height: 1.48;
+  letter-spacing: var(--track-name);
   max-width: 26ch;
   opacity: 0.6;
 }
@@ -914,16 +1315,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .is-focused .core-veil { opacity: 0.25; transition: opacity 240ms ease-out; }
 
 .hollow-hint {
-  font-family: var(--serif);
-  font-size: 16px;
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  letter-spacing: var(--track-body);
   fill-opacity: 0.75;
 }
 
 .exit-note {
-  font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
   fill-opacity: 0.9;
   paint-order: stroke;
   stroke: var(--ground-deep);
@@ -966,10 +1370,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   background: color-mix(in srgb, var(--ground-deep) 72%, transparent);
   backdrop-filter: blur(14px);
   color: inherit;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  text-transform: none;
   cursor: pointer;
   transition: border-color 240ms ease, background 240ms ease, opacity 240ms ease;
 }
@@ -1005,10 +1411,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   background: transparent;
   color: inherit;
   opacity: 0.5;
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  text-transform: none;
   cursor: pointer;
   transition: opacity 220ms ease, background 220ms ease;
 }
@@ -1027,13 +1435,132 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   content: '';
   position: fixed;
   inset: 0 auto 0 0;
-  width: 34vw;
+  width: 26vw;
   background: linear-gradient(
     100deg,
-    color-mix(in srgb, var(--ground-deep) 88%, #000) 0%,
-    color-mix(in srgb, var(--ground-deep) 46%, transparent) 30%,
-    transparent 72%
+    color-mix(in srgb, var(--ground-deep) 62%, #000) 0%,
+    color-mix(in srgb, var(--ground-deep) 24%, transparent) 42%,
+    transparent 82%
   );
   pointer-events: none;
   z-index: 4;
+}
+
+.camctl .camctl-hint-verb {
+  font-family: var(--type-title-family);
+  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 24, 'wght' 340;
+  font-size: calc(var(--type-title-size) * 0.54);
+  letter-spacing: var(--track-title);
+  line-height: var(--type-title-leading);
+  opacity: 0.84;
+}
+
+.camctl .camctl-hint-keys,
+.camctl .camctl-reset {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
+}
+
+.camctl .camctl-eyebrow,
+.camctl .camctl-preset {
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: calc(var(--type-label-size) * 0.92);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  text-transform: none;
+}
+
+.camctl .camctl-rack {
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: calc(var(--pad) + 26px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 14px;
+  width: max-content;
+  max-width: calc(100vw - (var(--pad) * 2));
+}
+
+.camctl .camctl-rack::before {
+  content: none;
+}
+
+.camctl .camctl-presets {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 2px 14px;
+}
+
+.camctl .camctl-preset {
+  gap: 8px;
+  padding: 5px 2px;
+}
+
+.camctl .camctl-hint {
+  bottom: calc(var(--pad) + 148px);
+}
+
+@media (max-width: 860px) and (orientation: portrait), (max-width: 620px) {
+  .mark {
+    padding-top: 16px;
+  }
+
+  .mark-slam {
+    --type-display-size: 34px;
+    --type-display-settings: 'opsz' 48, 'wght' 500;
+    margin-top: 6px;
+  }
+
+  .mark-meta {
+    margin-top: 5px;
+  }
+
+  .camctl .camctl-hint,
+  .camctl .camctl-rack {
+    display: none;
+  }
+
+  .viewbar {
+    position: static;
+    order: 3;
+    align-self: center;
+    transform: none;
+    margin-top: -8px;
+  }
+}
+
+/* ── Breakpoint overrides ─────────────────────────────────────────────────
+   These live last on purpose. The camera-chrome and rail rules they override
+   are written with two-class selectors further up the file, so a breakpoint
+   stated earlier loses on source order no matter how correct it is. */
+
+/* Mid widths: the rail is an overlay on the board, so it shows an identity and
+   not a paragraph of instruction. */
+@media (max-width: 1180px) {
+  .stage .rail .rail-invite { display: none; }
+}
+
+/* Short landscape: no vertical room for teaching chrome or camera presets. */
+@media (max-height: 560px) and (orientation: landscape) {
+  .stage .camctl .camctl-hint,
+  .stage .camctl .camctl-rack { display: none; }
+  .stage .rail .rail-invite { display: none; }
+  /* The search pill sits right there saying "Find a player"; the caption under
+     it is the same instruction twice, and it lands under the run bar. */
+  .stage .compact-note { display: none; }
+}
+
+/* Portrait phone: the page is a scroll column again, so the rail is a real
+   section with room to speak. */
+@media (max-width: 860px) and (orientation: portrait), (max-width: 620px) {
+  .stage .rail .rail-invite { display: block; }
 }

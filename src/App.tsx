@@ -9,6 +9,9 @@ import { Forthcoming } from './ui/Forthcoming';
 import { HollowBracket } from './bracket/HollowBracket';
 import { SLAM_ORDER, SLAM_ORDER_WOMEN, themeFor } from './ui/theme';
 import { Search } from './ui/Search';
+import { sound, SoundToggle } from './audio/sound';
+import { SlamMenu } from './ui/SlamMenu';
+import { Controls } from './ui/Controls';
 
 type Tour = 'men' | 'women';
 
@@ -27,8 +30,10 @@ export function App() {
 
   const forthcoming = slam.startsWith('us-open');
 
-  const handleHover = useCallback((id: string | null) => setHover(id), []);
-  const handleSelect = useCallback((id: string) => setPicked((p) => (p === id ? null : id)), []);
+  const handleHover = useCallback((id: string | null) => { if (id) sound.hover(); setHover(id); }, []);
+  const handleSelect = useCallback((id: string) => { sound.select(); setPicked((p) => (p === id ? null : id)); }, []);
+
+  useEffect(() => { sound.slamChange(); }, [slam]);
 
   useEffect(() => {
     setPicked(null);
@@ -62,7 +67,7 @@ export function App() {
       if (!matchId || !draw) { setPicked(null); return; }
       for (const r of draw.rounds) {
         const m = r.matches.find((x) => x.id === matchId);
-        if (m?.winner) { setPicked((p) => (p === m.winner ? null : m.winner!)); return; }
+        if (m?.winner) { sound.select(); setPicked((p) => (p === m.winner ? null : m.winner!)); return; }
       }
     },
     [draw],
@@ -71,7 +76,7 @@ export function App() {
 
   return (
     <main
-      className="stage"
+      className={`stage${view === 'radial' ? ' is-radial' : ''}${shown ? ' has-player-detail' : ''}${running ? ' is-running' : ''}`}
       style={
         {
           background: theme.groundDeep,
@@ -81,28 +86,29 @@ export function App() {
         } as React.CSSProperties
       }
     >
-      <header className="mark">
-        <span className="mark-word">The Draw</span>
+      <div className="scrim" aria-hidden="true" />
+      <header className="mark" style={{ '--flare': theme.flare } as React.CSSProperties}>
+        <p className="mark-word">The Draw</p>
         <h1 className="mark-slam">{theme.label}</h1>
+        <span className="mark-rule" aria-hidden="true" />
         <p className="mark-meta">
           2026 <span className="dot">·</span> {forthcoming ? 'Not yet drawn' : draw ? draw.event : ' '}
         </p>
-        <p className="mark-claim">
-          {forthcoming ? (
-            <>
-              128 places await.
-              <br />
-              Pick who takes the title.
-            </>
-          ) : (
-            <>
-              {draw ? `${draw.rounds.reduce((n, r) => n + r.matches.length, 0)} matches.` : '127 matches.'}
-              <br />
-              One thread takes the title.
-            </>
-          )}
-        </p>
       </header>
+
+      <div className="cluster">
+        <SoundToggle slam={slam} />
+        <SlamMenu
+          slam={slam}
+          tour={tour}
+          slams={slams}
+          onSlam={setSlam}
+          onTour={(t) => {
+            setTour(t);
+            setSlam(slam.replace(/-(men|women)$/, `-${t}`) as SlamId);
+          }}
+        />
+      </div>
 
       {forthcoming && (
         <>
@@ -159,8 +165,8 @@ export function App() {
                 championId={index.champion?.id ?? null}
                 activeId={activeId}
                 focused={activeId !== null}
-                onHoverPlayer={setHover}
-                onSelectPlayer={(id) => setPicked((p) => (p === id ? null : id))}
+                onHoverPlayer={(id) => { if (id) sound.hover(); setHover(id); }}
+                onSelectPlayer={(id) => { sound.select(); setPicked((p) => (p === id ? null : id)); }}
               />
             )}
           </div>
@@ -195,6 +201,8 @@ export function App() {
         </>
       )}
 
+      {!forthcoming && draw && view === 'board' && <Controls />}
+
       {!forthcoming && draw && view === 'radial' && (
         <div className="legend">
           <span className="legend-item">
@@ -213,26 +221,6 @@ export function App() {
         </div>
       )}
 
-      {draw && !forthcoming && (
-        <p className="colophon">
-          <a
-            className="colophon-link"
-            href="https://github.com/andrey-esipov/the-draw/blob/main/PROCESS.md"
-            target="_blank"
-            rel="noreferrer"
-          >
-            How 762 matches were reconciled ↗
-          </a>
-          <span className="colophon-sub">
-            Parsed from{' '}
-            <a href={draw.source.url} target="_blank" rel="noreferrer">
-              the official draw sheet
-            </a>
-            . Nothing ships that fails the tree check.
-          </span>
-        </p>
-      )}
-
       {!forthcoming && draw && (
         <p className="compact-note">Search a name to trace their tournament</p>
       )}
@@ -245,40 +233,6 @@ export function App() {
           onSelect={handleSelect}
         />
       )}
-
-      <nav className="switch" aria-label="Choose a tournament">
-        <div className="switch-tour">
-          {(['men', 'women'] as Tour[]).map((t) => (
-            <button
-              key={t}
-              className={`tour-btn${tour === t ? ' is-on' : ''}`}
-              onClick={() => {
-                setTour(t);
-                setSlam(slam.replace(/-(men|women)$/, `-${t}`) as SlamId);
-              }}
-            >
-              {t === 'men' ? "Men's" : "Women's"}
-            </button>
-          ))}
-        </div>
-        <ul className="switch-list">
-          {slams.map((id) => {
-            const t = themeFor(id);
-            return (
-              <li key={id}>
-                <button
-                  className={`slam-btn${slam === id ? ' is-on' : ''}`}
-                  style={{ '--swatch': t.flare } as React.CSSProperties}
-                  onClick={() => setSlam(id)}
-                >
-                  <span className="slam-swatch" />
-                  <span className="slam-label">{t.label}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
     </main>
   );
 }

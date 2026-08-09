@@ -17,6 +17,7 @@ declare module 'troika-three-text' {
     textAlign: string;
     outlineWidth: number | string;
     outlineColor: number | string;
+    gpuAccelerateSDF: boolean;
     sync(cb?: () => void): void;
     dispose(): void;
   }

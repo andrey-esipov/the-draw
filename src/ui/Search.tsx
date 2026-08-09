@@ -66,6 +66,10 @@ export function Search({ draw, flare, onHover, onSelect }: Props) {
 
   return (
     <div className="search" ref={boxRef} style={{ '--flare': flare } as React.CSSProperties}>
+      <svg className="search-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <circle cx="7" cy="7" r="4.4" fill="none" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M10.3 10.3 13.6 13.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
       <input
         className="search-input"
         type="search"

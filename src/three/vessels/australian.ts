@@ -41,60 +41,65 @@ function normanBrookes(opts: VesselOpts): THREE.Group {
   const control = [
     p(0.0, 0.0),
     p(0.36, 0.0),
-    p(0.38, 0.03),
+    p(0.37, 0.03),
     p(0.32, 0.06),
-    p(0.26, 0.09),
-    p(0.28, 0.11),
-    p(0.16, 0.15),
-    p(0.11, 0.21),
-    p(0.15, 0.26),
-    p(0.11, 0.31),
-    p(0.2, 0.35),
-    p(0.42, 0.48),
-    p(0.53, 0.64),
-    p(0.56, 0.8),
-    p(0.575, 0.94),
-    p(0.6, 1.04),
-    p(0.64, 1.12),
-    p(0.66, 1.16),
-    p(0.62, 1.16),
-    p(0.54, 1.08),
-    p(0.46, 0.98),
-    p(0.14, 0.9),
-    p(0.05, 0.9),
+    p(0.22, 0.085),
+    p(0.14, 0.11),
+    p(0.115, 0.14),
+    p(0.16, 0.17),
+    p(0.11, 0.2),
+    p(0.12, 0.235),
+    p(0.22, 0.3),
+    p(0.36, 0.4),
+    p(0.47, 0.52),
+    p(0.52, 0.66),
+    p(0.515, 0.8),
+    p(0.485, 0.91),
+    p(0.49, 0.99),
+    p(0.55, 1.08),
+    p(0.565, 1.14),
+    p(0.535, 1.14),
+    p(0.5, 1.07),
+    p(0.3, 1.02),
+    p(0.06, 1.01),
+    p(0.05, 1.01),
   ];
   const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 9), 96);
-  flute(bodyGeo, 22, 0.018, 0, (t) => Math.pow(Math.max(0, 1 - t / 0.45), 1.4));
+  flute(bodyGeo, 22, 0.02, 0, (t) => Math.pow(Math.max(0, 1 - t / 0.2), 1.4));
+  flute(bodyGeo, 24, 0.014, 0, (t) => Math.max(0, Math.sin(Math.max(0, (t - 0.28) / 0.42) * Math.PI)));
   flute(bodyGeo, 60, 0.0028, 0, (t) => Math.max(0, Math.sin(Math.min(t / 0.62, 1) * Math.PI)));
   bodyGeo.computeVertexNormals();
   content.add(new THREE.Mesh(bodyGeo, silver));
 
-  const band = beadedRing(0.57, 0.016, 54, 0.82);
+  const band = beadedRing(0.53, 0.016, 58, 0.7);
   content.add(new THREE.Mesh(band, bright));
+  const rimBead = beadedRing(0.5, 0.015, 60, 1.05);
+  content.add(new THREE.Mesh(rimBead, bright));
 
-  // Volute scroll handles springing from the belly and curling above the rim.
+  // Large scroll handles springing from the shoulder and curling above the rim.
   const hp = handlePair(
     [
-      new THREE.Vector3(0.52, 0.66, 0),
-      new THREE.Vector3(0.78, 0.7, 0),
-      new THREE.Vector3(0.88, 0.9, 0),
-      new THREE.Vector3(0.84, 1.08, 0),
-      new THREE.Vector3(0.66, 1.18, 0),
-      new THREE.Vector3(0.55, 1.11, 0),
-      new THREE.Vector3(0.58, 1.02, 0),
+      new THREE.Vector3(0.5, 0.79, 0),
+      new THREE.Vector3(0.67, 0.85, 0),
+      new THREE.Vector3(0.74, 0.99, 0),
+      new THREE.Vector3(0.71, 1.14, 0),
+      new THREE.Vector3(0.6, 1.23, 0),
+      new THREE.Vector3(0.51, 1.18, 0),
+      new THREE.Vector3(0.5, 1.09, 0),
     ],
-    0.036,
-    80,
+    0.032,
+    88,
     16,
     (t) => 0.7 + 0.6 * Math.sin(t * Math.PI),
   );
+  hp.scale(1, 1, 0.6);
   content.add(new THREE.Mesh(hp, silver));
 
-  // Scroll curls where the handles spring from the belly.
+  // Scroll curls where the handles spring from the shoulder.
   for (const side of [-1, 1]) {
-    const curl = new THREE.TorusGeometry(0.045, 0.02, 8, 24);
+    const curl = new THREE.TorusGeometry(0.04, 0.018, 8, 24);
     curl.rotateY(Math.PI / 2);
-    curl.translate(side * 0.53, 0.66, 0);
+    curl.translate(side * 0.51, 0.79, 0);
     content.add(new THREE.Mesh(curl, bright));
   }
 
@@ -130,7 +135,8 @@ function daphneAkhurst(opts: VesselOpts): THREE.Group {
     p(0.12, 0.82),
     p(0.05, 0.82),
   ];
-  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 9), 96);
+  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 9), 80);
+  flute(bodyGeo, 24, 0.013, 0, (t) => Math.pow(Math.max(0, 1 - (t - 0.3) / 0.4), 1.3) * (t > 0.3 ? 1 : 0));
   flute(bodyGeo, 40, 0.006, 0, (t) => Math.max(0, Math.sin(Math.min(t / 0.7, 1) * Math.PI)));
   bodyGeo.computeVertexNormals();
   content.add(new THREE.Mesh(bodyGeo, silver));
@@ -143,45 +149,55 @@ function daphneAkhurst(opts: VesselOpts): THREE.Group {
 
   const lidControl = [
     p(0.05, 0.9),
-    p(0.36, 0.9),
-    p(0.35, 0.925),
-    p(0.31, 0.96),
-    p(0.24, 1.0),
-    p(0.14, 1.04),
-    p(0.07, 1.07),
-    p(0.05, 1.085),
-    p(0.0, 1.09),
+    p(0.37, 0.9),
+    p(0.375, 0.925),
+    p(0.36, 0.955),
+    p(0.335, 0.99),
+    p(0.29, 1.04),
+    p(0.235, 1.09),
+    p(0.175, 1.135),
+    p(0.115, 1.17),
+    p(0.075, 1.195),
+    p(0.05, 1.21),
+    p(0.0, 1.215),
   ];
-  const lidGeo = new THREE.LatheGeometry(smoothProfile(lidControl, 9), 96);
-  flute(lidGeo, 40, 0.008, 0, (t) => Math.max(0, Math.sin(t * Math.PI)));
+  const lidGeo = new THREE.LatheGeometry(smoothProfile(lidControl, 9), 80);
+  flute(lidGeo, 28, 0.008, 0, (t) => Math.max(0, Math.sin(t * Math.PI)));
   lidGeo.computeVertexNormals();
   content.add(new THREE.Mesh(lidGeo, silver));
 
-  // Turned finial: bud on a slender neck.
-  const neck = new THREE.CylinderGeometry(0.018, 0.026, 0.05, 16);
-  neck.translate(0, 1.11, 0);
+  const collar = new THREE.TorusGeometry(0.235, 0.012, 8, 64);
+  collar.rotateX(Math.PI / 2);
+  collar.translate(0, 1.085, 0);
+  collar.computeVertexNormals();
+  content.add(new THREE.Mesh(collar, bright));
+
+  const neck = new THREE.CylinderGeometry(0.018, 0.028, 0.06, 16);
+  neck.translate(0, 1.24, 0);
   const bud = new THREE.SphereGeometry(0.045, 16, 12);
-  bud.scale(1, 1.35, 1);
-  bud.translate(0, 1.17, 0);
-  const spike = new THREE.ConeGeometry(0.02, 0.06, 12);
-  spike.translate(0, 1.24, 0);
+  bud.scale(1, 1.4, 1);
+  bud.translate(0, 1.31, 0);
+  const spike = new THREE.ConeGeometry(0.02, 0.07, 12);
+  spike.translate(0, 1.39, 0);
   const finial = mergeGeometries([neck, bud, spike]);
   finial.computeVertexNormals();
   content.add(new THREE.Mesh(finial, bright));
 
   const hp = handlePair(
     [
-      new THREE.Vector3(0.36, 0.56, 0),
-      new THREE.Vector3(0.54, 0.62, 0),
-      new THREE.Vector3(0.59, 0.76, 0),
-      new THREE.Vector3(0.52, 0.88, 0),
-      new THREE.Vector3(0.35, 0.88, 0),
+      new THREE.Vector3(0.35, 0.56, 0),
+      new THREE.Vector3(0.56, 0.55, 0),
+      new THREE.Vector3(0.64, 0.68, 0),
+      new THREE.Vector3(0.6, 0.83, 0),
+      new THREE.Vector3(0.46, 0.89, 0),
+      new THREE.Vector3(0.35, 0.87, 0),
     ],
-    0.024,
+    0.023,
     72,
     14,
-    (t) => 0.75 + 0.5 * Math.sin(t * Math.PI),
+    (t) => 0.7 + 0.6 * Math.sin(t * Math.PI),
   );
+  hp.scale(1, 1, 0.58);
   content.add(new THREE.Mesh(hp, silver));
 
   return finalizeVessel(root, content);

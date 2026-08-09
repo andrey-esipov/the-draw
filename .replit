@@ -1,0 +1,31 @@
+run = "npm run dev"
+entrypoint = "src/main.tsx"
+modules = ["nodejs-20"]
+
+[nix]
+channel = "stable-24_05"
+
+# The Draw is a static Vite app with no server and no database.
+[deployment]
+deploymentTarget = "static"
+build = ["sh", "-c", "npm ci && npm run build"]
+publicDir = "dist"
+
+[[ports]]
+localPort = 5210
+externalPort = 80
+
+[workflows]
+runButton = "Dev"
+
+[[workflows.workflow]]
+name = "Dev"
+author = "andrey"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5210

@@ -1,0 +1,216 @@
+/* ── Camera chrome ────────────────────────────────────────────────────────
+   A broadcast side-bug, not a viewer toolbar. Named framings ride the right
+   edge like a lower-third; a quiet serif affordance teaches the gesture on
+   first load, then leaves for good. Everything is currentColor + the ground so
+   it sits inside the film grade instead of on top of it. */
+
+.camctl {
+  font-family: var(--type-label-family);
+}
+
+/* ── First-load affordance ──────────────────────────────────────────────── */
+
+.camctl-hint {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--pad) + 148px);
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  text-align: center;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 900ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 900ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: camctl-hint-in 1400ms cubic-bezier(0.16, 1, 0.3, 1) 700ms backwards;
+}
+
+.camctl-hint.is-gone {
+  opacity: 0;
+  transform: translateX(-50%) translateY(8px);
+}
+
+@keyframes camctl-hint-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+}
+
+.camctl-hint-verb {
+  font-family: var(--type-title-family);
+  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 24, 'wght' 340;
+  font-size: calc(var(--type-title-size) * 0.54);
+  letter-spacing: var(--track-title);
+  line-height: var(--type-title-leading);
+  opacity: 0.84;
+}
+
+.camctl-hint-keys {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
+  opacity: 0.5;
+}
+
+/* ── The framing rack ───────────────────────────────────────────────────── */
+
+.camctl-rack {
+  position: fixed;
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: calc(var(--pad) + 26px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 14px;
+  z-index: 6;
+  width: max-content;
+  max-width: calc(100vw - (var(--pad) * 2));
+}
+
+.camctl-rack::before {
+  content: none;
+}
+
+.camctl-eyebrow {
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: calc(var(--type-label-size) * 0.92);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  text-transform: none;
+  opacity: 0.5;
+  padding-right: 1px;
+}
+
+.camctl-presets {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 2px 14px;
+}
+
+.camctl-preset {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 2px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font-family: var(--type-label-family);
+  font-variation-settings: var(--type-label-settings);
+  font-size: calc(var(--type-label-size) * 0.92);
+  line-height: var(--type-label-leading);
+  letter-spacing: var(--track-label);
+  text-transform: none;
+  cursor: pointer;
+  opacity: 0.52;
+  transition: opacity 260ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* The tick that rides in front of each label — a broadcast lead-in mark. */
+.camctl-preset::before {
+  content: '';
+  width: 10px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transform-origin: right center;
+  transform: scaleX(0.5);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1), opacity 260ms ease;
+}
+
+.camctl-preset:hover {
+  opacity: 0.85;
+}
+.camctl-preset:hover::before {
+  transform: scaleX(1);
+}
+
+.camctl-preset.is-on {
+  opacity: 1;
+}
+.camctl-preset.is-on::before {
+  transform: scaleX(2.2);
+  opacity: 1;
+}
+
+.camctl-preset:focus-visible {
+  opacity: 1;
+}
+.camctl-preset:focus-visible::before {
+  transform: scaleX(2.2);
+  opacity: 1;
+}
+
+/* ── Reset ──────────────────────────────────────────────────────────────── */
+
+/* Sits at the end of the rack, not under it: dropped below, it landed on the
+   run button and the view swap. */
+.camctl-reset {
+  flex: none;
+  margin-left: 2px;
+  padding: 5px 0 5px 14px;
+  background: none;
+  border: 0;
+  border-left: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  color: inherit;
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--track-caption);
+  text-transform: none;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateX(-3px);
+  pointer-events: none;
+  transition: opacity 320ms ease, transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 200ms ease;
+}
+
+.camctl-reset.is-live {
+  opacity: 0.62;
+  transform: none;
+  pointer-events: auto;
+}
+.camctl-reset.is-live:hover,
+.camctl-reset.is-live:focus-visible {
+  opacity: 0.9;
+}
+
+/* ── Cursor while dragging the board ────────────────────────────────────── */
+
+.broadcast.is-dragging,
+.broadcast.is-dragging canvas {
+  cursor: grabbing;
+}
+
+/* ── Small screens: fold the rack to the bottom, drop the hint ──────────── */
+
+@media (max-width: 860px) and (orientation: portrait), (max-width: 620px) {
+  .camctl-hint {
+    display: none;
+  }
+  .camctl-rack {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .camctl-hint,
+  .camctl-preset,
+  .camctl-preset::before,
+  .camctl-reset {
+    transition: none;
+    animation: none;
+  }
+}

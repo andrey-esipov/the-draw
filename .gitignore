@@ -1,6 +1,11 @@
-node_modules
-dist
+*.png.bak
 .DS_Store
-__pycache__
+.screenshots/
 .shots
+.shots/
+__pycache__
+dist
+node_modules
+screenshots/
 shots
+.audit/
