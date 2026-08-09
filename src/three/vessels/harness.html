@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ceremonial Vessels — Harness</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0a0b0e;
+        overflow: hidden;
+      }
+      #app {
+        position: fixed;
+        inset: 0;
+      }
+      .label {
+        position: fixed;
+        bottom: 18px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #8b909a;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div class="label">
+      <span>Australian Open</span>
+      <span>Roland-Garros</span>
+      <span>Wimbledon</span>
+      <span>US Open</span>
+    </div>
+    <script type="module" src="./harness.ts"></script>
+  </body>
+</html>

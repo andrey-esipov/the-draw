@@ -1,0 +1,102 @@
+{
+  "surfaces": [
+    {
+      "slug": "australian-open",
+      "color": "australian-open-color.jpg",
+      "roughness": "australian-open-rough.jpg",
+      "normal": "australian-open-normal.jpg",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "seamless": true,
+      "dominantColours": [
+        "#03223f",
+        "#043a63",
+        "#075c83",
+        "#008a96"
+      ],
+      "description": "Seamless cobalt/teal rubberized acrylic hardcourt with fine grit and broad smoother specular patches.",
+      "bytes": {
+        "color": 62326,
+        "roughness": 184147,
+        "normal": 116654
+      }
+    },
+    {
+      "slug": "roland-garros",
+      "color": "roland-garros-color.jpg",
+      "roughness": "roland-garros-rough.jpg",
+      "normal": "roland-garros-normal.jpg",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "seamless": true,
+      "dominantColours": [
+        "#5d2412",
+        "#843719",
+        "#9a4320",
+        "#c06b33"
+      ],
+      "description": "Seamless granular terracotta crushed-brick clay with faint drag-broom sweep marks and uniformly high roughness.",
+      "bytes": {
+        "color": 101366,
+        "roughness": 86984,
+        "normal": 197363
+      }
+    },
+    {
+      "slug": "wimbledon",
+      "color": "wimbledon-color.jpg",
+      "roughness": "wimbledon-rough.jpg",
+      "normal": "wimbledon-normal.jpg",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "seamless": true,
+      "dominantColours": [
+        "#0a2417",
+        "#102e23",
+        "#1c5732",
+        "#3a7342"
+      ],
+      "description": "Seamless deep emerald grass with mown stripe direction, blade relief, and alternating stripe roughness.",
+      "bytes": {
+        "color": 76197,
+        "roughness": 136948,
+        "normal": 220078
+      }
+    },
+    {
+      "slug": "us-open",
+      "color": "us-open-color.jpg",
+      "roughness": "us-open-rough.jpg",
+      "normal": "us-open-normal.jpg",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "seamless": true,
+      "dominantColours": [
+        "#061928",
+        "#102b3e",
+        "#173b53",
+        "#2a657b"
+      ],
+      "description": "Seamless dark blue-grey acrylic/asphalt hardcourt with fine grit and wetter smoother roughness pools.",
+      "bytes": {
+        "color": 60533,
+        "roughness": 185123,
+        "normal": 109073
+      }
+    }
+  ],
+  "tileChecks": {
+    "color": "tile-checks-color.jpg",
+    "roughness": "tile-checks-roughness.jpg",
+    "normal": "tile-checks-normal.jpg"
+  },
+  "legacyTileCheck": "tile-checks.jpg"
+}

@@ -56,7 +56,7 @@ export function Forthcoming({ theme, tour, pick, onPick }: Props) {
             <>Your pick for the title. The draw is made {DRAW_DATE}.</>
           ) : (
             <>
-              Play begins {OPEN_DATE}. The draw is made {DRAW_DATE} — until then these 128
+              Play begins {OPEN_DATE}. The draw is made {DRAW_DATE}. Until then these 128
               positions are empty, and the season so far is all anyone has to go on.
             </>
           )}

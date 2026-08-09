@@ -113,14 +113,7 @@ export function pathOf(index: DrawIndex, playerId: string): PathStep[] {
     });
 }
 
-export interface Storyline {
-  kind: 'upset' | 'marathon' | 'run';
-  matchId: string;
-  playerId: string;
-  headline: string;
-  detail: string;
-  weight: number;
-}
+const SEED_UPSET_THRESHOLD = 16;
 
 const seedNum = (seed: string | null): number | null => {
   if (!seed) return null;
@@ -128,85 +121,6 @@ const seedNum = (seed: string | null): number | null => {
   return Number.isFinite(n) ? n : null;
 };
 
-/** Storylines derived purely from the draw itself — no outside data, no editorial. */
-export function storylines(index: DrawIndex, limit = 6): Storyline[] {
-  const { draw } = index;
-  const out: Storyline[] = [];
-
-  for (const round of draw.rounds) {
-    for (const match of round.matches) {
-      if (!match.winner) continue;
-      const winSide = match.sides.find((s) => s.player === match.winner);
-      const loseSide = match.sides.find((s) => s.player !== match.winner);
-      if (!winSide || !loseSide) continue;
-
-      const winSeed = seedNum(winSide.seed);
-      const loseSeed = seedNum(loseSide.seed);
-      const winner = draw.players[winSide.player];
-      const loser = draw.players[loseSide.player];
-      if (!winner || !loser) continue;
-
-      if (loseSeed !== null && loseSeed <= 8 && (winSeed === null || winSeed - loseSeed > 12)) {
-        out.push({
-          kind: 'upset',
-          matchId: match.id,
-          playerId: winner.id,
-          headline: `${winner.name} over ${loser.name}`,
-          detail: `${index.roundName.get(match.round)} · ${formatScore(match, draw.bestOf)}`,
-          weight: (9 - loseSeed) * 10 + (winSeed === null ? 8 : 0) + match.round,
-        });
-      }
-
-      const games = totalGames(match);
-      if (games >= (draw.bestOf === 5 ? 58 : 36)) {
-        out.push({
-          kind: 'marathon',
-          matchId: match.id,
-          playerId: winner.id,
-          headline: `${games} games`,
-          detail: `${winner.name} d. ${loser.name} · ${formatScore(match, draw.bestOf)}`,
-          weight: games,
-        });
-      }
-    }
-  }
-
-  const unseededRun = [...(index.appearances.entries() as Iterable<[string, Match[]]>)]
-    .map(([id, matches]) => ({ id, wins: matches.filter((m) => m.winner === id).length }))
-    .filter(({ id, wins }) => wins >= 4 && draw.players[id]?.seed === null)
-    .sort((a, b) => b.wins - a.wins)[0];
-
-  if (unseededRun) {
-    const player = draw.players[unseededRun.id]!;
-    const last = (index.appearances.get(unseededRun.id) ?? []).slice(-1)[0];
-    out.push({
-      kind: 'run',
-      matchId: last?.id ?? '',
-      playerId: player.id,
-      headline: `${player.name}, unseeded`,
-      detail: `${unseededRun.wins} wins from the qualifying side of the draw`,
-      weight: unseededRun.wins * 25,
-    });
-  }
-
-  const seen = new Set<string>();
-  return out
-    .sort((a, b) => b.weight - a.weight)
-    .filter((s) => {
-      if (seen.has(s.playerId)) return false;
-      seen.add(s.playerId);
-      return true;
-    })
-    .slice(0, limit);
-}
-
-const SEED_UPSET_THRESHOLD = 16;
-
-/**
- * Matches where a seed inside the top eight lost to someone seeded far below
- * them or unseeded. Marked on the draw so the shocks are legible without
- * anyone having to hunt for them.
- */
 export function upsetMatchIds(index: DrawIndex): string[] {
   const out: string[] = [];
   for (const round of index.draw.rounds) {

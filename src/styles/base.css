@@ -84,6 +84,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   left: var(--pad);
   display: grid;
   gap: 3px;
+  z-index: 5;
 }
 .mark-word {
   font-family: var(--serif);
@@ -104,10 +105,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .mark-meta {
   font-family: var(--mono);
-  font-size: 9.4px;
-  letter-spacing: 0.16em;
+  font-size: 10px;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
-  opacity: 0.66;
+  opacity: 0.78;
   margin-top: 9px;
 }
 .mark-claim {
@@ -351,31 +352,29 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   text-align: left;
   cursor: pointer;
   position: relative;
-  transition: opacity 200ms ease-out, padding-left 260ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 200ms ease-out;
 }
 
 .form-row::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 50%;
-  width: 3px;
-  height: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
   background: var(--flare);
-  transform: translateY(-50%);
-  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.form-row:hover,
-.form-row:focus-visible { padding-left: 12px; }
 .form-row:hover::before,
-.form-row:focus-visible::before { height: 60%; }
+.form-row:focus-visible::before { transform: scaleX(0.32); }
 .form-row:focus-visible { outline: none; }
 .form-row:focus-visible .form-name { text-decoration: underline; text-underline-offset: 4px; }
 
-.form-row.is-picked { padding-left: 12px; }
-.form-row.is-picked::before { height: 100%; }
-.form-row.is-picked .form-name { opacity: 1; }
+.form-row.is-picked::before { transform: scaleX(1); }
+.form-row.is-picked .form-name { opacity: 1; font-variation-settings: 'opsz' 20, 'wght' 500; }
 
 .form-name {
   font-family: var(--serif);
@@ -930,4 +929,111 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   stroke: var(--ground-deep);
   stroke-width: 3px;
   stroke-linejoin: round;
+}
+
+/* ---- Board view --------------------------------------------------------- */
+
+.broadcast {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.broadcast canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.viewbar {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  z-index: 6;
+}
+
+.run {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px 11px 16px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ground-deep) 72%, transparent);
+  backdrop-filter: blur(14px);
+  color: inherit;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 240ms ease, background 240ms ease, opacity 240ms ease;
+}
+
+.run:hover:not(:disabled) {
+  border-color: color-mix(in srgb, currentColor 44%, transparent);
+}
+
+.run:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+.run-glyph {
+  width: 0;
+  height: 0;
+  border-left: 8px solid currentColor;
+  border-top: 5.5px solid transparent;
+  border-bottom: 5.5px solid transparent;
+}
+
+.viewswap {
+  display: inline-flex;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: 999px;
+  overflow: hidden;
+  backdrop-filter: blur(14px);
+}
+
+.viewswap button {
+  padding: 10px 17px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  opacity: 0.5;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 220ms ease, background 220ms ease;
+}
+
+.viewswap button.on {
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .run,
+  .viewswap button { transition: none; }
+}
+
+.stage::before {
+  content: '';
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 34vw;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--ground-deep) 88%, #000) 0%,
+    color-mix(in srgb, var(--ground-deep) 46%, transparent) 30%,
+    transparent 72%
+  );
+  pointer-events: none;
+  z-index: 4;
 }

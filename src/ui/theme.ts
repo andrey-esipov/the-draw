@@ -16,56 +16,74 @@ export interface SlamTheme {
   surface: Surface;
   label: string;
   city: string;
+  /** Secondary signature colour paired with the ground: Wimbledon purple, Roland-Garros bottle green, the AO's cyan, the US Open's apron green. */
+  heritage: string;
+  /** Tint for the raking rim light that rides the metal. */
+  rim: string;
+  /** Near-black colour the court dissolves into, carrying the slam's hue as a whisper. */
+  fog: string;
 }
 
 const THEMES: Record<string, Omit<SlamTheme, 'id'>> = {
   'australian-open': {
-    ground: '#0f4478',
-    groundDeep: '#07203f',
-    chalk: '#e9f1f6',
-    chalkDim: '#8fb6d6',
-    flare: '#ffd166',
+    ground: '#0e63a6',
+    groundDeep: '#06213f',
+    chalk: '#eef5fb',
+    chalkDim: '#8cbbe0',
+    flare: '#ffd15c',
     flareGlow: '#ffb703',
-    trace: '#f4f1e6',
+    trace: '#b9d8ee',
     surface: 'Hard',
     label: 'Australian Open',
     city: 'Melbourne',
+    heritage: '#1aa7e0',
+    rim: '#2fb4e6',
+    fog: '#061422',
   },
   'french-open': {
-    ground: '#6b2a12',
-    groundDeep: '#331307',
+    ground: '#7e3418',
+    groundDeep: '#2e1206',
     chalk: '#f6ece4',
-    chalkDim: '#c08a6c',
-    flare: '#ffb26b',
+    chalkDim: '#cc9878',
+    flare: '#f2b03a',
     flareGlow: '#ff8c42',
-    trace: '#f4f1e6',
+    trace: '#c4cbbd',
     surface: 'Clay',
     label: 'Roland-Garros',
     city: 'Paris',
+    heritage: '#1c5638',
+    rim: '#2a6f49',
+    fog: '#150b06',
   },
   wimbledon: {
-    ground: '#164630',
-    groundDeep: '#071f14',
-    chalk: '#f2f4ea',
-    chalkDim: '#7fa189',
+    ground: '#154430',
+    groundDeep: '#061c12',
+    chalk: '#f3f5ea',
+    chalkDim: '#89a893',
     flare: '#d8c56a',
     flareGlow: '#bfa53f',
-    trace: '#f4f1e6',
+    trace: '#bda6d6',
     surface: 'Grass',
     label: 'Wimbledon',
     city: 'London',
+    heritage: '#5a2a82',
+    rim: '#6d3a9a',
+    fog: '#08130d',
   },
   'us-open': {
-    ground: '#0d3345',
-    groundDeep: '#051d28',
+    ground: '#113a63',
+    groundDeep: '#04182b',
     chalk: '#eef3f8',
-    chalkDim: '#79a9b4',
-    flare: '#7fe3d0',
-    flareGlow: '#3fc9b0',
-    trace: '#f4f1e6',
+    chalkDim: '#7fa2bd',
+    flare: '#ecca6a',
+    flareGlow: '#d9b24a',
+    trace: '#c3d1de',
     surface: 'Hard',
     label: 'US Open',
     city: 'New York',
+    heritage: '#3f7a3e',
+    rim: '#4f9147',
+    fog: '#05111d',
   },
 };
 

@@ -77,7 +77,7 @@ export function Bracket({
     const beaten = next?.matches.find((m) => m.sides.some((sd) => sd.player === litId));
     const winner = beaten?.winner ? draw.players[beaten.winner] : null;
     if (!match || !winner) return null;
-    return `${RING_LABEL[exit.round + 1] ?? ''} · lost to ${surname(winner.name)}`;
+    return `${RING_LABEL[exit.round + 1] ?? ''} · lost to ${surname(winner.short)}`;
   }, [exit, isChampion, draw, litId]);
   const svgRef = useRef<SVGSVGElement>(null);
   useReveal(svgRef, draw.id);
@@ -310,7 +310,7 @@ export function Bracket({
               CHAMPION
             </text>
             <text x={CENTER.x} y={CENTER.y + 38} textAnchor="middle" fill={theme.chalk} className="core-surname">
-              {surname(draw.players[championId]!.name)}
+              {surname(draw.players[championId]!.short)}
             </text>
           </g>
         )}

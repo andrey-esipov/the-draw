@@ -3,6 +3,7 @@ import type { Draw, SlamId } from './data/types';
 import { indexDraw, upsetMatchIds } from './data/analysis';
 import { buildGeometry } from './bracket/geometry';
 import { Bracket, CENTER, SCALE } from './bracket/Bracket';
+import { Broadcast } from './bracket/Broadcast';
 import { Rail } from './ui/Rail';
 import { Forthcoming } from './ui/Forthcoming';
 import { HollowBracket } from './bracket/HollowBracket';
@@ -20,6 +21,9 @@ export function App() {
   const [prediction, setPrediction] = useState<string | null>(null);
   const [pendingName, setPendingName] = useState<string | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [view, setView] = useState<'board' | 'radial'>('board');
+  const [playToken, setPlayToken] = useState(0);
+  const [running, setRunning] = useState(false);
 
   const forthcoming = slam.startsWith('us-open');
 
@@ -53,6 +57,18 @@ export function App() {
 
   const slams = tour === 'men' ? SLAM_ORDER : SLAM_ORDER_WOMEN;
 
+  const handlePickMatch = useCallback(
+    (matchId: string | null) => {
+      if (!matchId || !draw) { setPicked(null); return; }
+      for (const r of draw.rounds) {
+        const m = r.matches.find((x) => x.id === matchId);
+        if (m?.winner) { setPicked((p) => (p === m.winner ? null : m.winner!)); return; }
+      }
+    },
+    [draw],
+  );
+  const handleRunEnd = useCallback(() => setRunning(false), []);
+
   return (
     <main
       className="stage"
@@ -70,12 +86,6 @@ export function App() {
         <h1 className="mark-slam">{theme.label}</h1>
         <p className="mark-meta">
           2026 <span className="dot">·</span> {forthcoming ? 'Not yet drawn' : draw ? draw.event : ' '}
-          {draw && !forthcoming && (
-            <>
-              <span className="dot">·</span>{' '}
-              {draw.rounds.reduce((n, r) => n + r.matches.length, 0)} matches
-            </>
-          )}
         </p>
         <p className="mark-claim">
           {forthcoming ? (
@@ -130,22 +140,62 @@ export function App() {
         <>
           <Rail index={index} theme={theme} player={shown} traced={activeId !== null} />
           <div className="field">
-            <Bracket
-              draw={draw}
-              geo={geo}
-              theme={theme}
-              upsets={upsets}
-              championId={index.champion?.id ?? null}
-              activeId={activeId}
-              focused={activeId !== null}
-              onHoverPlayer={setHover}
-              onSelectPlayer={(id) => setPicked((p) => (p === id ? null : id))}
-            />
+            {view === 'board' ? (
+              <Broadcast
+                slam={slam}
+                draw={draw}
+                theme={theme}
+                lit={shownId}
+                playToken={playToken}
+                onPick={handlePickMatch}
+                onRunEnd={handleRunEnd}
+              />
+            ) : (
+              <Bracket
+                draw={draw}
+                geo={geo}
+                theme={theme}
+                upsets={upsets}
+                championId={index.champion?.id ?? null}
+                activeId={activeId}
+                focused={activeId !== null}
+                onHoverPlayer={setHover}
+                onSelectPlayer={(id) => setPicked((p) => (p === id ? null : id))}
+              />
+            )}
+          </div>
+
+          <div className="viewbar">
+            <button
+              type="button"
+              className="run"
+              disabled={running || !shownId}
+              onClick={() => { setRunning(true); setPlayToken((n) => n + 1); }}
+            >
+              <span className="run-glyph" aria-hidden="true" />
+              {running ? 'Running the draw' : 'Run the draw'}
+            </button>
+            <div className="viewswap" role="group" aria-label="View">
+              <button
+                type="button"
+                className={view === 'board' ? 'on' : ''}
+                onClick={() => setView('board')}
+              >
+                Board
+              </button>
+              <button
+                type="button"
+                className={view === 'radial' ? 'on' : ''}
+                onClick={() => setView('radial')}
+              >
+                Radial
+              </button>
+            </div>
           </div>
         </>
       )}
 
-      {!forthcoming && draw && (
+      {!forthcoming && draw && view === 'radial' && (
         <div className="legend">
           <span className="legend-item">
             <svg className="legend-glyph" viewBox="0 0 30 10" aria-hidden="true">

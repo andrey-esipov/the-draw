@@ -16,11 +16,15 @@
     "@react-three/drei": "^10.0.0",
     "@react-three/fiber": "^9.0.0",
     "@react-three/postprocessing": "^3.0.0",
+    "camera-controls": "^3.1.2",
+    "d3-hierarchy": "^3.1.2",
     "gsap": "^3.13.0",
-    "postprocessing": "^6.36.0",
+    "playwright": "^1.62.1",
+    "postprocessing": "^6.39.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "three": "^0.171.0"
+    "three": "^0.171.0",
+    "troika-three-text": "^0.52.5"
   },
   "devDependencies": {
     "@types/react": "^19.1.0",
