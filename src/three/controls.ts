@@ -50,6 +50,15 @@ export interface DrawControls {
    * frame with air around it at any aspect. Called on mount and on resize.
    */
   fit(aspect: number): void;
+  /**
+   * Tell the resting framing which slice of the board carries the lit route, in
+   * world x, as outer edges rather than plate centres. Round one runs off the
+   * sides at the resting distance by design, so without this a champion who
+   * came through the outer edge has their own first match cropped away. Framing
+   * slides toward them instead of pulling back, which would cost every slam
+   * legibility to fix one.
+   */
+  focusSpan(minX: number | null, maxX?: number): void;
   /** The resting framing the board returns to, as a pose. */
   restPose(): CameraPose;
   /** True while space is held: the board is in grab-to-pan mode. */
@@ -58,6 +67,14 @@ export interface DrawControls {
   hasMoved: boolean;
   /** Fired exactly once, the first time the user moves the camera. */
   onFirstMove?: () => void;
+  /**
+   * Same signal, but for anyone who is not the camera chrome.
+   *
+   * onFirstMove is a single slot, so the last component to mount silently took
+   * it off whoever mounted first. Anything else that needs to know the board is
+   * no longer at rest registers here instead.
+   */
+  watchFirstMove(fn: () => void): () => void;
   dispose(): void;
 }
 
@@ -111,6 +128,8 @@ export function createControls(
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const halfW = bounds.width / 2;
+  let focus: { minX: number; maxX: number } | null = null;
+  let lastAspect = Math.max(0.35, camera.aspect || 1.6);
   const cage: Cage = {
     radiusMin: 15,
     radiusMax: 135,
@@ -180,6 +199,11 @@ export function createControls(
     hasMoved: false,
     panMode: false,
     onFirstMove: undefined,
+    watchFirstMove(fn: () => void) {
+      if (controls.hasMoved) { fn(); return () => {}; }
+      movers.add(fn);
+      return () => { movers.delete(fn); };
+    },
     update,
     flyTo,
     frame,
@@ -187,6 +211,7 @@ export function createControls(
     adopt,
     pose,
     fit,
+    focusSpan,
     restPose,
     dispose,
   };
@@ -207,10 +232,13 @@ export function createControls(
   }
   let flight: Flight | null = null;
 
+  const movers = new Set<() => void>();
+
   function markMoved() {
     if (!controls.hasMoved) {
       controls.hasMoved = true;
       controls.onFirstMove?.();
+      movers.forEach((fn) => fn());
     }
   }
 
@@ -466,6 +494,9 @@ export function createControls(
   }
 
   function flyTo(pose: CameraPose, dur = 1.6): Promise<void> {
+    // A programmatic flight leaves the resting frame just as surely as a drag
+    // does, so the chrome that only belongs at rest has to hear about it.
+    markMoved();
     return startFlight(poseToNamed(pose), dur);
   }
 
@@ -495,6 +526,33 @@ export function createControls(
     cancelFlight();
   }
 
+    /**
+   * How far the resting frame slides along x so the lit route stays inside it.
+   * Zero whenever the route already fits, which is most of the time — the shift
+   * only pays out for a champion who came through the outer rounds.
+   */
+  function shiftFor(radius: number, aspect: number): number {
+    if (!focus) return 0;
+    const vFov = (camera.fov * Math.PI) / 180;
+    const visibleHalf = Math.tan(vFov / 2) * Math.max(0.35, aspect) * radius;
+    // Keep real air between the outermost lit card and the edge. The thread
+    // does not stop at the plate: it carries a terminal stroke past the first
+    // match and is drawn with screen-space width, so a pad measured to the card
+    // edge alone still let the corner of the route touch the frame.
+    const pad = 2.9;
+    let shift = 0;
+    if (focus.maxX + pad > visibleHalf) shift = focus.maxX + pad - visibleHalf;
+    if (focus.minX - pad < -visibleHalf) shift = Math.min(shift, focus.minX - pad + visibleHalf);
+    // Never slide so far that we frame empty floor beyond the board's own edge.
+    const room = Math.max(0, bounds.width / 2 + 3.2 - visibleHalf);
+    return clamp(shift, -room, room);
+  }
+
+  function focusSpan(minX: number | null, maxX?: number): void {
+    focus = minX === null ? null : { minX, maxX: maxX ?? minX };
+    fit(lastAspect);
+  }
+
   /**
    * Fit the whole board into frame for the given viewport aspect.
    *
@@ -505,6 +563,7 @@ export function createControls(
    * vertical fit so nothing is ever cropped at either edge.
    */
   function fit(aspect: number): void {
+    lastAspect = aspect;
     const vFov = (camera.fov * Math.PI) / 180;
     const margin = 1.1;
     const halfBoardW = bounds.width / 2 + 3.2;
@@ -520,9 +579,10 @@ export function createControls(
     const radius = clamp(Math.min(Math.max(byWidth, byHeight), legibleMax), cage.radiusMin, cage.radiusMax);
 
     framings.all.radius = radius;
-    // Board centre, lifted a touch so the trophy and the title share the upper
-    // third rather than fighting each other.
-    framings.all.target.set(0, 1.6, -0.5);
+    // Board centre, lifted only slightly. Lifted hard it left a dead band under
+    // the draw while the bottom rows sank into the floor scrim, and the whole
+    // sheet read as though its last rounds had been cut off.
+    framings.all.target.set(shiftFor(radius, aspect), 0.35, -0.5);
     framings.all.theta = 0;
     framings.all.phi = 1.4;
 

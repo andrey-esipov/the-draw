@@ -18,10 +18,20 @@
     linear-gradient(to left, rgba(2, 4, 8, 0.82) 0%, rgba(2, 4, 8, 0.44) 9%, rgba(2, 4, 8, 0) 22%);
 }
 
+/* The bottom corners of the frame are where the outer rounds live, so a
+   full-width band across the foot of the screen reads as the draw being cut
+   off. The chrome it exists to seat is only ever centre-bottom, so the weight
+   goes there as a pool and the band itself stays shallow. */
 .scrim::after {
   background:
-    linear-gradient(to top, rgba(2, 4, 8, 0.86) 0%, rgba(2, 4, 8, 0.4) 11%, rgba(2, 4, 8, 0) 26%),
-    radial-gradient(120% 96% at 50% 44%, rgba(2, 4, 8, 0) 46%, rgba(2, 4, 8, 0.34) 82%, rgba(2, 4, 8, 0.6) 100%);
+    radial-gradient(
+      44% 26% at 50% 104%,
+      rgba(2, 4, 8, 0.82) 0%,
+      rgba(2, 4, 8, 0.5) 44%,
+      rgba(2, 4, 8, 0) 78%
+    ),
+    linear-gradient(to top, rgba(2, 4, 8, 0.66) 0%, rgba(2, 4, 8, 0.24) 6%, rgba(2, 4, 8, 0) 15%),
+    radial-gradient(122% 100% at 50% 44%, rgba(2, 4, 8, 0) 54%, rgba(2, 4, 8, 0.18) 84%, rgba(2, 4, 8, 0.34) 100%);
 }
 
 @media (max-width: 900px) {
@@ -30,4 +40,25 @@
       radial-gradient(112% 46% at 0% 0%, rgba(2, 4, 8, 0.92) 0%, rgba(2, 4, 8, 0.66) 40%, rgba(2, 4, 8, 0) 76%),
       linear-gradient(to left, rgba(2, 4, 8, 0.7) 0%, rgba(2, 4, 8, 0) 18%);
   }
+}
+
+/* Flying in puts bright plates directly under the camera rack and the run bar.
+   The centre pool deepens to keep that chrome on solid ground; the band does
+   not, because deepening it is what buried the bottom of the sheet. */
+.scrim::after { transition: background 620ms cubic-bezier(0.4, 0, 0.2, 1); }
+
+.is-flown .scrim::after {
+  background:
+    radial-gradient(
+      48% 30% at 50% 104%,
+      rgba(2, 4, 8, 0.92) 0%,
+      rgba(2, 4, 8, 0.66) 44%,
+      rgba(2, 4, 8, 0) 80%
+    ),
+    linear-gradient(to top, rgba(2, 4, 8, 0.7) 0%, rgba(2, 4, 8, 0.28) 6%, rgba(2, 4, 8, 0) 15%),
+    radial-gradient(122% 100% at 50% 44%, rgba(2, 4, 8, 0) 54%, rgba(2, 4, 8, 0.18) 84%, rgba(2, 4, 8, 0.34) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim::after { transition: none; }
 }

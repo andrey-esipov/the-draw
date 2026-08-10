@@ -1,14 +1,13 @@
 {
   "environment": {
     "file": "studio.hdr",
-    "preview": "studio-preview.png",
     "format": "Radiance RGBE HDR equirectangular",
     "dimensions": {
-      "width": 2048,
-      "height": 1024
+      "width": 512,
+      "height": 256
     },
     "description": "Dark reflection-only studio environment with a large overhead/front soft key, dim cyan side rims, and a dark floor.",
-    "bytes": 8388684,
-    "previewBytes": 282533
+    "bytes": 524337,
+    "note": "Downsampled from 2048x1024. Only feeds PMREM, which blurs it well past this resolution."
   }
 }

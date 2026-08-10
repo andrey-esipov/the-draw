@@ -4,29 +4,41 @@
 
 export type SlamKey = 'ao' | 'rg' | 'wim' | 'us';
 
+// A room, not a note. Every bed is built from three bands of filtered noise —
+// a low rumble (the building), a low-mid murmur (the crowd) and a whisper of air
+// (the openness overhead) — plus, optionally, a very distant occasional ball. No
+// pitched drone anywhere: tennis rooms are broadband, so these are too.
 interface SlamVoice {
-  /** Fundamental of the drone, in Hz. Kept in the low register so it reads as room, not note. */
-  root: number;
-  /** Ceiling of the drone lowpass — how much air the bed carries. */
-  droneCut: number;
-  /** Centre of the crowd-air bandpass — the colour of the room. */
+  /** Lowpass ceiling of the room rumble, in Hz. Below pitch — this is felt, not heard. */
+  rumbleCut: number;
+  /** Level of the room rumble. The US night session rumbles; Wimbledon barely. */
+  rumbleLevel: number;
+  /** Centre of the crowd-murmur bandpass — the body of the room. */
+  murmurCentre: number;
+  /** Width of the murmur. Tighter reads closer and drier. */
+  murmurQ: number;
+  /** How present the crowd is. */
+  murmurLevel: number;
+  /** Centre of the airy top band — the sense of space above the court. */
   airCentre: number;
-  /** How present the crowd air is. Wimbledon whispers; the US Open breathes. */
+  /** How open the room feels overhead. Melbourne is bright and open; Wimbledon is close. */
   airLevel: number;
-  /** Overall bed level trim. Warmer rooms sit lower. */
-  bedTrim: number;
-  /** Slight detune spread across the drone stack, in cents. */
-  spread: number;
+  /** How much the bed washes into the reverb — the size of the room. */
+  reverbSend: number;
+  /** Min/max seconds between distant, far-off ball impacts in the bed. */
+  impactGap: [number, number];
+  /** Level of those distant impacts — always far below the murmur. */
+  impactLevel: number;
 }
 
-// Four rooms. Roots are low just-tuned pitches; the character is carried in the
-// filtering, not the note. Wimbledon is warmest and quietest, the US Open coolest
-// and most electric, Roland-Garros clay-warm, Melbourne open and bright-blue.
+// Four rooms. Wimbledon: quiet, close, dry, restrained. Roland-Garros: warmer,
+// dustier midrange, a little more crowd. US Open: night session, big room, most
+// low-end rumble, most electric. Australian Open: bright open-air day, most air.
 const SLAMS: Record<SlamKey, SlamVoice> = {
-  ao: { root: 65.41, droneCut: 300, airCentre: 300, airLevel: 0.8, bedTrim: 1.0, spread: 3 },
-  rg: { root: 58.27, droneCut: 260, airCentre: 250, airLevel: 0.66, bedTrim: 0.9, spread: 4 },
-  wim: { root: 55.0, droneCut: 232, airCentre: 200, airLevel: 0.3, bedTrim: 0.95, spread: 2.5 },
-  us: { root: 61.74, droneCut: 320, airCentre: 340, airLevel: 0.9, bedTrim: 1.0, spread: 4 },
+  ao:  { rumbleCut: 105, rumbleLevel: 0.20, murmurCentre: 560, murmurQ: 0.45, murmurLevel: 0.70, airCentre: 2100, airLevel: 0.85, reverbSend: 0.42, impactGap: [7, 15], impactLevel: 0.5 },
+  rg:  { rumbleCut: 95,  rumbleLevel: 0.22, murmurCentre: 470, murmurQ: 0.55, murmurLevel: 0.78, airCentre: 1500, airLevel: 0.5,  reverbSend: 0.5,  impactGap: [8, 17], impactLevel: 0.45 },
+  wim: { rumbleCut: 90,  rumbleLevel: 0.14, murmurCentre: 520, murmurQ: 0.6,  murmurLevel: 0.46, airCentre: 1700, airLevel: 0.34, reverbSend: 0.34, impactGap: [10, 22], impactLevel: 0.4 },
+  us:  { rumbleCut: 120, rumbleLevel: 0.28, murmurCentre: 500, murmurQ: 0.4,  murmurLevel: 0.82, airCentre: 1900, airLevel: 0.7,  reverbSend: 0.62, impactGap: [6, 13], impactLevel: 0.55 },
 };
 
 const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
@@ -64,21 +76,27 @@ export class Engine {
   private reverb: ConvolverNode;
   private reverbReturn: GainNode;
 
-  // Bed
+  // Bed: three noise bands (rumble, murmur, air) plus far-off ball impacts.
   private bedGain: GainNode;
-  private droneOscs: OscillatorNode[] = [];
-  private droneGain: GainNode;
-  private droneFilter: BiquadFilterNode;
-  private droneLfo: OscillatorNode;
-  private droneLfoGain: GainNode;
+  private rumbleSrc: AudioBufferSourceNode | null = null;
+  private rumbleFilter: BiquadFilterNode;
+  private rumbleGain: GainNode;
+  private murmurSrc: AudioBufferSourceNode | null = null;
+  private murmurFilter: BiquadFilterNode;
+  private murmurGain: GainNode;
+  private murmurLfo: OscillatorNode;
+  private murmurLfoGain: GainNode;
   private airSrc: AudioBufferSourceNode | null = null;
   private airFilter: BiquadFilterNode;
   private airGain: GainNode;
   private airLfo: OscillatorNode;
   private airLfoGain: GainNode;
+  private bedSend: GainNode;
+  private impactTimer: number | null = null;
   private currentSlam: SlamKey | null = null;
 
   private noiseBuffer: AudioBuffer;
+  private airNoiseBuffer: AudioBuffer;
 
   // Voice management
   private activeVoices = 0;
@@ -132,64 +150,66 @@ export class Engine {
     this.reverbReturn.connect(this.bus);
 
     this.noiseBuffer = this.makeNoise(3.0);
+    this.airNoiseBuffer = this.makePinkNoise(3.0);
 
-    // ── Bed: drone ────────────────────────────────────────────────────────────
+    // ── Bed ─────────────────────────────────────────────────────────────────────
     this.bedGain = ctx.createGain();
     this.bedGain.gain.value = 1;
     this.bedGain.connect(this.bus);
 
-    this.droneFilter = ctx.createBiquadFilter();
-    this.droneFilter.type = 'lowpass';
-    this.droneFilter.frequency.value = 300;
-    this.droneFilter.Q.value = 0.7;
+    // A shared send so the whole bed washes into the room by the slam's amount.
+    this.bedSend = ctx.createGain();
+    this.bedSend.gain.value = 0.4;
+    this.bedSend.connect(this.reverb);
 
-    this.droneGain = ctx.createGain();
-    this.droneGain.gain.value = 0;
-    this.droneFilter.connect(this.droneGain);
-    this.droneGain.connect(this.bedGain);
-    // A whisper of the drone into the reverb gives the room a tail.
-    const droneSend = ctx.createGain();
-    droneSend.gain.value = 0.25;
-    this.droneGain.connect(droneSend);
-    droneSend.connect(this.reverb);
+    // Rumble: lowpassed brown noise, below pitch. The building, not a note.
+    this.rumbleFilter = ctx.createBiquadFilter();
+    this.rumbleFilter.type = 'lowpass';
+    this.rumbleFilter.frequency.value = 110;
+    this.rumbleFilter.Q.value = 0.5;
+    this.rumbleGain = ctx.createGain();
+    this.rumbleGain.gain.value = 0;
+    this.rumbleFilter.connect(this.rumbleGain);
+    this.rumbleGain.connect(this.bedGain);
 
-    // Root, octave, twelfth. A fifth this low turns to mud on a laptop speaker;
-    // stacking upward keeps the bed warm and clean.
-    const ratios = [1, 2, 3];
-    for (const r of ratios) {
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.value = 46 * r;
-      osc.connect(this.droneFilter);
-      this.droneOscs.push(osc);
-    }
+    // Murmur: bandpassed brown noise up where voices live, not down in the
+    // building. Centred low it was a rumble and the room read as a threat; the
+    // crowd is what makes a tennis venue sound like people rather than weather.
+    this.murmurFilter = ctx.createBiquadFilter();
+    this.murmurFilter.type = 'bandpass';
+    this.murmurFilter.frequency.value = 340;
+    this.murmurFilter.Q.value = 0.6;
+    this.murmurGain = ctx.createGain();
+    this.murmurGain.gain.value = 0;
+    this.murmurFilter.connect(this.murmurGain);
+    this.murmurGain.connect(this.bedGain);
+    this.murmurGain.connect(this.bedSend);
 
-    // Slow breathing on the drone's amplitude so the bed never sits perfectly still.
-    this.droneLfo = ctx.createOscillator();
-    this.droneLfo.type = 'sine';
-    this.droneLfo.frequency.value = 0.037;
-    this.droneLfoGain = ctx.createGain();
-    this.droneLfoGain.gain.value = 0.0009;
-    this.droneLfo.connect(this.droneLfoGain);
-    this.droneLfoGain.connect(this.droneGain.gain);
+    // Slow swells in the murmur, like a distant crowd breathing.
+    this.murmurLfo = ctx.createOscillator();
+    this.murmurLfo.type = 'sine';
+    this.murmurLfo.frequency.value = 0.085;
+    this.murmurLfoGain = ctx.createGain();
+    this.murmurLfoGain.gain.value = 0.0055;
+    this.murmurLfo.connect(this.murmurLfoGain);
+    this.murmurLfoGain.connect(this.murmurGain.gain);
 
-    // ── Bed: crowd air ────────────────────────────────────────────────────────
+    // Air: a whisper of pink noise up top — the openness above the court.
     this.airFilter = ctx.createBiquadFilter();
     this.airFilter.type = 'bandpass';
-    this.airFilter.frequency.value = 480;
-    this.airFilter.Q.value = 0.5;
-
+    this.airFilter.frequency.value = 1600;
+    this.airFilter.Q.value = 0.4;
     this.airGain = ctx.createGain();
     this.airGain.gain.value = 0;
     this.airFilter.connect(this.airGain);
     this.airGain.connect(this.bedGain);
 
-    // Very slow swells in the air, like a distant crowd inhaling.
+    // A slower, offset swell in the air so the two bands never pulse together.
     this.airLfo = ctx.createOscillator();
     this.airLfo.type = 'sine';
-    this.airLfo.frequency.value = 0.028;
+    this.airLfo.frequency.value = 0.058;
     this.airLfoGain = ctx.createGain();
-    this.airLfoGain.gain.value = 0.0028;
+    this.airLfoGain.gain.value = 0.0016;
     this.airLfo.connect(this.airLfoGain);
     this.airLfoGain.connect(this.airGain.gain);
   }
@@ -227,6 +247,28 @@ export class Engine {
     return buf;
   }
 
+  /** Pink noise (Paul Kellet's filter): a natural, airy spectrum for swooshes. */
+  private makePinkNoise(seconds: number): AudioBuffer {
+    const rate = this.ctx.sampleRate;
+    const len = Math.floor(seconds * rate);
+    const buf = this.ctx.createBuffer(1, len, rate);
+    const data = buf.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < len; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.969 * b2 + white * 0.153852;
+      b3 = 0.8665 * b3 + white * 0.3104856;
+      b4 = 0.55 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.016898;
+      const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+      b6 = white * 0.115926;
+      data[i] = pink * 0.11;
+    }
+    return buf;
+  }
+
   private canVoice(kind: string, minGap: number): boolean {
     const t = now();
     if (this.activeVoices >= this.maxVoices) return false;
@@ -246,11 +288,20 @@ export class Engine {
     const t = ctx.currentTime;
     if (!this.started) {
       this.started = true;
-      this.droneOscs.forEach((o) => o.start());
-      this.droneLfo.start();
+      this.murmurLfo.start();
       this.airLfo.start();
+      this.rumbleSrc = ctx.createBufferSource();
+      this.rumbleSrc.buffer = this.noiseBuffer;
+      this.rumbleSrc.loop = true;
+      this.rumbleSrc.connect(this.rumbleFilter);
+      this.rumbleSrc.start();
+      this.murmurSrc = ctx.createBufferSource();
+      this.murmurSrc.buffer = this.noiseBuffer;
+      this.murmurSrc.loop = true;
+      this.murmurSrc.connect(this.murmurFilter);
+      this.murmurSrc.start();
       this.airSrc = ctx.createBufferSource();
-      this.airSrc.buffer = this.noiseBuffer;
+      this.airSrc.buffer = this.airNoiseBuffer;
       this.airSrc.loop = true;
       this.airSrc.connect(this.airFilter);
       this.airSrc.start();
@@ -270,34 +321,42 @@ export class Engine {
     const t = ctx.currentTime;
     const trim = this.restrained ? 0.7 : 1;
 
-    const ratios = [1, 2, 3];
-    this.droneOscs.forEach((osc, i) => {
-      const detune = (i - 1) * v.spread;
-      osc.frequency.cancelScheduledValues(t);
-      osc.frequency.setValueAtTime(osc.frequency.value, t);
-      osc.frequency.linearRampToValueAtTime(v.root * ratios[i]!, t + fade);
-      osc.detune.setTargetAtTime(detune, t, 0.5);
-    });
+    const ramp = (param: AudioParam, to: number) => {
+      param.cancelScheduledValues(t);
+      param.setValueAtTime(Math.max(0.0001, param.value), t);
+      param.linearRampToValueAtTime(Math.max(0.0001, to), t + fade);
+    };
 
-    this.droneFilter.frequency.cancelScheduledValues(t);
-    this.droneFilter.frequency.setValueAtTime(this.droneFilter.frequency.value, t);
-    this.droneFilter.frequency.linearRampToValueAtTime(v.droneCut, t + fade);
+    ramp(this.rumbleFilter.frequency, v.rumbleCut);
+    ramp(this.rumbleGain.gain, 0.05 * v.rumbleLevel * trim);
 
-    const droneLevel = 0.026 * v.bedTrim * trim;
-    this.droneGain.gain.cancelScheduledValues(t);
-    this.droneGain.gain.setValueAtTime(Math.max(0.0001, this.droneGain.gain.value), t);
-    this.droneGain.gain.linearRampToValueAtTime(droneLevel, t + fade);
+    ramp(this.murmurFilter.frequency, v.murmurCentre);
+    this.murmurFilter.Q.setTargetAtTime(v.murmurQ, t, 0.5);
+    ramp(this.murmurGain.gain, 0.012 * v.murmurLevel * trim);
 
-    this.airFilter.frequency.cancelScheduledValues(t);
-    this.airFilter.frequency.setValueAtTime(this.airFilter.frequency.value, t);
-    this.airFilter.frequency.linearRampToValueAtTime(v.airCentre, t + fade);
+    ramp(this.airFilter.frequency, v.airCentre);
+    ramp(this.airGain.gain, 0.0045 * v.airLevel * trim);
 
-    const airLevel = 0.009 * v.airLevel * trim;
-    this.airGain.gain.cancelScheduledValues(t);
-    this.airGain.gain.setValueAtTime(Math.max(0.0001, this.airGain.gain.value), t);
-    this.airGain.gain.linearRampToValueAtTime(airLevel, t + fade);
+    this.bedSend.gain.cancelScheduledValues(t);
+    this.bedSend.gain.setValueAtTime(this.bedSend.gain.value, t);
+    this.bedSend.gain.linearRampToValueAtTime(v.reverbSend, t + fade);
 
     this.currentSlam = slam;
+    this.scheduleImpact(v);
+  }
+
+  /** Schedule the next far-off ball impact for the current room, then reschedule itself. */
+  private scheduleImpact(v: SlamVoice) {
+    if (this.impactTimer !== null) { window.clearTimeout(this.impactTimer); this.impactTimer = null; }
+    if (typeof window === 'undefined') return;
+    const [lo, hi] = v.impactGap;
+    const wait = (lo + Math.random() * (hi - lo)) * 1000;
+    this.impactTimer = window.setTimeout(() => {
+      if (this.currentSlam && this.started) {
+        this.thock(0.02 * v.impactLevel * (this.restrained ? 0.6 : 1), 0.85, 0.7);
+        this.scheduleImpact(SLAMS[this.currentSlam]);
+      }
+    }, wait);
   }
 
   /** Fade the whole output down without tearing the graph down (used for ducking/disable). */
@@ -319,226 +378,244 @@ export class Engine {
   // ── One-shots ───────────────────────────────────────────────────────────────
 
   /**
-   * A struck resonant tone: three partials over a soft body, eased in over tens
-   * of milliseconds so there is no click, damped by a lowpass that closes as it
-   * decays, and sent generously to the room. This is the whole vocabulary — the
-   * interface is never allowed to beep.
+   * A swoosh: pink noise through a bandpass swept between two frequencies, with a
+   * soft attack and decay. The whole air-movement vocabulary — rackets, cards,
+   * the camera — is built from this. A random read-offset means no two are alike.
    */
-  private strike(freq: number, peak: number, tail: number, sendAmt: number, colour = 1) {
+  private swoosh(dur: number, peak: number, fromHz: number, toHz: number, q: number, sendAmt: number) {
     const ctx = this.ctx;
     const t = ctx.currentTime;
 
-    const body = ctx.createGain();
-    body.gain.value = 1;
+    const src = ctx.createBufferSource();
+    src.buffer = this.airNoiseBuffer;
+    src.loop = true;
+    const offset = Math.random() * Math.max(0, this.airNoiseBuffer.duration - dur - 0.1);
 
-    // A lowpass that closes over the tail, the way a struck body loses its top
-    // first. Nothing here is ever bright enough to read as a beep.
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.Q.value = q;
+    bp.frequency.setValueAtTime(fromHz, t);
+    bp.frequency.exponentialRampToValueAtTime(Math.max(40, toHz), t + dur);
+
+    // A fixed lowpass tames the pink-noise top so the swoosh reads as warm air
+    // moving, not hiss.
     const lp = ctx.createBiquadFilter();
     lp.type = 'lowpass';
-    lp.Q.value = 0.4;
-    lp.frequency.setValueAtTime(Math.min(3200, freq * 5.5 * colour), t);
-    lp.frequency.exponentialRampToValueAtTime(Math.max(140, freq * 1.4), t + tail);
+    lp.frequency.value = 1900;
+    lp.Q.value = 0.5;
 
     const g = ctx.createGain();
     g.gain.setValueAtTime(0.0001, t);
-    // A slow enough attack to be felt rather than struck at you.
-    g.gain.linearRampToValueAtTime(peak, t + 0.055);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + tail);
+    g.gain.linearRampToValueAtTime(peak, t + dur * 0.4);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur * 1.15);
 
-    // Root, octave, twelfth: consonant, no beating, no metallic inharmonics.
-    const partials: [number, number][] = [[1, 1], [2, 0.3], [3, 0.12]];
-    const oscs: OscillatorNode[] = [];
-    for (const [ratio, level] of partials) {
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.value = freq * ratio;
-      const pg = ctx.createGain();
-      pg.gain.value = level;
-      osc.connect(pg);
-      pg.connect(body);
-      oscs.push(osc);
+    src.connect(bp); bp.connect(lp); lp.connect(g); g.connect(this.bus);
+    const send = ctx.createGain(); send.gain.value = sendAmt; g.connect(send); send.connect(this.reverb);
+
+    src.start(t, offset);
+    src.stop(t + dur * 1.2);
+    this.hold(dur * 1.2);
+  }
+
+  /**
+   * A crowd, not a tone.
+   *
+   * Two bands of noise — chest around 240Hz and voices around 700Hz — each with
+   * its own shape, so a swell reads as people rather than a synthesizer. Every
+   * pure sine that used to sit under these moments is gone: a low sine is the
+   * single most synthetic sound there is, and at 45-70Hz it read as menace.
+   */
+  private crowd(dur: number, peak: number, sendAmt = 0.6, lift = 1, delay = 0) {
+    const ctx = this.ctx;
+    // Scheduled in context time, never on a timer: an offline render has no
+    // wall clock, so a setTimeout'd swell simply would not exist in the file
+    // the harness measures.
+    const t = ctx.currentTime + delay;
+    const bands: [number, number, number][] = [
+      [240 * lift, 0.55, 0.72],
+      [700 * lift, 0.45, 1],
+      [1450 * lift, 0.7, 0.34],
+    ];
+    for (const [centre, q, share] of bands) {
+      const src = ctx.createBufferSource();
+      src.buffer = this.airNoiseBuffer;
+      src.loop = true;
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.Q.value = q;
+      bp.frequency.setValueAtTime(centre * 0.72, t);
+      bp.frequency.linearRampToValueAtTime(centre, t + dur * 0.3);
+      bp.frequency.exponentialRampToValueAtTime(centre * 0.66, t + dur);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      // Slow in, slower out. A crowd rises before it realises it is rising.
+      g.gain.linearRampToValueAtTime(peak * share, t + dur * 0.28);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      src.connect(bp); bp.connect(g); g.connect(this.bus);
+      const send = ctx.createGain(); send.gain.value = sendAmt; g.connect(send); send.connect(this.reverb);
+      src.start(t, Math.random() * 1.5);
+      src.stop(t + dur + 0.1);
     }
+    this.hold(delay + dur + 0.15);
+  }
 
-    body.connect(lp);
-    lp.connect(g);
-    g.connect(this.bus);
+  /**
+   * A thock: ball on strings. Mostly a short burst of lowpassed brown noise whose
+   * cutoff closes fast (the strings damping), under a low sine that drops in pitch
+   * quickly (the weight of the ball). Warm, no click transient, no pitch to speak
+   * of. `colour` opens the strings up for the brighter strikes late in a rally.
+   */
+  private thock(peak: number, colour = 1, sendAmt = 0.3) {
+    const ctx = this.ctx;
+    const t = ctx.currentTime;
 
-    const send = ctx.createGain();
-    send.gain.value = sendAmt;
-    g.connect(send);
-    send.connect(this.reverb);
+    const src = ctx.createBufferSource();
+    src.buffer = this.noiseBuffer;
+    src.loop = true;
+    const offset = Math.random() * Math.max(0, this.noiseBuffer.duration - 0.4);
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.Q.value = 0.8;
+    lp.frequency.setValueAtTime(Math.min(3000, 1000 * colour), t);
+    lp.frequency.exponentialRampToValueAtTime(200, t + 0.1);
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(0.0001, t);
+    ng.gain.linearRampToValueAtTime(peak, t + 0.008);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.17);
+    src.connect(lp); lp.connect(ng); ng.connect(this.bus);
+    const send = ctx.createGain(); send.gain.value = sendAmt; ng.connect(send); send.connect(this.reverb);
+    src.start(t, offset); src.stop(t + 0.26);
 
-    oscs.forEach((o) => { o.start(t); o.stop(t + tail + 0.08); });
-    this.hold(tail);
+    // The ball's weight, not a bass drop. Held up in the body of the strings
+    // and cut short — the old 190→85Hz fall was the most electronic thing here.
+    const sub = ctx.createOscillator();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(320, t);
+    sub.frequency.exponentialRampToValueAtTime(165, t + 0.05);
+    const sg = ctx.createGain();
+    sg.gain.setValueAtTime(0.0001, t);
+    sg.gain.linearRampToValueAtTime(peak * 0.3, t + 0.005);
+    sg.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
+    sub.connect(sg); sg.connect(this.bus);
+    sub.start(t); sub.stop(t + 0.26);
+    this.hold(0.28);
   }
 
   hover() {
     if (!this.canVoice('hover', 90)) return;
     const trim = this.restrained ? 0.6 : 1;
-    // Barely there: a low breath of tone under the cursor, not a tick.
-    this.strike(220, 0.016 * trim, 0.9, 0.5, 0.7);
+    // A racket passing through air, heard from across the court. Barely there.
+    this.swoosh(0.19, 0.075 * trim, 520, 1150, 1.0, 0.2);
   }
 
   select() {
     if (!this.canVoice('select', 90)) return;
-    const trim = this.restrained ? 0.6 : 1;
-    // A card opening: a warm low tone, answered a beat later by its fifth.
-    this.strike(146.83, 0.05 * trim, 2.2, 0.62);
-    window.setTimeout(() => this.strike(220, 0.03 * trim, 2.6, 0.7), 130);
+    const trim = this.restrained ? 0.7 : 1;
+    // A stroke, not a hit: the swing carries it and the strings only just
+    // register. A full ball-strike on every click was far too hard a sound for
+    // something you do dozens of times reading a draw.
+    this.swoosh(0.26, 0.085 * trim, 380, 1250, 0.8, 0.3);
+    this.thock(0.075 * trim, 1.5, 0.22);
   }
 
-  /** A card closing: the same warmth, resolving downward. */
+  /** A card sweeping open — a longer, soft swoosh riding the ~460ms open. */
+  expand() {
+    if (!this.canVoice('expand', 90)) return;
+    const trim = this.restrained ? 0.6 : 1;
+    this.swoosh(0.46, 0.085 * trim, 320, 1050, 0.7, 0.4);
+  }
+
+  /** A card closing: a shorter, reversed swoosh. */
   dismiss() {
     if (!this.canVoice('dismiss', 90)) return;
     const trim = this.restrained ? 0.6 : 1;
-    this.strike(196, 0.032 * trim, 1.6, 0.6);
-    window.setTimeout(() => this.strike(130.81, 0.028 * trim, 2.2, 0.66), 120);
+    this.swoosh(0.3, 0.08 * trim, 1050, 300, 0.7, 0.34);
   }
 
   /**
-   * The camera moving. Not a note — a breath of air moving past, so the travel
-   * has weight without anything sounding.
+   * The camera moving. Air travelling past — the same vocabulary as everything
+   * else, sweeping up as you depart, settling down as you arrive.
    */
   glide(seconds = 0.9, depart = true) {
     if (!this.canVoice('glide', 220)) return;
-    const ctx = this.ctx;
-    const t = ctx.currentTime;
-    const trim = this.restrained ? 0.4 : 1;
-
-    const src = ctx.createBufferSource();
-    src.buffer = this.noiseBuffer;
-    src.loop = true;
-
-    const bp = ctx.createBiquadFilter();
-    bp.type = 'bandpass';
-    bp.Q.value = 0.55;
-    const from = depart ? 170 : 380;
-    const to = depart ? 420 : 150;
-    bp.frequency.setValueAtTime(from, t);
-    bp.frequency.exponentialRampToValueAtTime(to, t + seconds);
-
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(0.075 * trim, t + seconds * 0.42);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + seconds * 1.15);
-
-    src.connect(bp);
-    bp.connect(g);
-    g.connect(this.bus);
-    const send = ctx.createGain();
-    send.gain.value = 0.45;
-    g.connect(send);
-    send.connect(this.reverb);
-
-    src.start(t);
-    src.stop(t + seconds * 1.2);
-    this.hold(seconds * 1.2);
+    const trim = this.restrained ? 0.5 : 1;
+    const from = depart ? 240 : 950;
+    const to = depart ? 950 : 240;
+    this.swoosh(seconds, 0.06 * trim, from, to, 0.55, 0.42);
   }
 
   slamChange() {
     if (!this.canVoice('slam', 200)) return;
+    const ctx = this.ctx;
+    const t = ctx.currentTime;
     const trim = this.restrained ? 0.6 : 1;
-    // The room changing: one low tone, long, under everything.
-    this.strike(98, 0.045 * trim, 3.2, 0.8, 0.8);
+    // Walking into another stadium: the air moves, and a room full of people
+    // settles around you. The old descending 70→45Hz sine read as dread.
+    this.swoosh(0.75, 0.04 * trim, 620, 240, 0.55, 0.5);
+    this.crowd(1.9, 0.055 * trim, 0.65, 0.92);
+    void t;
+    this.hold(2.0);
   }
 
-  // ── The run: a build that resolves ────────────────────────────────────────
+  // ── The run: a rally that builds and resolves ─────────────────────────────
 
-  /** The run begins: a soft, dark swell rising under the board. */
+  /** The run begins: a soft breath drawing in under the board — the rally about to start. */
   runStart() {
     if (!this.canVoice('runstart', 200)) return;
     const ctx = this.ctx;
     const t = ctx.currentTime;
     const trim = this.restrained ? 0.55 : 1;
 
-    // A filtered-noise riser plus a low sub, both swelling in and settling.
-    const src = ctx.createBufferSource();
-    src.buffer = this.noiseBuffer;
-    src.loop = true;
-    const bp = ctx.createBiquadFilter();
-    bp.type = 'bandpass';
-    bp.frequency.setValueAtTime(180, t);
-    bp.frequency.linearRampToValueAtTime(430, t + 1.9);
-    bp.Q.value = 0.7;
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(0.017 * trim, t + 1.3);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
-    src.connect(bp); bp.connect(g); g.connect(this.bus);
-    const send = ctx.createGain(); send.gain.value = 0.3; g.connect(send); send.connect(this.reverb);
-    src.start(t); src.stop(t + 2.3);
-
-    const sub = ctx.createOscillator();
-    sub.type = 'sine';
-    sub.frequency.setValueAtTime(41, t);
-    const sg = ctx.createGain();
-    sg.gain.setValueAtTime(0.0001, t);
-    sg.gain.linearRampToValueAtTime(0.038 * trim, t + 1.0);
-    sg.gain.exponentialRampToValueAtTime(0.0001, t + 2.0);
-    sub.connect(sg); sg.connect(this.bus);
-    sub.start(t); sub.stop(t + 2.1);
-    this.hold(2.3);
+    // A rising airy riser, no pitch — the room leaning in, and hushing.
+    this.swoosh(1.5, 0.028 * trim, 220, 860, 0.7, 0.4);
+    this.crowd(2.0, 0.038 * trim, 0.5, 0.86);
+    void t;
+    this.hold(2.1);
   }
 
   /**
-   * The thread crosses a round. A low pentatonic climb — no leading tones, so it
-   * rises without ever sounding like a scale being played at you. Later rounds
-   * gain an octave above and a longer tail, so the ascent is felt, not counted.
+   * The thread crosses a round: a struck ball. Energy builds through level,
+   * brightness and density — never pitch. Late in the rally the strings are
+   * brighter, the strike harder, and the exchanges double up.
    */
   advance(round: number, total = 7) {
     if (!this.canVoice(`adv${round}`, 120)) return;
     const trim = this.restrained ? 0.6 : 1;
+    const climb = Math.max(0, Math.min(1, (round - 1) / Math.max(1, total - 1)));
 
-    const scale = [146.83, 174.61, 196.0, 220.0, 261.63, 293.66, 349.23, 392.0];
-    const idx = Math.max(0, Math.min(scale.length - 1, round - 1));
-    const f = scale[idx]!;
-    const climb = idx / Math.max(1, total - 1);
-
-    this.strike(f, (0.032 + climb * 0.026) * trim, 1.9 + climb * 1.1, 0.55 + climb * 0.25, 0.9 + climb * 0.3);
-    if (climb > 0.45) {
-      window.setTimeout(() => this.strike(f * 2, 0.016 * trim, 2.4, 0.75, 0.8), 90);
+    const peak = (0.11 + climb * 0.06) * trim;
+    const colour = 1 + climb * 1.5;
+    this.thock(peak, colour, 0.3 + climb * 0.2);
+    // A whisper of air over the strike, growing brighter as the rally quickens.
+    this.swoosh(0.18 + climb * 0.08, (0.014 + climb * 0.018) * trim, 800, 1500 + climb * 700, 0.85, 0.28);
+    // Density: the fast late exchanges answer with a second ball.
+    if (climb > 0.5) {
+      window.setTimeout(() => this.thock(peak * 0.7, colour, 0.28), 90 - climb * 30);
     }
   }
+
+  /**
+   * The rally resolves into a crowd swell — the loudest, warmest moment.
+   *
+   * Three noise bands rising together and falling apart at different rates,
+   * with the voices band arriving last and holding longest. That staggering is
+   * what a stadium actually does; a single band blooming and closing is a
+   * synthesizer pad, and a sine underneath it was the tell.
+   */
   crown() {
     if (!this.canVoice('crown', 800)) return;
-    const ctx = this.ctx;
-    const t = ctx.currentTime;
     const trim = this.restrained ? 0.6 : 1;
 
-    // A major chord voiced low to high: root, fifth, octave, major tenth. Warm.
-    const chord = [98.0, 146.83, 196.0, 246.94, 392.0];
-    chord.forEach((f, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = i < 2 ? 'sine' : 'triangle';
-      osc.frequency.value = f;
-      const lp = ctx.createBiquadFilter();
-      lp.type = 'lowpass';
-      lp.frequency.value = Math.min(3400, f * 3.5);
-      lp.Q.value = 0.4;
-      const g = ctx.createGain();
-      const peak = (0.062 - i * 0.007) * trim;
-      const attack = 0.12 + i * 0.05;
-      const tail = 3.4 - i * 0.25;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(Math.max(0.012, peak), t + attack);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + tail);
-      osc.connect(lp); lp.connect(g); g.connect(this.bus);
-      const send = ctx.createGain(); send.gain.value = 0.6; g.connect(send); send.connect(this.reverb);
-      osc.start(t); osc.stop(t + tail + 0.1);
-    });
+    // Match point: the decisive final ball, struck bright, a beat ahead of the
+    // reaction — the room always answers the shot rather than meeting it.
+    this.thock(0.15 * trim, 1.6, 0.5);
 
-    // A soft sub swell underneath for body — the trophy landing.
-    const sub = ctx.createOscillator();
-    sub.type = 'sine';
-    sub.frequency.value = 49;
-    const sg = ctx.createGain();
-    sg.gain.setValueAtTime(0.0001, t);
-    sg.gain.linearRampToValueAtTime(0.05 * trim, t + 0.35);
-    sg.gain.exponentialRampToValueAtTime(0.0001, t + 3.0);
-    sub.connect(sg); sg.connect(this.bus);
-    sub.start(t); sub.stop(t + 3.1);
-    this.hold(3.5);
+    // The roar. Long, so it can still be rising while the trophy is landing.
+    this.crowd(4.2, 0.155 * trim, 0.75, 1, 0.11);
+    // A second, later wave: applause settling in behind the first shout.
+    this.crowd(3.4, 0.07 * trim, 0.8, 1.35, 0.78);
 
+    this.hold(5.2);
     void eqPower; // reserved for future manual crossfades; keep the helper referenced
   }
 
@@ -547,9 +624,11 @@ export class Engine {
 
   dispose() {
     try {
-      this.droneOscs.forEach((o) => { try { o.stop(); } catch { /* already stopped */ } });
-      try { this.droneLfo.stop(); } catch { /* noop */ }
+      if (this.impactTimer !== null) window.clearTimeout(this.impactTimer);
+      try { this.murmurLfo.stop(); } catch { /* noop */ }
       try { this.airLfo.stop(); } catch { /* noop */ }
+      try { this.rumbleSrc?.stop(); } catch { /* noop */ }
+      try { this.murmurSrc?.stop(); } catch { /* noop */ }
       try { this.airSrc?.stop(); } catch { /* noop */ }
     } finally {
       const c = this.ctx as AudioContext;

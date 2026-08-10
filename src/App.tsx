@@ -12,6 +12,8 @@ import { Search } from './ui/Search';
 import { sound, SoundToggle } from './audio/sound';
 import { SlamMenu } from './ui/SlamMenu';
 import { Controls } from './ui/Controls';
+import { drawControlsBus } from './three/controls';
+import { bootDone } from './boot';
 
 type Tour = 'men' | 'women';
 
@@ -27,13 +29,44 @@ export function App() {
   const [view, setView] = useState<'board' | 'radial'>('board');
   const [playToken, setPlayToken] = useState(0);
   const [running, setRunning] = useState(false);
+  const [focusToken, setFocusToken] = useState(0);
+  const [flown, setFlown] = useState(false);
 
   const forthcoming = slam.startsWith('us-open');
 
   const handleHover = useCallback((id: string | null) => { if (id) sound.hover(); setHover(id); }, []);
-  const handleSelect = useCallback((id: string) => { sound.select(); setPicked((p) => (p === id ? null : id)); }, []);
+  // Committing a name from search is never a toggle: you asked for that player,
+  // so they get traced and the camera goes to them.
+  const handleSelect = useCallback((id: string) => {
+    sound.select();
+    setPicked(id);
+    setFocusToken((n) => n + 1);
+  }, []);
 
   useEffect(() => { sound.slamChange(); }, [slam]);
+
+  // The masthead owns the frame only while the board is at rest. The moment the
+  // viewer takes the camera the title is sitting on top of the very cards they
+  // flew in to read, so it stands down to a corner lockup.
+  useEffect(() => {
+    let drop: (() => void) | undefined;
+    const attach = () => {
+      drop?.();
+      drop = drawControlsBus.current?.watchFirstMove(() => setFlown(true));
+    };
+    attach();
+    const off = drawControlsBus.subscribe(attach);
+    return () => { drop?.(); off(); };
+  }, []);
+
+  useEffect(() => { setFlown(false); }, [slam, view]);
+
+  // The board lifts the hold itself on its first rendered frame. Every other
+  // landing — the radial view, a tournament not yet drawn, a draw that failed
+  // to load — has to say so rather than hold a visitor on a splash.
+  useEffect(() => {
+    if (view !== 'board' || forthcoming || loadFailed) bootDone();
+  }, [view, forthcoming, loadFailed]);
 
   useEffect(() => {
     setPicked(null);
@@ -76,7 +109,7 @@ export function App() {
 
   return (
     <main
-      className={`stage${view === 'radial' ? ' is-radial' : ''}${shown ? ' has-player-detail' : ''}${running ? ' is-running' : ''}`}
+      className={`stage${view === 'radial' ? ' is-radial' : ''}${shown ? ' has-player-detail' : ''}${running ? ' is-running' : ''}${flown && view === 'board' ? ' is-flown' : ''}`}
       style={
         {
           background: theme.groundDeep,
@@ -153,6 +186,7 @@ export function App() {
                 theme={theme}
                 lit={shownId}
                 playToken={playToken}
+                focusToken={focusToken}
                 onPick={handlePickMatch}
                 onRunEnd={handleRunEnd}
               />

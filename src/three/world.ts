@@ -102,14 +102,23 @@ const FEEL: Record<string, Feel> = {
 export interface World {
   group: THREE.Group;
   setSlam: (slam: SlamId, theme: SlamTheme) => void;
+  warm: () => void;
   dispose: () => void;
 }
+
+// One id per court surface. Warming these covers every slam, since the men's
+// and women's draws at a tournament stand on the same court.
+const WARM_SLAMS: SlamId[] = [
+  'australian-open-men',
+  'french-open-men',
+  'us-open-men',
+  'wimbledon-men',
+];
 
 /**
  * The room the bracket stands in: a court stretching away into fog, a key light
  * raking across it, and a dark studio environment for the metal to reflect.
- */
-export function createWorld(scene: THREE.Scene, renderer: THREE.WebGLRenderer): World {
+ */export function createWorld(scene: THREE.Scene, renderer: THREE.WebGLRenderer): World {
   const group = new THREE.Group();
   scene.add(group);
   const court = createCourt(scene, renderer);
@@ -217,6 +226,18 @@ export function createWorld(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
   return {
     group,
     setSlam,
+    warm: () => {
+      // Each surface is drawn procedurally the first time its slam is picked,
+      // which lands as a stall on the click. Build the other three while the
+      // room is just sitting there, so the switch has nothing left to make.
+      const idle = window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 240));
+      for (const id of WARM_SLAMS) {
+        idle(() => {
+          court.warm(id, themeFor(id));
+          load(`surfaces/${surfaceKey(id)}-normal.jpg`, false);
+        });
+      }
+    },
     dispose: () => {
       if ((window as unknown as Record<string, unknown>).__worldSetSlam) {
         delete (window as unknown as Record<string, unknown>).__worldSetSlam;

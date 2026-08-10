@@ -27,13 +27,13 @@ export function HollowBracket({ slam, theme, pickName }: Props) {
           </feMerge>
         </filter>
         <radialGradient id="hollowVeil">
-          <stop offset="0%" stopColor={theme.groundDeep} stopOpacity={0.82} />
-          <stop offset="46%" stopColor={theme.groundDeep} stopOpacity={0.68} />
+          <stop offset="0%" stopColor={theme.groundDeep} stopOpacity={0.86} />
+          <stop offset="52%" stopColor={theme.groundDeep} stopOpacity={0.72} />
           <stop offset="100%" stopColor={theme.groundDeep} stopOpacity={0} />
         </radialGradient>
       </defs>
 
-      <g fill="none" stroke={theme.chalk} strokeOpacity={0.05}>
+      <g fill="none" stroke={theme.chalk} strokeOpacity={0.1}>
         {[1, 2, 3, 4, 5, 6, 7].map((r) => (
           <circle key={r} cx={CENTER.x} cy={CENTER.y} r={ringRadius(r) * SCALE} strokeWidth={0.6} />
         ))}
@@ -41,14 +41,14 @@ export function HollowBracket({ slam, theme, pickName }: Props) {
 
       <g className="hollow-threads" fill="none" stroke={theme.chalk} strokeLinecap="round">
         {geo.edges.map((e, i) => (
-          <path key={i} d={e.d} strokeWidth={0.75} strokeOpacity={0.22} />
+          <path key={i} d={e.d} strokeWidth={0.9} strokeOpacity={0.36} />
         ))}
       </g>
 
       <g className="hollow-rim" fill={theme.chalk}>
         {geo.leaves.map((leaf) => {
           const p = polar(leaf.angleDeg, 1.018, SCALE, CENTER);
-          return <circle key={leaf.index} cx={p.x} cy={p.y} r={1.4} fillOpacity={0.42} />;
+          return <circle key={leaf.index} cx={p.x} cy={p.y} r={1.6} fillOpacity={0.62} />;
         })}
       </g>
 
@@ -68,7 +68,19 @@ export function HollowBracket({ slam, theme, pickName }: Props) {
         )}
       </g>
 
-      <circle cx={CENTER.x} cy={CENTER.y} r={118} fill="url(#hollowVeil)" pointerEvents="none" />
+      <circle cx={CENTER.x} cy={CENTER.y} r={112} fill="url(#hollowVeil)" pointerEvents="none" />
+      {/* The veil has to darken the middle so the ask can be read, but a soft
+          blob with no boundary reads as a render fault. This is its edge. */}
+      <circle
+        cx={CENTER.x}
+        cy={CENTER.y}
+        r={104}
+        fill="none"
+        stroke={theme.chalk}
+        strokeOpacity={0.16}
+        strokeWidth={0.8}
+        pointerEvents="none"
+      />
 
       {pickName ? (
         <text className="hollow-name" x={CENTER.x} y={CENTER.y + 52} textAnchor="middle" fill={theme.flare}>

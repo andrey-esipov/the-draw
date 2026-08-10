@@ -49,6 +49,10 @@ export function createStage(canvas: HTMLCanvasElement, w: number, h: number): St
   renderer.toneMappingExposure = 1.1;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = false;
+  // Checking the compile log costs a synchronous GPU flush on every new
+  // program. In a shipped build that reads as a half-second freeze when the
+  // slam changes, so only pay for it in development where it buys diagnosis.
+  renderer.debug.checkShaderErrors = import.meta.env.DEV;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, w / h, 0.4, 400);

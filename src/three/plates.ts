@@ -1,14 +1,20 @@
 import * as THREE from 'three';
 import { Text, configureTextBuilder } from 'troika-three-text';
 import { createText } from './text';
-import type { Draw, Player, SetScore, Side } from '../data/types';
+import type { Draw, Player } from '../data/types';
 import type { SlamTheme } from '../ui/theme';
-import { type BracketLayout, type PlateNode } from './layout';
+import { elbowX, type BracketLayout, type PlateNode } from './layout';
 import { BLOOM_LAYER } from './stage';
 import { buildMarkAtlas } from './marks';
 import { createMatchCard, type MatchCard } from './matchcard';
 
 const BASE = import.meta.env.BASE_URL;
+/**
+ * How far behind a plate's back face the bracket lines sit. Plates extrude
+ * 0.09 forward from their z with a 0.022 bevel, so anything below zero is
+ * already behind them; this is just enough clearance to beat depth precision.
+ */
+const PLATE_BACK = 0.05;
 const MONO = `${BASE}fonts/mono-latin.woff`;
 const NAME_ADVANCING = `${BASE}fonts/sans-latin-600.woff`;
 const NAME_OUT = `${BASE}fonts/sans-latin.woff`;
@@ -32,26 +38,6 @@ function fitToWidth(t: Text, maxW: number, floor: number): void {
     t.letterSpacing = tracking(t.fontSize);
     t.sync();
   });
-}
-
-function setsNeeded(bestOf: number): number {
-  return Math.ceil(bestOf / 2);
-}
-
-function isWalkover(sides: Side[], winner: string | null): boolean {
-  return !!winner && sides.length === 2 && sides.every((s) => s.sets.length === 0);
-}
-
-function isRetirement(side: Side, winner: string | null, bestOf: number): boolean {
-  if (!winner || side.player === winner) return false;
-  const wonSets = side.sets.filter((s) => s.won).length;
-  return side.sets.length > 0 && wonSets < setsNeeded(bestOf);
-}
-
-function scoreOpacity(set: SetScore | undefined, playerWon: boolean): number {
-  if (!set) return 0.18;
-  if (playerWon) return set.won ? 0.84 : 0.66;
-  return set.won ? 0.5 : 0.34;
 }
 
 /** Rounds 1 and 2 carry 96 of the 127 matches. They stay quiet until you come close. */
@@ -303,36 +289,31 @@ export function createPlates(
   const labels: { text: Text; node: PlateNode; player: string | null; row: 0 | 1; base: number }[] = [];
   const scores: { text: Text; node: PlateNode; base: number }[] = [];
 
-  const atlas = buildMarkAtlas(
-    Object.values(draw.players).map((p) => p.country ?? '').filter(Boolean),
-    theme,
-  );
-  const marks: { node: PlateNode; player: string; won: boolean; x: number; y: number; size: number }[] = [];
+  const atlas = buildMarkAtlas();
+  const marks: { node: PlateNode; player: string; won: boolean; x: number; y: number; w: number; h: number }[] = [];
 
   for (const n of layout.plates) {
-    const showsScore = n.round >= 5;
-    const scoreCount = showsScore ? Math.max(3, ...n.match.sides.map((s) => s.sets.length)) : 0;
-    const scoreSize = Math.max(0.2, n.h * 0.165);
-    const scoreStep = scoreSize * 1.35;
-    const scoreRight = n.x + n.w / 2 - n.w * 0.055;
-    const scoreStart = scoreRight - (Math.max(0, scoreCount - 1) * scoreStep);
-    const seedRight = n.x + n.w / 2 - n.w * 0.05;
+    // Every plate reads the same: who played, and who came through. Set scores
+    // belong to the match card you open, not to 127 slabs competing for the
+    // same sliver of width — printed here they ran straight through the names.
+    const winSize = Math.max(0.17, n.h * 0.2);
+    const winRight = n.x + n.w / 2 - n.w * 0.045;
+    const seedRight = winRight - winSize * 1.5;
     n.match.sides.forEach((side, row) => {
       const p = side ? draw.players[side.player] : undefined;
       const rowY = n.y + (row === 0 ? n.h * 0.22 : -n.h * 0.22);
 
-      const markSize = Math.min(n.h * 0.42, n.w * 0.13);
-      const markX = n.x - n.w / 2 + n.w * 0.05 + markSize / 2;
-      const nameX = markX + markSize / 2 + n.w * 0.04;
+      const markH = Math.min(n.h * 0.42, n.w * 0.13);
+      const markW = markH * (4 / 3);
+      const markX = n.x - n.w / 2 + n.w * 0.05 + markW / 2;
+      const nameX = markX + markW / 2 + n.w * 0.04;
       const won = !!side && n.match.winner === side.player;
 
       const nameSize = Math.max(0.2, n.h * 0.3);
-      const seedSize = nameSize * (showsScore ? 0.28 : 0.6);
+      const seedSize = nameSize * 0.6;
       const seedW = side?.seed ? seedSize * (0.6 * side.seed.length + 0.9) : 0;
-      const playerSeedX = showsScore ? n.x - n.w / 2 + n.w * 0.025 : seedRight;
-      const maxW = showsScore
-        ? Math.max(n.w * 0.24, scoreStart - scoreStep * 0.88 - nameX)
-        : Math.max(n.w * 0.3, playerSeedX - seedW - n.w * 0.035 - nameX);
+      const playerSeedX = seedRight;
+      const maxW = Math.max(n.w * 0.3, playerSeedX - seedW - n.w * 0.035 - nameX);
 
       const t = createText();
       t.text = shortName(p);
@@ -359,7 +340,8 @@ export function createPlates(
           won: n.match.winner === side!.player,
           x: markX,
           y: rowY,
-          size: markSize,
+          w: markW,
+          h: markH,
         });
       }
 
@@ -368,7 +350,7 @@ export function createPlates(
         s.text = side.seed;
         s.font = MONO;
         s.fontSize = seedSize;
-        s.anchorX = showsScore ? 'left' : 'right';
+        s.anchorX = 'right';
         s.anchorY = 'middle';
         s.letterSpacing = 0.04;
         s.color = flare.getHex();
@@ -380,77 +362,21 @@ export function createPlates(
         labels.push({ text: s, node: n, player: side.player, row: row as 0 | 1, base: s.fillOpacity });
       }
 
-      if (showsScore && side) {
-        const playerWon = n.match.winner === side.player;
-        const walkover = isWalkover(n.match.sides, n.match.winner);
-        if (walkover || (!n.match.winner && side.sets.length === 0)) {
-          const note = createText();
-          note.text = walkover ? (playerWon ? 'W/O' : '—') : '—';
-          note.font = MONO;
-          note.fontSize = scoreSize * 0.82;
-          note.anchorX = 'right';
-          note.anchorY = 'middle';
-          note.letterSpacing = 0.08;
-          note.color = playerWon ? flare.getHex() : chalk.getHex();
-          note.fillOpacity = playerWon ? 0.66 : 0.22;
-          note.position.set(scoreRight, rowY, n.z + 0.165);
-          note.userData.isText = true;
-          note.sync();
-          group.add(note);
-          scores.push({ text: note, node: n, base: note.fillOpacity });
-        } else {
-          side.sets.forEach((set, i) => {
-            const x = scoreStart + i * scoreStep;
-            const g = createText();
-            g.text = String(set.games);
-            g.font = MONO;
-            g.fontSize = scoreSize;
-            g.anchorX = 'center';
-            g.anchorY = 'middle';
-            g.letterSpacing = 0.015;
-            g.color = playerWon ? flare.getHex() : chalk.getHex();
-            g.fillOpacity = scoreOpacity(set, playerWon);
-            g.position.set(x, rowY, n.z + 0.165);
-            g.userData.isText = true;
-            g.sync();
-            group.add(g);
-            scores.push({ text: g, node: n, base: g.fillOpacity });
-
-            if (set.tiebreak !== null) {
-              const tb = createText();
-              tb.text = String(set.tiebreak);
-              tb.font = MONO;
-              tb.fontSize = scoreSize * 0.48;
-              tb.anchorX = 'left';
-              tb.anchorY = 'middle';
-              tb.letterSpacing = 0;
-              tb.color = playerWon ? flare.getHex() : chalk.getHex();
-              tb.fillOpacity = scoreOpacity(set, playerWon) * 0.92;
-              tb.position.set(x + scoreSize * 0.36, rowY + scoreSize * 0.28, n.z + 0.168);
-              tb.userData.isText = true;
-              tb.sync();
-              group.add(tb);
-              scores.push({ text: tb, node: n, base: tb.fillOpacity });
-            }
-          });
-
-          if (isRetirement(side, n.match.winner, draw.bestOf)) {
-            const ret = createText();
-            ret.text = 'RET';
-            ret.font = MONO;
-            ret.fontSize = scoreSize * 0.52;
-            ret.anchorX = 'left';
-            ret.anchorY = 'middle';
-            ret.letterSpacing = 0.06;
-            ret.color = chalk.getHex();
-            ret.fillOpacity = 0.32;
-            ret.position.set(scoreStart + scoreCount * scoreStep - scoreStep * 0.45, rowY, n.z + 0.165);
-            ret.userData.isText = true;
-            ret.sync();
-            group.add(ret);
-            scores.push({ text: ret, node: n, base: ret.fillOpacity });
-          }
-        }
+      if (won) {
+        const wm = createText();
+        wm.text = 'W';
+        wm.font = MONO;
+        wm.fontSize = winSize;
+        wm.anchorX = 'right';
+        wm.anchorY = 'middle';
+        wm.letterSpacing = 0.04;
+        wm.color = flare.getHex();
+        wm.fillOpacity = 0.9;
+        wm.position.set(winRight, rowY, n.z + 0.165);
+        wm.userData.isText = true;
+        wm.sync();
+        group.add(wm);
+        scores.push({ text: wm, node: n, base: wm.fillOpacity });
       }
     });
   }
@@ -495,7 +421,7 @@ export function createPlates(
     markFade[i] = m.won ? 0.95 : 0.45;
     dummy.position.set(m.x, m.y, m.node.z + 0.15);
     dummy.rotation.set(0, 0, 0);
-    dummy.scale.set(m.size, m.size, 1);
+    dummy.scale.set(m.w, m.h, 1);
     dummy.updateMatrix();
     markMesh.setMatrixAt(i, dummy.matrix);
   });
@@ -556,6 +482,22 @@ export function createPlates(
       if (s.text.visible !== vis) s.text.visible = vis;
       s.text.fillOpacity = s.base * fade;
     }
+    // Flags fade on the same terms as the names beside them. Held at full
+    // strength while the type dissolved, the far rounds read as rows of bright
+    // chips with nothing written on them — broken rather than distant.
+    let markDirty = false;
+    marks.forEach((m, i) => {
+      tmp.set(m.node.x, m.node.y, m.node.z);
+      const px = (m.h * focal) / Math.max(1, camera.position.distanceTo(tmp));
+      const lod = Math.min(1, Math.max(0, (px - 5.4) / 5.4));
+      const fade = lod * lod * (3 - 2 * lod);
+      const next = (m.won ? 0.95 : 0.45) * fade;
+      if (Math.abs((markFade[i] ?? 0) - next) > 0.004) {
+        markFade[i] = next;
+        markDirty = true;
+      }
+    });
+    if (markDirty) markGeo.getAttribute('aFade').needsUpdate = true;
   }
 
   function pick(ray: THREE.Raycaster): PlateNode | null {
@@ -621,17 +563,28 @@ export function createConnectors(layout: BracketLayout, theme: SlamTheme): THREE
   const pts: number[] = [];
   for (const c of layout.connectors) {
     const { from, to } = c;
-    const outX = from.x + (to.x - from.x) * 0.38;
-    const a = new THREE.Vector3(from.x + (from.side || 1) * (from.w / 2) * -1, from.y, from.z);
-    const start = new THREE.Vector3(from.x + Math.sign(to.x - from.x) * (from.w / 2), from.y, from.z);
-    const knee = new THREE.Vector3(outX, from.y, from.z + (to.z - from.z) * 0.45);
-    const rise = new THREE.Vector3(outX, to.y, from.z + (to.z - from.z) * 0.55);
-    const end = new THREE.Vector3(to.x - Math.sign(to.x - from.x) * (to.w / 2), to.y, to.z);
-    void a;
-    const chain = [start, knee, rise, end];
+    const outX = elbowX(from, to);
+    // One depth for the whole elbow, set behind the deeper of the two plates.
+    //
+    // Flat is what makes the corners true right angles: sloping a run in z
+    // projects it as a diagonal, so junctions came out soft and the line looked
+    // like it ran past the corner. Behind is what stops a line crossing a card
+    // face — plates are opaque and write depth, so anything back here is hidden
+    // wherever a plate covers it and emerges cleanly at the plate's edge, which
+    // is how a bracket on paper reads.
+    const z = Math.min(from.z, to.z) - PLATE_BACK;
+    const dir = Math.sign(to.x - from.x) || 1;
+    const chain = [
+      new THREE.Vector3(from.x + dir * (from.w / 2), from.y, z),
+      new THREE.Vector3(outX, from.y, z),
+      new THREE.Vector3(outX, to.y, z),
+      new THREE.Vector3(to.x - dir * (to.w / 2), to.y, z),
+    ];
     for (let i = 0; i < chain.length - 1; i++) {
-      pts.push(chain[i]!.x, chain[i]!.y, chain[i]!.z);
-      pts.push(chain[i + 1]!.x, chain[i + 1]!.y, chain[i + 1]!.z);
+      const a = chain[i]!;
+      const b = chain[i + 1]!;
+      if (a.distanceToSquared(b) < 1e-8) continue;
+      pts.push(a.x, a.y, a.z, b.x, b.y, b.z);
     }
   }
   const geo = new THREE.BufferGeometry();

@@ -14,8 +14,10 @@ export const ROUNDS = 7;
 
 /** Half the horizontal gap held open at centre for the final and the podium. */
 const CENTER_GAP = 4.6;
-/** Horizontal distance between adjacent rounds. */
+/** Horizontal distance between the semi-final column and centre. */
 const COL_W = 4.4;
+/** Clear space left between one round's plate edge and the next round's. */
+const GUTTER = 1.1;
 /** How far each earlier round retreats from the camera. */
 const DEPTH_STEP = 0.42;
 /** Total vertical extent of every round, which is what keeps parents centred. */
@@ -24,6 +26,37 @@ const SPAN = 34;
 /** Plate size per round. Later rounds are physically bigger, not just nearer. */
 const PLATE_W = [0, 3.15, 3.35, 3.6, 3.9, 4.25, 4.7, 5.6];
 const PLATE_H = [0, 0.62, 0.78, 0.98, 1.22, 1.5, 1.85, 2.3];
+
+/**
+ * Column centres, walked outward from the semi-finals so consecutive rounds
+ * always leave GUTTER of clear floor between their plate edges.
+ *
+ * A fixed pitch cannot do this. Plates get wider every round, so a constant step
+ * eventually has neighbouring columns touching, and the elbow that should stand
+ * in the gap between them ends up buried inside a card — which is why lines used
+ * to sprout from under a plate instead of leaving its edge.
+ */
+const COLUMN_X: number[] = (() => {
+  const xs: number[] = new Array(ROUNDS + 1).fill(0);
+  xs[ROUNDS] = 0;
+  xs[ROUNDS - 1] = CENTER_GAP + COL_W;
+  for (let r = ROUNDS - 2; r >= 1; r--) {
+    xs[r] = xs[r + 1]! + (PLATE_W[r]! + PLATE_W[r + 1]!) / 2 + GUTTER;
+  }
+  return xs;
+})();
+
+/**
+ * Where a connector's riser stands: the middle of the clear gutter between the
+ * two plates it joins. Derived from the real edges rather than a fraction of the
+ * span, so it stays in open space no matter how the columns are sized.
+ */
+export function elbowX(from: PlateNode, to: PlateNode): number {
+  const dir = Math.sign(to.x - from.x) || 1;
+  const leave = from.x + dir * (from.w / 2);
+  const arrive = to.x - dir * (to.w / 2);
+  return (leave + arrive) / 2;
+}
 
 export interface PlateNode {
   match: Match;
@@ -100,7 +133,7 @@ export function buildBracketLayout(draw: Draw): BracketLayout {
         match,
         round: r,
         side,
-        x: side * (CENTER_GAP + depth * COL_W),
+        x: side * COLUMN_X[r]!,
         y: rowY(inHalf, half),
         z,
         w: PLATE_W[r]!,
@@ -125,7 +158,7 @@ export function buildBracketLayout(draw: Draw): BracketLayout {
     });
   }
 
-  const outermost = CENTER_GAP + (ROUNDS - 1) * COL_W;
+  const outermost = COLUMN_X[1]! + PLATE_W[1]! / 2;
   return {
     plates,
     byMatch,

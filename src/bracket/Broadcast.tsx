@@ -12,6 +12,7 @@ import { sound } from '../audio/sound';
 import { buildCinematic, idleDrift, type Cinematic } from '../three/cinema';
 import { createPodium, PLINTH_TOP, PODIUM_SCALE } from '../three/podium';
 import { createControls, drawControlsBus, type CameraPose } from '../three/controls';
+import { bootDone } from '../boot';
 
 interface Props {
   slam: SlamId;
@@ -21,16 +22,19 @@ interface Props {
   lit: string | null;
   /** Bumped by the parent to (re)start the cinematic run. */
   playToken: number;
+  /** Bumped when a name is committed from search, to fly to their last match. */
+  focusToken: number;
   onPick: (matchId: string | null) => void;
   onRunEnd: () => void;
 }
 
-export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd }: Props) {
+export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPick, onRunEnd }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const api = useRef<{
     setLit: (id: string | null) => void;
     play: () => void;
+    reveal: () => void;
     resize: () => void;
   } | null>(null);
 
@@ -55,6 +59,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
     const plates = createPlates(layout, draw, theme);
     const connectors = createConnectors(layout, theme);
     stage.scene.add(plates.group, connectors);
+    world.warm();
 
 
     const finalMatch = draw.rounds[draw.rounds.length - 1]?.matches[0];
@@ -70,7 +75,17 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
     podium.group.position.set(layout.podium.x, layout.podium.y, layout.podium.z);
     podium.group.scale.setScalar(PODIUM_SCALE);
     stage.scene.add(podium.group);
-    podium.setReveal(1);
+
+    // ── Arrival ──────────────────────────────────────────────────────────
+    // The board is not cut to. The camera comes in from a little further out
+    // and below, the draw settles into its resting frame, and the trophy is the
+    // last thing to arrive — so the first five seconds read as a broadcast
+    // opening rather than a page that finished loading.
+    const ARRIVE = 2600;
+    let arriveAt = 0;
+    let arrived = reduced;
+    let landed = reduced;
+    podium.setReveal(reduced ? 1 : 0);
 
     const controls = createControls(stage.camera, host, layout.bounds);
     controls.fit(w / h);
@@ -85,6 +100,8 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
     let crowned = false;
     let championRun = false;
     let litId: string | null = null;
+    /** The lit player's run, kept so search can fly to where it ended. */
+    let litPath: PlateNode[] = [];
 
     const pointer = new THREE.Vector2();
     const ndc = new THREE.Vector2();
@@ -113,6 +130,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
       if (!restorePose) restorePose = controls.pose();
       plates.setExpanded(n);
       sound.select();
+      sound.expand();
       if (!reduced) sound.glide(0.85, true);
       void controls.flyTo(inspectPose(n), reduced ? 0 : 0.85);
     }
@@ -139,13 +157,26 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
       litId = id;
       clearRoute();
       if (!id) {
+        litPath = [];
         plates.setHighlight(new Set(), null);
+        controls.focusSpan(null);
         return;
       }
       const path: PlateNode[] = routeOf(layout, draw, id);
+      litPath = path;
       plates.setHighlight(new Set(path.map((n) => n.match.id)), id);
       litRounds = path.length;
-      if (path.length === 0) return;
+      if (path.length === 0) {
+        controls.focusSpan(null);
+        return;
+      }
+      // The thread runs a short stroke out past the first-round plate, so the
+      // span it has to be framed by is wider than the plates it joins.
+      const TAIL = 0.9;
+      controls.focusSpan(
+        Math.min(...path.map((n) => n.x - n.w / 2)) - TAIL,
+        Math.max(...path.map((n) => n.x + n.w / 2)) + TAIL,
+      );
       const champion = draw.rounds[draw.rounds.length - 1]?.matches[0]?.winner === id;
       championRun = champion;
       // Only the winner's thread climbs to the plinth. Everyone else's route
@@ -161,6 +192,29 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
         rest: controls.restPose(),
       });
       if (reduced) route.setProgress(1);
+    }
+
+    /**
+     * Fly to where a searched player's tournament ended.
+     *
+     * Naming someone in a 127-match board and being left to hunt for them is
+     * the whole problem search exists to solve, so the camera goes and stands
+     * at their last match — close enough to read it, wide enough to see who
+     * put them out.
+     */
+    function reveal() {
+      const n = litPath[litPath.length - 1];
+      if (!n) return;
+      plates.closeExpanded();
+      restorePose = null;
+      if (!reduced) sound.glide(0.95, true);
+      void controls.flyTo(
+        {
+          pos: new THREE.Vector3(n.x, n.y + 1.5, n.z + 12.5 + n.w * 1.15),
+          look: new THREE.Vector3(n.x, n.y, n.z),
+        },
+        reduced ? 0 : 1.15,
+      );
     }
 
     function play() {
@@ -205,7 +259,27 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
       const now = performance.now();
       const dt = clock.getDelta();
 
-      if (camOverride) {
+      // Taking the camera cancels the arrival outright: nobody should have a
+      // trophy fade in over a frame they are already flying.
+      if (!arrived && (controls.hasMoved || running)) { arrived = true; podium.setReveal(1); }
+
+      if (!arrived) {
+        if (!arriveAt) arriveAt = now;
+        const t = Math.min(1, (now - arriveAt) / ARRIVE);
+        const ease = t * t * (3 - 2 * t);
+        const rest = controls.restPose();
+        stage.camera.position.set(
+          rest.pos.x,
+          rest.pos.y - (1 - ease) * 2.8,
+          rest.pos.z + (1 - ease) * 8.4,
+        );
+        stage.camera.lookAt(rest.look);
+        // The trophy takes the back half of the arrival on its own, so the eye
+        // lands on it once the draw has stopped moving.
+        podium.setReveal(Math.max(0, Math.min(1, (t - 0.5) / 0.5)));
+        if (!landed && t > 0.62) { landed = true; sound.crown(); }
+        if (t >= 1) { arrived = true; podium.setReveal(1); }
+      } else if (camOverride) {
         stage.camera.position.copy(camOverride.pos);
         stage.camera.lookAt(camOverride.look);
       } else if (running && cinema) {
@@ -245,6 +319,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
       podium.update(now);
       plates.updateDetail(stage.camera, h);
       stage.render();
+      bootDone();
     }
     frame();
 
@@ -303,7 +378,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
     const ro = new ResizeObserver(resize);
     ro.observe(host);
 
-    api.current = { setLit, play, resize };
+    api.current = { setLit, play, reveal, resize };
     setLit(lit);
 
     return () => {
@@ -328,6 +403,10 @@ export function Broadcast({ slam, draw, theme, lit, playToken, onPick, onRunEnd 
   useEffect(() => {
     api.current?.setLit(lit);
   }, [lit]);
+
+  useEffect(() => {
+    if (focusToken > 0) api.current?.reveal();
+  }, [focusToken]);
 
   useEffect(() => {
     if (playToken > 0) api.current?.play();

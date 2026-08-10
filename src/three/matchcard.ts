@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { Draw, Match, Player, SetScore, Side } from '../data/types';
 import type { SlamTheme } from '../ui/theme';
 import type { PlateNode } from './layout';
+import { flagCell, getLoadedFlagImage, loadFlagImage } from './flag-atlas';
 
 const TEX_W = 2400;
 const TEX_H = 620;
@@ -63,22 +64,6 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath();
 }
 
-const IOC_TO_ISO2: Record<string, string> = {
-  AND: 'AD', ARG: 'AR', AUS: 'AU', AUT: 'AT', BEL: 'BE', BIH: 'BA', BOL: 'BO', BRA: 'BR',
-  BUL: 'BG', CAN: 'CA', CHI: 'CL', CHN: 'CN', COL: 'CO', CRO: 'HR', CZE: 'CZ', DEN: 'DK',
-  EGY: 'EG', ESP: 'ES', FIN: 'FI', FRA: 'FR', GBR: 'GB', GEO: 'GE', GER: 'DE', GRE: 'GR',
-  HKG: 'HK', HUN: 'HU', INA: 'ID', ITA: 'IT', JPN: 'JP', KAZ: 'KZ', KOR: 'KR', LAT: 'LV',
-  LTU: 'LT', MEX: 'MX', MKD: 'MK', MNE: 'ME', MON: 'MC', NED: 'NL', NOR: 'NO', NZL: 'NZ',
-  PAR: 'PY', PER: 'PE', PHI: 'PH', POL: 'PL', POR: 'PT', ROU: 'RO', SRB: 'RS', SLO: 'SI',
-  SUI: 'CH', SVK: 'SK', SWE: 'SE', THA: 'TH', TUR: 'TR', UKR: 'UA', USA: 'US', UZB: 'UZ',
-};
-
-function flagEmoji(country: string | null | undefined): string {
-  const iso = IOC_TO_ISO2[country?.toUpperCase() ?? ''];
-  if (!iso) return '◼';
-  return [...iso].map((c) => String.fromCodePoint(127397 + c.charCodeAt(0))).join('');
-}
-
 function setFont(ctx: CanvasRenderingContext2D, weight: number, px: number, family = 'Geist, Inter, system-ui, sans-serif'): void {
   ctx.font = `${weight} ${px}px ${family}`;
 }
@@ -97,6 +82,7 @@ function setsNeeded(draw: Draw): number {
 
 function isRetirement(draw: Draw, match: Match): boolean {
   if (!match.winner) return false;
+  if (match.sides.some((s) => s.sets.some((x) => x.retired))) return true;
   const winner = match.sides.find((s) => s.player === match.winner);
   return !!winner && winner.sets.filter((s) => s.won).length < setsNeeded(draw) && winner.sets.length > 0;
 }
@@ -130,8 +116,17 @@ function drawSetScore(
   }
   setFont(ctx, set.won ? 700 : 480, 74, 'Geist Mono, ui-monospace, SFMono-Regular, monospace');
   ctx.fillStyle = muted ? 'rgba(255,255,255,0.46)' : color;
+  // A missing games count is a gap in the record, not a zero. Say so with the
+  // same dash an unplayed set gets rather than printing whatever it holds.
+  if (!Number.isFinite(set.games)) {
+    setFont(ctx, 500, 54, 'Geist Mono, ui-monospace, SFMono-Regular, monospace');
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.fillText('\u2013', x, y);
+    ctx.textAlign = 'left';
+    return;
+  }
   ctx.fillText(String(set.games), x, y);
-  if (set.tiebreak !== null) {
+  if (set.tiebreak !== null && Number.isFinite(set.tiebreak)) {
     const w = ctx.measureText(String(set.games)).width;
     setFont(ctx, 620, 30, 'Geist Mono, ui-monospace, SFMono-Regular, monospace');
     ctx.fillStyle = muted ? 'rgba(255,255,255,0.34)' : color;
@@ -142,17 +137,34 @@ function drawSetScore(
 }
 
 function drawFlagPill(ctx: CanvasRenderingContext2D, player: Player | undefined, x: number, cy: number, theme: SlamTheme): void {
-  roundRect(ctx, x, cy - 32, 104, 64, 20);
+  const pw = 104;
+  const ph = 64;
+  roundRect(ctx, x, cy - 32, pw, ph, 20);
   ctx.fillStyle = alpha(theme.chalk, 0.09);
   ctx.fill();
+
+  const cell = flagCell(player?.country);
+  const fh = 46;
+  const fw = fh * (4 / 3);
+  const fx = x + (pw - fw) / 2;
+  const fy = cy - fh / 2;
+  const img = getLoadedFlagImage();
+
+  ctx.save();
+  roundRect(ctx, fx, fy, fw, fh, 11);
+  ctx.clip();
+  if (img) {
+    ctx.drawImage(img, cell.x, cell.y, cell.w, cell.h, fx, fy, fw, fh);
+  } else {
+    ctx.fillStyle = '#5b636f';
+    ctx.fillRect(fx, fy, fw, fh);
+  }
+  ctx.restore();
+
+  roundRect(ctx, fx, fy, fw, fh, 11);
   ctx.strokeStyle = alpha(theme.chalk, 0.18);
   ctx.lineWidth = 1.5;
   ctx.stroke();
-  setFont(ctx, 600, 34, 'Apple Color Emoji, Segoe UI Emoji, sans-serif');
-  ctx.fillStyle = theme.chalk;
-  ctx.textAlign = 'center';
-  ctx.fillText(flagEmoji(player?.country), x + 52, cy + 12);
-  ctx.textAlign = 'left';
 }
 
 function colX(i: number, maxSets: number): number {
@@ -344,6 +356,21 @@ export function createMatchCard(draw: Draw, theme: SlamTheme, reduced: boolean):
       from: 0,
     };
     apply(reduced ? 1 : 0);
+  }
+
+  // The flag atlas loads asynchronously; repaint the open card once it arrives
+  // so the pills never keep their neutral placeholder.
+  if (!getLoadedFlagImage()) {
+    loadFlagImage()
+      .then(() => {
+        if (!state || state.phase === 'closing' || state.phase === 'closed') return;
+        const texture = paintTexture(draw, state.node, theme);
+        state.texture.dispose();
+        state.texture = texture;
+        mat.map = texture;
+        mat.needsUpdate = true;
+      })
+      .catch(() => {});
   }
 
   function close(): void {

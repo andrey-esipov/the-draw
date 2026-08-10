@@ -5,6 +5,7 @@ import type { SlamTheme } from '../ui/theme';
 export interface Court {
   group: THREE.Group;
   setSlam: (slam: SlamId, theme: SlamTheme) => void;
+  warm: (slam: SlamId, theme: SlamTheme) => void;
   dispose: () => void;
 }
 
@@ -32,7 +33,11 @@ const PLANE_L_M = 66;
 const NET_POST_HALF = DOUBLES_HALF + 0.92;
 const NET_CENTRE_H = 0.914;
 const NET_POST_H = 1.07;
-const NET_BAND_H = 0.12;
+// Real ITF headband is 5–6.3cm doubled canvas; the mesh openings are ~4.5cm.
+const NET_BAND_H = 0.062;
+const NET_MESH_GAP = 0.006;
+const NET_OPENING = 0.045;
+const NET_STRAP_W = 0.05;
 
 interface SurfacePalette {
   playing: string;
@@ -441,6 +446,39 @@ function makeSagStrip(topOffset: number, bottomOffset: number, zOffset: number):
   return geo;
 }
 
+/**
+ * The mesh hangs from the sagging cord but its bottom tape rests along the
+ * court, so the top follows the catenary while the bottom stays near flat —
+ * the fabric is tallest at the posts and shortest at the pulled-down centre.
+ */
+function makeNetMeshStrip(topOffset: number, bottomY: number): THREE.BufferGeometry {
+  const segs = 96;
+  const pos: number[] = [];
+  const uv: number[] = [];
+  const idx: number[] = [];
+  for (let i = 0; i <= segs; i++) {
+    const t = i / segs;
+    const x = -NET_POST_HALF + t * NET_POST_HALF * 2;
+    const top = netTop(x) + topOffset;
+    // A slight settle in the bottom tape toward the centre reads as slack.
+    const bottom = bottomY + (1 - Math.min(1, Math.abs(x) / NET_POST_HALF)) * -0.004;
+    pos.push(x, top, 0, x, bottom, 0);
+    // v runs 0 at the bottom tape to 1 just under the headband; the fabric
+    // height changes across x, so squares stretch a touch near the posts.
+    uv.push(t, 1, t, 0);
+  }
+  for (let i = 0; i < segs; i++) {
+    const a = i * 2;
+    idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(idx);
+  geo.computeVertexNormals();
+  return geo;
+}
+
 function makeCordGeometry(offset: number, radius: number): THREE.TubeGeometry {
   const pts: THREE.Vector3[] = [];
   for (let i = 0; i <= 48; i++) {
@@ -451,38 +489,173 @@ function makeCordGeometry(offset: number, radius: number): THREE.TubeGeometry {
   return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 96, radius, 8, false);
 }
 
-function buildNetMeshTexture(): THREE.CanvasTexture {
+/**
+ * A woven net: square openings of ~4.5cm knotted from pale cord with real
+ * thickness. The tile repeats horizontally; vertically it spans the whole
+ * fabric so the weave can thicken and darken toward the bottom tape. Returns a
+ * colour+alpha canvas and a matching normal map so the raking key catches the
+ * round of each cord.
+ */
+function buildNetMeshTextures(): { color: THREE.CanvasTexture; normal: THREE.CanvasTexture } {
+  const W = 256;
+  const H = 1024;
+  const cols = 6; // openings per horizontal tile
+  const rows = 26; // openings over the full fabric height
+  const cw = W / cols;
+  const rh = H / rows;
+  const cord = 3.7; // cord half-thickness in px
+
   const c = document.createElement('canvas');
-  c.width = 1024;
-  c.height = 256;
+  c.width = W;
+  c.height = H;
   const g = c.getContext('2d')!;
-  g.clearRect(0, 0, c.width, c.height);
-  g.strokeStyle = 'rgba(235,241,238,0.42)';
-  g.lineWidth = 1.1;
-  for (let x = 0; x < c.width; x += 20) {
-    g.beginPath();
-    g.moveTo(x, 0);
-    g.lineTo(x + 28, c.height);
-    g.stroke();
-    g.beginPath();
-    g.moveTo(x + 28, 0);
-    g.lineTo(x, c.height);
-    g.stroke();
+  const r = rand(80231);
+
+  // Height field of the cord, used for both alpha and the normal map.
+  const hf = new Float32Array(W * H);
+  const put = (x: number, y: number, v: number) => {
+    const xi = ((x % W) + W) % W;
+    const yi = Math.max(0, Math.min(H - 1, y));
+    const i = (yi | 0) * W + (xi | 0);
+    if (v > hf[i]!) hf[i] = v;
+  };
+  const stamp = (cx: number, cy: number, half: number) => {
+    const h0 = Math.ceil(half + 1);
+    for (let dy = -h0; dy <= h0; dy++) {
+      for (let dx = -h0; dx <= h0; dx++) {
+        const d = Math.hypot(dx, dy);
+        if (d > half + 0.75) continue;
+        // Rounded cross-section: full at centre, feathered at the edge.
+        const v = Math.max(0, 1 - (d / (half + 0.75)) ** 1.6);
+        put(cx + dx, cy + dy, v);
+      }
+    }
+  };
+
+  // Vertical cords.
+  for (let cx = 0; cx <= cols; cx++) {
+    const bx = cx * cw;
+    for (let y = 0; y < H; y++) {
+      const jitter = Math.sin(y * 0.09 + cx) * 0.6 + (r() - 0.5) * 0.5;
+      stamp(bx + jitter, y, cord);
+    }
   }
-  g.strokeStyle = 'rgba(235,241,238,0.22)';
-  g.lineWidth = 1;
-  for (let y = 8; y < c.height; y += 22) {
-    g.beginPath();
-    g.moveTo(0, y);
-    g.lineTo(c.width, y + Math.sin(y * 0.05) * 1.4);
-    g.stroke();
+  // Horizontal cords.
+  for (let ry = 0; ry <= rows; ry++) {
+    const by = ry * rh;
+    for (let x = 0; x < W; x++) {
+      const jitter = Math.sin(x * 0.11 + ry) * 0.6 + (r() - 0.5) * 0.5;
+      stamp(x, by + jitter, cord);
+    }
   }
+  // Knots where cords cross.
+  for (let cx = 0; cx <= cols; cx++) {
+    for (let ry = 0; ry <= rows; ry++) {
+      stamp(cx * cw, ry * rh, cord + 1.9);
+    }
+  }
+
+  // Bottom tape/hem: a solid darker band the fabric ends into.
+  const hemTop = H - rh * 0.9;
+  for (let y = Math.floor(hemTop); y < H; y++) {
+    for (let x = 0; x < W; x++) hf[y * W + x] = 1;
+  }
+
+  // Paint colour + alpha from the height field, densifying toward the bottom.
+  const img = g.createImageData(W, H);
+  for (let y = 0; y < H; y++) {
+    const v = y / H; // 0 top → 1 bottom
+    const dens = 0.72 + v * 0.28; // lower mesh reads denser
+    const shade = 1 - v * 0.32; // and a touch darker near the ground
+    const inHem = y >= hemTop;
+    for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      const h = hf[i]!;
+      const o = i * 4;
+      const lum = inHem ? 150 : Math.round(224 * shade);
+      img.data[o] = lum;
+      img.data[o + 1] = lum + 4;
+      img.data[o + 2] = lum;
+      img.data[o + 3] = Math.round(Math.min(1, h * (inHem ? 1 : 1.2)) * 255 * (inHem ? 1 : dens));
+    }
+  }
+  g.putImageData(img, 0, 0);
+
+  const color = new THREE.CanvasTexture(c);
+  color.colorSpace = THREE.SRGBColorSpace;
+  color.anisotropy = 8;
+  color.wrapS = THREE.RepeatWrapping;
+  color.wrapT = THREE.ClampToEdgeWrapping;
+  color.needsUpdate = true;
+
+  // Normal map from the height gradient — cords become rounded ridges.
+  const nc = document.createElement('canvas');
+  nc.width = W;
+  nc.height = H;
+  const ng = nc.getContext('2d')!;
+  const nimg = ng.createImageData(W, H);
+  const at = (x: number, y: number) => hf[((y + H) % H) * W + ((x + W) % W)]!;
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const dzdx = (at(x + 1, y) - at(x - 1, y)) * 2.2;
+      const dzdy = (at(x, y + 1) - at(x, y - 1)) * 2.2;
+      let nx = -dzdx;
+      let ny = -dzdy;
+      const nz = 1;
+      const inv = 1 / Math.hypot(nx, ny, nz);
+      nx *= inv;
+      ny *= inv;
+      const o = (y * W + x) * 4;
+      nimg.data[o] = Math.round((nx * 0.5 + 0.5) * 255);
+      nimg.data[o + 1] = Math.round((ny * 0.5 + 0.5) * 255);
+      nimg.data[o + 2] = Math.round((nz * inv * 0.5 + 0.5) * 255);
+      nimg.data[o + 3] = 255;
+    }
+  }
+  ng.putImageData(nimg, 0, 0);
+  const normal = new THREE.CanvasTexture(nc);
+  normal.colorSpace = THREE.NoColorSpace;
+  normal.anisotropy = 8;
+  normal.wrapS = THREE.RepeatWrapping;
+  normal.wrapT = THREE.ClampToEdgeWrapping;
+  normal.needsUpdate = true;
+
+  return { color, normal };
+}
+
+/** White canvas headband texture: doubled tape with a soft top fold shadow. */
+function buildBandTexture(): THREE.CanvasTexture {
+  const W = 512;
+  const H = 32;
+  const c = document.createElement('canvas');
+  c.width = W;
+  c.height = H;
+  const g = c.getContext('2d')!;
+  const r = rand(4451);
+  g.fillStyle = '#eef1ec';
+  g.fillRect(0, 0, W, H);
+  // The fold: brighter along the top lip, a soft core shadow under it.
+  const grd = g.createLinearGradient(0, 0, 0, H);
+  grd.addColorStop(0, 'rgba(255,255,255,0.55)');
+  grd.addColorStop(0.28, 'rgba(255,255,255,0)');
+  grd.addColorStop(0.52, 'rgba(0,0,0,0.14)');
+  grd.addColorStop(0.62, 'rgba(0,0,0,0)');
+  grd.addColorStop(1, 'rgba(0,0,0,0.10)');
+  g.fillStyle = grd;
+  g.fillRect(0, 0, W, H);
+  // Faint weave along the length so it isn't a dead flat white.
+  g.globalAlpha = 0.05;
+  for (let i = 0; i < 700; i++) {
+    g.fillStyle = r() > 0.5 ? '#ffffff' : '#000000';
+    g.fillRect(r() * W, r() * H, 1, 1);
+  }
+  g.globalAlpha = 1;
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.ClampToEdgeWrapping;
-  tex.repeat.set(1, 1);
+  tex.repeat.set(48, 1);
   tex.needsUpdate = true;
   return tex;
 }
@@ -495,99 +668,133 @@ function createNet(theme: SlamTheme): { group: THREE.Group; dispose: () => void;
     return x;
   };
 
-  const meshTexture = track(buildNetMeshTexture());
+  const openingsAcross = Math.round((NET_POST_HALF * 2) / NET_OPENING);
+  const meshRepeatX = Math.max(1, Math.round(openingsAcross / 6));
+
+  const { color: meshColor, normal: meshNormal } = buildNetMeshTextures();
+  track(meshColor);
+  track(meshNormal);
+  meshColor.repeat.set(meshRepeatX, 1);
+  meshNormal.repeat.set(meshRepeatX, 1);
+
   const meshMat = track(new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(theme.chalkDim).lerp(new THREE.Color('#ffffff'), 0.16),
-    map: meshTexture,
-    alphaMap: meshTexture,
+    color: new THREE.Color(theme.chalkDim).lerp(new THREE.Color('#ffffff'), 0.46),
+    map: meshColor,
+    alphaMap: meshColor,
+    normalMap: meshNormal,
+    normalScale: new THREE.Vector2(0.5, 0.5),
     transparent: true,
-    opacity: 0.42,
-    alphaTest: 0.06,
+    opacity: 1,
+    alphaTest: 0.14,
     side: THREE.DoubleSide,
     depthWrite: false,
     depthTest: false,
-    roughness: 0.82,
+    roughness: 0.8,
     metalness: 0,
-    emissive: new THREE.Color(theme.chalkDim).multiplyScalar(0.18),
-    emissiveIntensity: 0.34,
-    fog: false,
-  }));
-  const netMesh = new THREE.Mesh(track(makeSagStrip(-NET_BAND_H, -NET_CENTRE_H + 0.07, 0)), meshMat);
-  netMesh.renderOrder = -2;
-  group.add(netMesh);
-
-  const bandMat = track(new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(theme.chalk).lerp(new THREE.Color(theme.groundDeep), 0.55),
-    transparent: true,
-    opacity: 0.68,
-    roughness: 0.76,
-    metalness: 0,
-    emissive: new THREE.Color(theme.chalk).multiplyScalar(0.16),
-    emissiveIntensity: 0.38,
-    side: THREE.DoubleSide,
-    depthWrite: false,
-    depthTest: false,
-    fog: false,
-  }));
-  const band = new THREE.Mesh(track(makeSagStrip(0.012, -NET_BAND_H, -0.006)), bandMat);
-  band.renderOrder = -1;
-  group.add(band);
-
-  const cordMat = track(new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(theme.chalk).lerp(new THREE.Color(theme.groundDeep), 0.42),
-    transparent: true,
-    opacity: 0.72,
-    roughness: 0.62,
-    metalness: 0,
-    depthWrite: false,
-    depthTest: false,
-    emissive: new THREE.Color(theme.chalk).multiplyScalar(0.18),
+    emissive: new THREE.Color(theme.chalkDim).multiplyScalar(0.16),
     emissiveIntensity: 0.42,
     fog: false,
   }));
-  const topCord = new THREE.Mesh(track(makeCordGeometry(0.02, 0.012)), cordMat);
-  topCord.renderOrder = 0;
-  group.add(topCord);
+  const netMesh = new THREE.Mesh(track(makeNetMeshStrip(-NET_BAND_H, NET_MESH_GAP)), meshMat);
+  netMesh.renderOrder = -3;
+  group.add(netMesh);
 
-  const postMat = track(new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(theme.groundDeep).lerp(new THREE.Color(theme.chalk), 0.22),
-    roughness: 0.45,
-    metalness: 0.55,
+  const bandTexture = track(buildBandTexture());
+  const bandMat = track(new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color(theme.chalk).lerp(new THREE.Color('#ffffff'), 0.2),
+    map: bandTexture,
     transparent: true,
-    opacity: 0.58,
-    fog: false,
-  }));
-  const postGeo = track(new THREE.CylinderGeometry(0.045, 0.052, NET_POST_H + 0.08, 12, 1));
-  for (const side of [-1, 1]) {
-    const post = new THREE.Mesh(postGeo, postMat);
-    post.position.set(side * NET_POST_HALF, (NET_POST_H + 0.08) / 2 - 0.02, 0);
-    group.add(post);
-  }
-
-  const strapMat = track(new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(theme.chalk).lerp(new THREE.Color(theme.groundDeep), 0.68),
-    transparent: true,
-    opacity: 0.64,
-    roughness: 0.82,
+    opacity: 0.98,
+    roughness: 0.7,
+    metalness: 0,
+    emissive: new THREE.Color(theme.chalk).multiplyScalar(0.1),
+    emissiveIntensity: 0.28,
     side: THREE.DoubleSide,
     depthWrite: false,
     depthTest: false,
     fog: false,
   }));
-  const strapGeo = track(new THREE.PlaneGeometry(0.065, NET_CENTRE_H - 0.04));
-  const strap = new THREE.Mesh(strapGeo, strapMat);
-  strap.position.set(0, (NET_CENTRE_H - 0.04) / 2 + 0.035, -0.012);
-  group.add(strap);
+  // The band is a shallow forward-tilted box so it reads as doubled canvas, not
+  // a decal: a front face the camera sees and a thin top the light rides.
+  const bandFront = new THREE.Mesh(track(makeSagStrip(0.006, -NET_BAND_H, 0.02)), bandMat);
+  bandFront.renderOrder = -1;
+  group.add(bandFront);
+  const bandBack = new THREE.Mesh(track(makeSagStrip(0.006, -NET_BAND_H, -0.02)), bandMat);
+  bandBack.renderOrder = -1;
+  group.add(bandBack);
+  const bandTop = new THREE.Mesh(track(makeCordGeometry(0.006, 0.02)), bandMat);
+  bandTop.renderOrder = -1;
+  group.add(bandTop);
+
+  // The steel cable the net hangs from, peeking along the very top of the band.
+  const cordMat = track(new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color(theme.chalk).lerp(new THREE.Color(theme.groundDeep), 0.5),
+    roughness: 0.35,
+    metalness: 0.8,
+    emissive: new THREE.Color(theme.chalk).multiplyScalar(0.06),
+    emissiveIntensity: 0.2,
+    fog: false,
+  }));
+  const topCord = new THREE.Mesh(track(makeCordGeometry(0.028, 0.006)), cordMat);
+  topCord.renderOrder = 0;
+  group.add(topCord);
+
+  // Square metal posts, 1.07m, set 0.914m outside the doubles line.
+  const postMat = track(new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color(theme.groundDeep).lerp(new THREE.Color(theme.chalk), 0.34),
+    roughness: 0.34,
+    metalness: 0.72,
+    envMapIntensity: 0.6,
+    emissive: new THREE.Color(theme.groundDeep).multiplyScalar(0.4),
+    emissiveIntensity: 0.4,
+    fog: false,
+  }));
+  const postGeo = track(new THREE.BoxGeometry(0.1, NET_POST_H, 0.1));
+  const capGeo = track(new THREE.BoxGeometry(0.13, 0.05, 0.13));
+  for (const side of [-1, 1]) {
+    const post = new THREE.Mesh(postGeo, postMat);
+    post.position.set(side * NET_POST_HALF, NET_POST_H / 2, 0);
+    group.add(post);
+    const cap = new THREE.Mesh(capGeo, postMat);
+    cap.position.set(side * NET_POST_HALF, NET_POST_H + 0.02, 0);
+    group.add(cap);
+  }
+
+  // The centre strap: a white band pulling the middle down to 0.914m. One of
+  // the most recognisable details on a real court.
+  const strapMat = track(new THREE.MeshPhysicalMaterial({
+    color: new THREE.Color(theme.chalk).lerp(new THREE.Color('#ffffff'), 0.28),
+    transparent: true,
+    opacity: 0.98,
+    roughness: 0.78,
+    metalness: 0,
+    emissive: new THREE.Color(theme.chalk).multiplyScalar(0.12),
+    emissiveIntensity: 0.32,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    depthTest: false,
+    fog: false,
+  }));
+  const strapH = NET_CENTRE_H + 0.03;
+  const strapGeo = track(new THREE.PlaneGeometry(NET_STRAP_W, strapH));
+  for (const z of [0.026, -0.026]) {
+    const strap = new THREE.Mesh(strapGeo, strapMat);
+    strap.position.set(0, strapH / 2, z);
+    strap.renderOrder = 1;
+    group.add(strap);
+  }
 
   function setTheme(next: SlamTheme): void {
-    meshMat.color.copy(new THREE.Color(next.chalkDim).lerp(new THREE.Color('#ffffff'), 0.16));
-    meshMat.emissive.copy(new THREE.Color(next.chalkDim).multiplyScalar(0.18));
-    bandMat.color.copy(new THREE.Color(next.chalk).lerp(new THREE.Color(next.groundDeep), 0.55));
-    bandMat.emissive.copy(new THREE.Color(next.chalk).multiplyScalar(0.16));
-    cordMat.color.copy(new THREE.Color(next.chalk).lerp(new THREE.Color(next.groundDeep), 0.42));
-    cordMat.emissive.copy(new THREE.Color(next.chalk).multiplyScalar(0.18));
-    postMat.color.copy(new THREE.Color(next.groundDeep).lerp(new THREE.Color(next.chalk), 0.22));
-    strapMat.color.copy(new THREE.Color(next.chalk).lerp(new THREE.Color(next.groundDeep), 0.68));
+    meshMat.color.copy(new THREE.Color(next.chalkDim).lerp(new THREE.Color('#ffffff'), 0.46));
+    meshMat.emissive.copy(new THREE.Color(next.chalkDim).multiplyScalar(0.16));
+    bandMat.color.copy(new THREE.Color(next.chalk).lerp(new THREE.Color('#ffffff'), 0.2));
+    bandMat.emissive.copy(new THREE.Color(next.chalk).multiplyScalar(0.1));
+    cordMat.color.copy(new THREE.Color(next.chalk).lerp(new THREE.Color(next.groundDeep), 0.5));
+    cordMat.emissive.copy(new THREE.Color(next.chalk).multiplyScalar(0.06));
+    postMat.color.copy(new THREE.Color(next.groundDeep).lerp(new THREE.Color(next.chalk), 0.34));
+    postMat.emissive.copy(new THREE.Color(next.groundDeep).multiplyScalar(0.4));
+    strapMat.color.copy(new THREE.Color(next.chalk).lerp(new THREE.Color('#ffffff'), 0.28));
+    strapMat.emissive.copy(new THREE.Color(next.chalk).multiplyScalar(0.12));
   }
 
   return { group, setTheme, dispose: () => disposables.forEach((d) => d.dispose()) };
@@ -640,15 +847,21 @@ export function createCourt(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
 
   const textures = new Map<string, SurfaceTextures>();
 
-  function setSlam(slam: SlamId, theme: SlamTheme): void {
-    const key = surfaceKey(slam);
-    const palette = PALETTES[key] ?? PALETTES.wimbledon!;
+  function surfaceFor(key: string, theme: SlamTheme): SurfaceTextures {
     let tex = textures.get(key);
     if (!tex) {
       tex = buildSurfaceTextures(key, theme);
-      for (const t of [tex.color, tex.bump, tex.roughness]) t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      const aniso = renderer.capabilities.getMaxAnisotropy();
+      for (const t of [tex.color, tex.bump, tex.roughness]) t.anisotropy = aniso;
       textures.set(key, tex);
     }
+    return tex;
+  }
+
+  function setSlam(slam: SlamId, theme: SlamTheme): void {
+    const key = surfaceKey(slam);
+    const palette = PALETTES[key] ?? PALETTES.wimbledon!;
+    const tex = surfaceFor(key, theme);
     mat.map = tex.color;
     mat.bumpMap = tex.bump;
     mat.roughnessMap = tex.roughness;
@@ -663,6 +876,9 @@ export function createCourt(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
   return {
     group,
     setSlam,
+    warm: (slam, theme) => {
+      surfaceFor(surfaceKey(slam), theme);
+    },
     dispose: () => {
       textures.forEach((t) => {
         t.color.dispose();

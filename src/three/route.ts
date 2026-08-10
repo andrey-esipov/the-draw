@@ -3,7 +3,7 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import type { SlamTheme } from '../ui/theme';
-import type { PlateNode } from './layout';
+import { elbowX, type PlateNode } from './layout';
 import { BLOOM_LAYER } from './stage';
 
 export interface Route {
@@ -21,15 +21,16 @@ const EPS = 0.0001;
 const FACE_LIFT = 0.142;
 
 function connectorChain(from: PlateNode, to: PlateNode): THREE.Vector3[] {
-  const outX = from.x + (to.x - from.x) * 0.38;
+  const outX = elbowX(from, to);
   const direction = Math.sign(to.x - from.x) || 1;
-  const fz = from.z + FACE_LIFT;
-  const tz = to.z + FACE_LIFT;
+  // Flat in z for the same reason the connectors are: a run that slopes in
+  // depth projects as a diagonal and the corner stops being square.
+  const z = Math.max(from.z, to.z) + FACE_LIFT;
   return [
-    new THREE.Vector3(from.x + direction * (from.w / 2), from.y, fz),
-    new THREE.Vector3(outX, from.y, fz + (tz - fz) * 0.45),
-    new THREE.Vector3(outX, to.y, fz + (tz - fz) * 0.55),
-    new THREE.Vector3(to.x - direction * (to.w / 2), to.y, tz),
+    new THREE.Vector3(from.x + direction * (from.w / 2), from.y, z),
+    new THREE.Vector3(outX, from.y, z),
+    new THREE.Vector3(outX, to.y, z),
+    new THREE.Vector3(to.x - direction * (to.w / 2), to.y, z),
   ];
 }
 

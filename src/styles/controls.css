@@ -32,6 +32,27 @@
   transform: translateX(-50%) translateY(8px);
 }
 
+/* At narrow widths the board fills the frame and this lands on the lit court,
+   where a hairline serif has nothing to sit against. A soft oval of ground,
+   with no edge to find, carries it for the few seconds it exists. */
+.camctl-hint::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 148%;
+  height: 340%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    color-mix(in srgb, var(--ground-deep) 76%, #000) 0%,
+    color-mix(in srgb, var(--ground-deep) 34%, transparent) 52%,
+    transparent 78%
+  );
+}
+
 @keyframes camctl-hint-in {
   from {
     opacity: 0;

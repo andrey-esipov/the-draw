@@ -22,6 +22,8 @@ export interface SetScore {
   games: number;
   tiebreak: number | null;
   won: boolean;
+  /** The set the loser retired in. Its games count is where they stopped. */
+  retired?: boolean;
 }
 
 export interface Side {

@@ -851,14 +851,65 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     height: 100%;
     z-index: 5;
     pointer-events: none;
-    /* Radial, not linear: a rectangle of tinted black against true black leaves
-       a visible corner seam wherever it ends. This has no edge to find. */
+    background: none;
+  }
+
+  /* The board runs full width underneath, so the type needs something to sit on.
+     A masked blur softens the cards behind the words without drawing an edge,
+     and the radial tint carries the contrast the rest of the way. */
+  .rail::before,
+  .forthcoming::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    backdrop-filter: blur(11px) saturate(0.8);
+    -webkit-backdrop-filter: blur(11px) saturate(0.8);
     background: radial-gradient(
-      120% 78% at 0% 50%,
-      color-mix(in srgb, var(--ground-deep) 82%, #000) 0%,
-      color-mix(in srgb, var(--ground-deep) 34%, transparent) 46%,
-      transparent 78%
+      132% 86% at 0% 50%,
+      color-mix(in srgb, var(--ground-deep) 94%, #000) 0%,
+      color-mix(in srgb, var(--ground-deep) 74%, transparent) 38%,
+      color-mix(in srgb, var(--ground-deep) 26%, transparent) 66%,
+      transparent 88%
     );
+    -webkit-mask-image: radial-gradient(
+      132% 86% at 0% 50%,
+      #000 0%,
+      #000 38%,
+      rgba(0, 0, 0, 0.45) 66%,
+      transparent 88%
+    );
+    mask-image: radial-gradient(
+      132% 86% at 0% 50%,
+      #000 0%,
+      #000 38%,
+      rgba(0, 0, 0, 0.45) 66%,
+      transparent 88%
+    );
+  }
+
+  /* Same story for the draw that has not been made: its 306px top padding and
+     100%-height column assume a two-column stage. As a row it gets ~340px and
+     spills its title and player list behind the mandala. Overlay it instead. */
+  .forthcoming {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: min(348px, 66vw);
+    height: 100%;
+    padding: 26px 18px 26px var(--pad);
+    justify-content: flex-start;
+    z-index: 5;
+  }
+  .forthcoming .forth-note { max-width: none; }
+  .forthcoming .form-list {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    /* The list is taller than the column, so its last row is always cut. Fading
+       the cut says "keep going" instead of looking like a rendering mistake. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 88%, transparent 100%);
   }
 
   .is-radial .mark { left: 0; right: 0; }
@@ -1180,10 +1231,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 @keyframes hollow-breathe {
   0%,
   100% {
-    stroke-opacity: 0.17;
+    stroke-opacity: 0.28;
   }
   50% {
-    stroke-opacity: 0.32;
+    stroke-opacity: 0.46;
   }
 }
 
@@ -1547,6 +1598,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    not a paragraph of instruction. */
 @media (max-width: 1180px) {
   .stage .rail .rail-invite { display: none; }
+  /* The search pill already says "Find a player" and the camera hint already
+     teaches the board. In board mode this caption is the same instruction a
+     third time, and its rail-offset origin lands it under the run bar. */
+  .stage .compact-note { display: none; }
 }
 
 /* Short landscape: no vertical room for teaching chrome or camera presets. */
@@ -1563,4 +1618,54 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    section with room to speak. */
 @media (max-width: 860px) and (orientation: portrait), (max-width: 620px) {
   .stage .rail .rail-invite { display: block; }
+}
+
+/* ── The masthead stands down ─────────────────────────────────────
+   At rest the title is the piece's front page and it owns the top of the
+   frame. Once the camera is taken, the board underneath it is the point, and a
+   centred serif display sitting across the plates a viewer just flew in to
+   read is the single loudest thing wrong with the screen. So it retreats to a
+   small top-left lockup and gives the frame back. */
+.mark {
+  transition:
+    transform 620ms var(--ease-soft),
+    opacity 620ms var(--ease-soft);
+}
+.mark-word,
+.mark-meta,
+.mark-rule {
+  transition: opacity 420ms var(--ease-soft);
+}
+.mark-slam {
+  transition:
+    font-size 620ms var(--ease-soft),
+    opacity 420ms var(--ease-soft);
+}
+
+.is-flown .mark {
+  justify-items: start;
+  text-align: left;
+  padding-left: var(--pad);
+  gap: 0;
+}
+.is-flown .mark-word { opacity: 0.34; }
+.is-flown .mark-slam {
+  --type-display-size: 21px;
+  --type-display-settings: 'opsz' 30, 'wght' 500;
+  margin-top: 2px;
+  opacity: 0.72;
+}
+.is-flown .mark-rule,
+.is-flown .mark-meta {
+  opacity: 0;
+  height: 0;
+  margin-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark,
+  .mark-word,
+  .mark-meta,
+  .mark-rule,
+  .mark-slam { transition: none; }
 }

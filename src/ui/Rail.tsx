@@ -42,9 +42,11 @@ export function Rail({ index, theme, player, traced }: Props) {
         )}
         {player.seed && <span className="seed">Seed {player.seed}</span>}
         {player.country && <span className="country">{player.country}</span>}
-        <span className="outcome" style={{ color: isChampion ? theme.flare : undefined }}>
-          {outcome(steps, isChampion)}
-        </span>
+        {(traced || !isChampion) && (
+          <span className="outcome" style={{ color: isChampion ? theme.flare : undefined }}>
+            {outcome(steps, isChampion)}
+          </span>
+        )}
       </p>
 
       {!traced && (

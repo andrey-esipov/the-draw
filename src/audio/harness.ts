@@ -162,6 +162,7 @@ async function run() {
   const rows: Metrics[] = [];
   rows.push(await renderOneShot('hover', 1.6, (e) => e.hover()));
   rows.push(await renderOneShot('select', 3.2, (e) => e.select()));
+  rows.push(await renderOneShot('expand', 1.6, (e) => e.expand()));
   rows.push(await renderOneShot('dismiss', 3.0, (e) => e.dismiss()));
   rows.push(await renderOneShot('glide in', 1.6, (e) => e.glide(0.85, true)));
   rows.push(await renderOneShot('glide out', 1.6, (e) => e.glide(0.9, false)));
