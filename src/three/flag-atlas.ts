@@ -31,6 +31,14 @@ export function flagCell(country: string | null | undefined): FlagCell {
 let imagePromise: Promise<HTMLImageElement> | null = null;
 let loadedImage: HTMLImageElement | null = null;
 
+/**
+ * The generated atlas records a root-absolute path. That only resolves when the
+ * piece is served from the root of a domain; under a project subpath it walks
+ * off the top of the site and 404s. Every other asset here goes through
+ * BASE_URL, so this does too.
+ */
+const ATLAS_URL = `${import.meta.env.BASE_URL}${FLAG_ATLAS.src.replace(/^\/+/, '')}`;
+
 export function loadFlagImage(): Promise<HTMLImageElement> {
   if (imagePromise) return imagePromise;
   imagePromise = new Promise((resolve, reject) => {
@@ -40,8 +48,8 @@ export function loadFlagImage(): Promise<HTMLImageElement> {
       loadedImage = img;
       resolve(img);
     };
-    img.onerror = () => reject(new Error('failed to load flag atlas'));
-    img.src = FLAG_ATLAS.src;
+    img.onerror = () => reject(new Error(`failed to load flag atlas from ${ATLAS_URL}`));
+    img.src = ATLAS_URL;
   });
   return imagePromise;
 }
