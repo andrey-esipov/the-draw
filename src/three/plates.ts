@@ -457,6 +457,8 @@ export function createPlates(
   }
 
   const tmp = new THREE.Vector3();
+  /** Where a winner's line and a loser's line meet once neither is readable. */
+  const SHARED_FADED = 0.82;
   function setRouteProgress(_t: number) {}
 
   function updateDetail(camera: THREE.PerspectiveCamera, viewportH: number) {
@@ -464,14 +466,23 @@ export function createPlates(
     hoverStroke.update(now);
     matchCard.update(now);
     const focal = viewportH / (2 * Math.tan((camera.fov * Math.PI) / 360));
+    // Fade is a property of the card, not of the individual line. Measured off
+    // each label's own fontSize, a long name that had been shrunk to fit its
+    // plate crossed the threshold before its opponent did, and the match read
+    // as a single player who had turned up to play nobody.
     for (const l of labels) {
       tmp.set(l.node.x, l.node.y, l.node.z);
-      const px = (l.text.fontSize * focal) / Math.max(1, camera.position.distanceTo(tmp));
-      const lod = Math.min(1, Math.max(0, (px - 3.2) / 3.2));
+      const px = (l.node.h * 0.3 * focal) / Math.max(1, camera.position.distanceTo(tmp));
+      const lod = Math.min(1, Math.max(0, (px - 1.7) / 3.3));
       const fade = lod * lod * (3 - 2 * lod);
       const vis = fade > 0.02;
       if (l.text.visible !== vis) l.text.visible = vis;
-      l.text.fillOpacity = l.base * fade;
+      // Close in, the loser sits well back of the winner and the eye reads the
+      // result without reading the names. Far out there is no contrast budget
+      // left to spend on hierarchy: holding the gap open just deletes the
+      // loser, so the two lines converge as the type dissolves.
+      const share = l.base + (SHARED_FADED - l.base) * (1 - fade);
+      l.text.fillOpacity = share * fade;
     }
     for (const s of scores) {
       tmp.set(s.node.x, s.node.y, s.node.z);
@@ -491,8 +502,8 @@ export function createPlates(
       const px = (m.h * focal) / Math.max(1, camera.position.distanceTo(tmp));
       const lod = Math.min(1, Math.max(0, (px - 5.4) / 5.4));
       const fade = lod * lod * (3 - 2 * lod);
-      const next = (m.won ? 0.95 : 0.45) * fade;
-      if (Math.abs((markFade[i] ?? 0) - next) > 0.004) {
+      const seat = m.won ? 0.95 : 0.45;
+      const next = (seat + (SHARED_FADED - seat) * (1 - fade)) * fade;      if (Math.abs((markFade[i] ?? 0) - next) > 0.004) {
         markFade[i] = next;
         markDirty = true;
       }
@@ -518,7 +529,6 @@ export function createPlates(
     matchCard.set(matchId ? (layout.byMatch.get(matchId) ?? null) : null);
   };
   debug.__drawCardClose = () => matchCard.close();
-
   return {
     group,
     mesh,

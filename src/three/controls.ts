@@ -565,17 +565,22 @@ export function createControls(
   function fit(aspect: number): void {
     lastAspect = aspect;
     const vFov = (camera.fov * Math.PI) / 180;
-    const margin = 1.1;
-    const halfBoardW = bounds.width / 2 + 3.2;
+    const margin = 1.02;
+    // Past the outermost column the route still has work to do: it carries a
+    // terminal stroke beyond the first match, drawn with screen-space width.
+    // Padded to the plate edge alone, a champion seeded at the very top of a
+    // half had the end of their run sliced off by the frame.
+    const halfBoardW = bounds.width / 2 + 3.8;
     const halfBoardH = bounds.height / 2 + 1.4;
     const byWidth = (halfBoardW * margin) / (Math.tan(vFov / 2) * Math.max(0.35, aspect));
     const byHeight = (halfBoardH * margin) / Math.tan(vFov / 2);
     // Past a point, fitting every last round costs more than it buys: the board
-    // recedes until 127 matches are a field of unreadable specks. Beyond this
-    // distance we stop pulling back and let round one run off the sides, where
-    // it is already dissolving into the dark — the centre stays legible and a
-    // scroll or a pan reaches the rest.
-    const legibleMax = aspect >= 1.2 ? 88 : 74;
+    // recedes until 127 matches are a field of unreadable specks. But a bracket
+    // that has had one half sliced off by the frame is worse than a small one —
+    // it reads as broken rather than distant, and at anything near square the
+    // old cap did exactly that. Pull back far enough to hold the whole sheet at
+    // every ordinary window shape, and only start cropping at the extremes.
+    const legibleMax = aspect >= 1.2 ? 88 : 118;
     const radius = clamp(Math.min(Math.max(byWidth, byHeight), legibleMax), cage.radiusMin, cage.radiusMax);
 
     framings.all.radius = radius;
