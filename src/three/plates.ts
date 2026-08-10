@@ -22,6 +22,9 @@ const NAME_OUT = `${BASE}fonts/sans-latin.woff`;
 /** Troika takes one font per Text; the global default covers the rest of Latin. */
 configureTextBuilder({ defaultFontURL: `${BASE}fonts/mono-latin-ext.woff` });
 
+/** Above the route's 8 and 9, so the thread lights a card without erasing it. */
+const TYPE_ORDER = 12;
+
 /** Names tighten as they grow; small type on a dark field wants a little air. */
 function tracking(size: number): number {
   return THREE.MathUtils.clamp(0.024 - size * 0.05, -0.018, 0.012);
@@ -329,6 +332,10 @@ export function createPlates(
       t.whiteSpace = 'nowrap';
       t.overflowWrap = 'normal';
       t.userData.isText = true;
+      // The champion thread is drawn with additive blending and no depth
+      // write, so whatever it crosses gets painted over. That swallowed the
+      // one card the eye goes to first: the champion's own opening match.
+      t.renderOrder = TYPE_ORDER;
       fitToWidth(t, maxW, 0.68);
       group.add(t);
       labels.push({ text: t, node: n, player: side?.player ?? null, row: row as 0 | 1, base: t.fillOpacity });
@@ -357,6 +364,7 @@ export function createPlates(
         s.fillOpacity = won ? 0.62 : 0.3;
         s.position.set(playerSeedX, rowY, n.z + 0.16);
         s.userData.isText = true;
+        s.renderOrder = TYPE_ORDER;
         s.sync();
         group.add(s);
         labels.push({ text: s, node: n, player: side.player, row: row as 0 | 1, base: s.fillOpacity });
@@ -374,6 +382,7 @@ export function createPlates(
         wm.fillOpacity = 0.9;
         wm.position.set(winRight, rowY, n.z + 0.165);
         wm.userData.isText = true;
+        wm.renderOrder = TYPE_ORDER;
         wm.sync();
         group.add(wm);
         scores.push({ text: wm, node: n, base: wm.fillOpacity });
@@ -414,7 +423,7 @@ export function createPlates(
   const markMesh = new THREE.InstancedMesh(markGeo, markMat, Math.max(1, marks.length));
   markMesh.count = marks.length;
   markMesh.frustumCulled = false;
-  markMesh.renderOrder = 2;
+  markMesh.renderOrder = TYPE_ORDER - 1;
   marks.forEach((m, i) => {
     const rect = atlas.uv(draw.players[m.player]?.country ?? '');
     markUv.set(rect, i * 4);

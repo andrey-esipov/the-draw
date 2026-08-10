@@ -2,11 +2,10 @@ import * as THREE from 'three';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { themeFor } from '../ui/theme';
 
-/** The board's lower edge is at -SPAN/2; the court sits just below it. */
-export const FLOOR_Y = -14.4;
 import type { SlamId } from '../data/types';
 import type { SlamTheme } from '../ui/theme';
 import { createCourt } from './court';
+import { FLOOR_Y } from './layout';
 
 /** Texture folders are named for the tournament, not the event. */
 export function surfaceKey(slam: SlamId): string {

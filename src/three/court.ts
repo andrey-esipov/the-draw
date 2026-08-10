@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { SlamId } from '../data/types';
 import type { SlamTheme } from '../ui/theme';
+import { COURT_Z, FLOOR_Y } from './layout';
 
 export interface Court {
   group: THREE.Group;
@@ -12,7 +13,7 @@ export interface Court {
 const COURT_MARKER = 'THE_DRAW_COURT_REAL_SURFACES_NET_V3';
 void COURT_MARKER;
 
-const FLOOR_Y = -14.4;
+
 const COURT_LENGTH = 23.77;
 const DOUBLES_WIDTH = 10.97;
 const SINGLES_WIDTH = 8.23;
@@ -820,7 +821,7 @@ export function createCourt(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
   });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.name = 'court-atmosphere';
-  mesh.position.set(0, FLOOR_Y + 0.025, -42);
+  mesh.position.set(0, FLOOR_Y + 0.025, COURT_Z);
   mesh.scale.setScalar(SCALE);
   mesh.renderOrder = -5;
   group.add(mesh);
@@ -841,7 +842,7 @@ export function createCourt(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
     rim: '#6d3a9a',
     fog: '#08130d',
   });
-  net.group.position.set(0, FLOOR_Y + 0.045, -42);
+  net.group.position.set(0, FLOOR_Y + 0.045, COURT_Z);
   net.group.scale.setScalar(SCALE);
   group.add(net.group);
 

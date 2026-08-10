@@ -28,6 +28,32 @@ const PLATE_W = [0, 3.15, 3.35, 3.6, 3.9, 4.25, 4.7, 5.6];
 const PLATE_H = [0, 0.62, 0.78, 0.98, 1.22, 1.5, 1.85, 2.3];
 
 /**
+ * The lowest point the board reaches: the bottom edge of a first-round plate
+ * sitting in the outermost row. Round one owns the extremes because it has the
+ * most rows, so its plate height is the one that matters here.
+ */
+export const BOARD_FLOOR = -(SPAN / 2) - PLATE_H[1] / 2;
+
+/**
+ * Where the ground plane sits.
+ *
+ * Kept above BOARD_FLOOR, the ground silently swallows the bottom of every
+ * draw. The plates are still drawn and still project inside the frame, so a
+ * screen-space check calls them present while the viewer sees a sheet with its
+ * last rounds sliced away. Keep it under the board. There is a test.
+ */
+export const FLOOR_Y = -17.6;
+
+/**
+ * How far back the court sits behind the sheet.
+ *
+ * Its near baseline is the lowest bright thing in the frame, and the chrome
+ * lives directly under that. Too far forward and the baseline lands across the
+ * caption, where no amount of scrim hides it without leaving a smudge.
+ */
+export const COURT_Z = -48;
+
+/**
  * Column centres, walked outward from the semi-finals so consecutive rounds
  * always leave GUTTER of clear floor between their plate edges.
  *
