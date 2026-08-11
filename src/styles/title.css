@@ -35,9 +35,10 @@
 }
 
 .title-word {
-  font-family: var(--type-datum-family);
-  font-size: 12px;
-  letter-spacing: 0.035em;
+  font-family: var(--type-mark-family);
+  font-variation-settings: var(--type-mark-settings);
+  font-size: 13px;
+  letter-spacing: var(--track-mark);
   color: rgba(238, 243, 236, 0.66);
   margin: 0;
 }
@@ -164,10 +165,16 @@
   text-wrap: balance;
 }
 
+/* The count under a tournament's name belongs to the poster, not to the
+   scoreboard. Mono is right on the board, where it sits beside seeds and
+   scorelines and its tabular figures earn their keep; here it was the one
+   code-like note under four names set in a display serif. Same face as the name
+   above it, smaller and opened up, so the pair reads as one caption. */
 .title-state {
-  font-family: var(--type-datum-family);
-  font-size: 11px;
-  letter-spacing: 0.03em;
+  font-family: var(--type-mark-family);
+  font-variation-settings: 'opsz' 16, 'SOFT' 0, 'WONK' 0, 'wght' 380;
+  font-size: 12px;
+  letter-spacing: 0.1em;
   /* Reads on the darkest part of the floor at AA, and is the only place the
      screen admits a tournament has no draw yet. */
   color: rgba(233, 240, 232, 0.62);

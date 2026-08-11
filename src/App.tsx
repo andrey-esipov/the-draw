@@ -5,7 +5,7 @@ import { buildGeometry } from './bracket/geometry';
 import { Bracket, CENTER, SCALE } from './bracket/Bracket';
 import { Broadcast } from './bracket/Broadcast';
 import { Rail } from './ui/Rail';
-import { Forthcoming } from './ui/Forthcoming';
+import { DRAW_DATE_SHORT, Forthcoming } from './ui/Forthcoming';
 import { HollowBracket } from './bracket/HollowBracket';
 import { SLAM_ORDER, SLAM_ORDER_WOMEN, themeFor } from './ui/theme';
 import { Search } from './ui/Search';
@@ -251,7 +251,8 @@ export function App() {
         <h1 className="mark-slam">{theme.label}</h1>
         <span className="mark-rule" aria-hidden="true" />
         <p className="mark-meta">
-          2026 <span className="dot">·</span> {forthcoming ? 'Not yet drawn' : draw ? draw.event : ' '}
+          2026 <span className="dot">·</span>{' '}
+          {forthcoming ? `Draw made ${DRAW_DATE_SHORT}` : draw ? draw.event : ' '}
         </p>
       </header>
 

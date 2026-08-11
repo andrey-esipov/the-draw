@@ -433,6 +433,75 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
   roomGlow.renderOrder = -30;
   scene.add(roomGlow);
 
+  /**
+   * The room drifts through the season.
+   *
+   * The air over the set takes its colour from each slam in turn, in calendar
+   * order — Melbourne blue, then Roland-Garros clay, then grass, then a New York
+   * night — so the thing moving in the background is the four tournaments the
+   * viewer is about to choose between rather than decoration.
+   *
+   * These are not the courts' own colours. A court colour used as light is a
+   * filter over the whole set, and the silver reflects the room, so it would
+   * take four polished cups through four costumes. They are light tints of each
+   * identity: the colour of the air in that place rather than the colour of its
+   * ground.
+   *
+   * Slow enough that it is never a transition you catch happening. A full circuit
+   * of all four takes 76 seconds, and because the blend is continuous the colour
+   * is always moving and never switches.
+   */
+  const HOUSE = new THREE.Color('#8fb9a4');
+  // Each tint pulled back toward the house green, because the room still has to
+  // be this piece's room while it drifts. Taken at full strength the clay phase
+  // turned the whole set brown and read as a different app rather than as the
+  // same room in different light. Roland-Garros is tempered hardest: it is the
+  // only one of the four whose colour is warm, so it travels furthest from a
+  // green room and needs the most holding back.
+  const SEASON = [
+    new THREE.Color('#7fb6d9').lerp(HOUSE, 0.3),
+    new THREE.Color('#cf9a78').lerp(HOUSE, 0.4),
+    HOUSE.clone(),
+    new THREE.Color('#8aa9cd').lerp(HOUSE, 0.3),
+  ];
+  const SEASON_MS = 19000;
+  const glowMat = roomGlow.material as THREE.MeshBasicMaterial;
+  const glowBase = roomGlow.position.clone();
+  const seasonColour = new THREE.Color();
+  const committed = new THREE.Color();
+  let commitTo = -1;
+  let commitAmt = 0;
+
+  /** Settle the room on one slam as its cup walks out, and hold it there. */
+  function commitRoom(i: number, amount: number) {
+    commitTo = i;
+    commitAmt = amount;
+  }
+
+  function ambient(now: number) {
+    if (reduced) return;
+    const t = now / SEASON_MS;
+    const i = Math.floor(t) % SEASON.length;
+    const f = t - Math.floor(t);
+    // Smoothstep across the whole span rather than a hold and a crossfade: the
+    // colour is in motion at every instant, so there is no moment that reads as
+    // the start or the end of a change.
+    seasonColour.copy(SEASON[i]!).lerp(SEASON[(i + 1) % SEASON.length]!, f * f * (3 - 2 * f));
+    if (commitTo >= 0 && commitAmt > 0) {
+      committed.copy(SEASON[commitTo % SEASON.length]!);
+      seasonColour.lerp(committed, Math.min(1, commitAmt));
+    }
+    glowMat.color.copy(seasonColour);
+
+    // And the air itself moves. Periods of 42 and 78 seconds against a drift of
+    // barely a tenth of the plane's width: at any moment it is still, and over a
+    // minute the light has crossed the room. Anything faster is weather.
+    const s = now / 1000;
+    roomGlow.position.x = glowBase.x + Math.sin(s * 0.1496) * 1.5;
+    roomGlow.position.y = glowBase.y + Math.sin(s * 0.0805 + 1.1) * 0.42;
+    glowMat.opacity = 0.5 + Math.sin(s * 0.1122 + 0.6) * 0.055;
+  }
+
   scene.add(new THREE.HemisphereLight('#1b2c26', '#030806', 0.66));
   const key = new THREE.DirectionalLight('#fff6e8', 0.9);
   key.position.set(3.4, 6.2, 5.2);
@@ -652,6 +721,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
   }
 
   function update(now: number, dt: number) {
+    ambient(now);
     const k = Math.min(1, dt * 7.5);
     for (let i = 0; i < cups.length; i++) {
       const active = hovered === i || selected === i;
@@ -759,6 +829,10 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
     // narrows the gap to the board's own, more present court, which the next
     // renderer picks up on.
     if (!isGrid) courtStrength.value = 1 + outE * 1.5;
+    // The drift stops wandering the moment a choice is made: the room settles
+    // into the colour of the slam being walked into, so the air the cup leaves
+    // through is already the air of the board it is going to.
+    commitRoom(i, outE);
   }
 
   // The board glows its trophy through a bloom pass, so these have to as well

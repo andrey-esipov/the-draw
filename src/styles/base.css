@@ -38,6 +38,19 @@
   --type-datum-size: 11px;
   --type-datum-leading: 1.35;
 
+  /* The wordmark, and only the wordmark.
+     It was set in the mono, which is the right face for a scoreline or a seed
+     and the wrong one for the name of the thing: a monospaced wordmark reads as
+     a terminal prompt, not as a championship. This is the serif at a text
+     optical size, so the contrast is refined rather than the display cut's
+     drama, with WONK off — the wonky axis gives the headline its character and
+     makes a small wordmark look unsteady — and opened up, the way a name is set
+     on a programme cover or engraved round a cup. */
+  --type-mark-family: var(--serif);
+  --type-mark-size: 12.5px;
+  --type-mark-settings: 'opsz' 20, 'SOFT' 0, 'WONK' 0, 'wght' 400;
+  --track-mark: 0.17em;
+
   --type-label-family: var(--sans);
   --type-label-size: 12px;
   --type-label-leading: 1.28;
@@ -156,9 +169,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    reads as a template rather than as something set. Every one of these strings
    was already authored in sentence case — only the CSS was raising it. */
 .mark-word {
-  font-family: var(--type-datum-family);
-  font-size: calc(var(--type-datum-size) * 1.02);
-  letter-spacing: 0.035em;
+  font-family: var(--type-mark-family);
+  font-variation-settings: var(--type-mark-settings);
+  font-size: var(--type-mark-size);
+  letter-spacing: var(--track-mark);
   opacity: 0.52;
 }
 

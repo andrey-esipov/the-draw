@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { SlamId } from '../data/types';
 import { sound, SoundToggle } from '../audio/sound';
+import { DRAW_DATE_SHORT } from '../ui/Forthcoming';
 import { bootDone } from '../boot';
 import { themeFor } from '../ui/theme';
 import { createTitleScene, GRID_ASPECT, titleSlams, type TitleScene, type TitleTour } from './scene';
@@ -319,7 +320,13 @@ export function TitleScreen({ onEnter, returnFrom = null }: Props) {
                 aria-describedby={drawn ? undefined : `title-note-${i}`}
               >
                 <span className="title-name">{theme.label}</span>
-                <span className="title-state">{drawn ? '128 players' : 'Not yet drawn'}</span>
+                <span className="title-state">
+                  {/* Not "Not yet drawn". Under a piece that is itself a draw,
+                      that reads as the app being unfinished rather than as the
+                      tournament not having been made yet. Naming the date says
+                      the same thing and says it about the tennis. */}
+                  {drawn ? '128 players' : `Draw made ${DRAW_DATE_SHORT}`}
+                </span>
               </button>
               {!drawn && (
                 <span id={`title-note-${i}`} className="title-hidden">

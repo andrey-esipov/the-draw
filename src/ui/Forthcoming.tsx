@@ -6,6 +6,13 @@ import type { SlamTheme } from './theme';
 
 const OPEN_DATE = 'Monday 24 August';
 const DRAW_DATE = 'Thursday 20 August';
+/**
+ * The same date, short enough to sit under a tournament name.
+ *
+ * Exported so the title's label and the board's masthead cannot drift from the
+ * paragraph on the empty-state panel that says the same thing at length.
+ */
+export const DRAW_DATE_SHORT = '20 August';
 
 interface Props {
   theme: SlamTheme;
