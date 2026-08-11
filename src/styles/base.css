@@ -527,6 +527,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   min-height: 0;
 }
 
+/* The shared .eyebrow token sits at 0.55 opacity, which reads fine over the
+   lighter rail background elsewhere but drops under 3:1 against this panel's
+   deep ground. Lifted locally rather than raising the shared token. */
+.forthcoming .eyebrow {
+  opacity: 0.86;
+}
+
 .forth-title {
   font-family: var(--type-title-family);
   font-variation-settings: var(--type-title-settings);
@@ -543,7 +550,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   line-height: var(--type-body-leading);
   letter-spacing: var(--track-body);
   font-weight: var(--type-body-weight);
-  opacity: 0.62;
+  opacity: 0.85;
   max-width: 34ch;
   text-wrap: pretty;
 }
@@ -565,7 +572,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   line-height: var(--type-label-leading);
   letter-spacing: var(--track-label);
   text-transform: none;
-  opacity: 0.42;
+  opacity: 0.8;
 }
 
 .forth-label {
@@ -574,9 +581,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   border-color: color-mix(in oklab, currentColor 14%, transparent);
 }
 
-.forth-error { font-family: var(--type-body-family); font-size: var(--type-body-size); letter-spacing: var(--track-body); opacity: 0.68; line-height: var(--type-body-leading); padding-top: 14px; }
+.forth-error { font-family: var(--type-body-family); font-size: var(--type-body-size); letter-spacing: var(--track-body); opacity: 0.85; line-height: var(--type-body-leading); padding-top: 14px; }
 .forth-loading { padding-top: 14px; }
-.forth-foot { font-family: var(--type-caption-family); font-variation-settings: normal; letter-spacing: var(--track-caption); font-size: var(--type-caption-size); padding-top: 14px; opacity: 0.34; line-height: var(--type-caption-leading); }
+.forth-foot { font-family: var(--type-caption-family); font-variation-settings: normal; letter-spacing: var(--track-caption); font-size: var(--type-caption-size); padding-top: 14px; opacity: 0.92; line-height: var(--type-caption-leading); }
 
 .form-list {
   list-style: none;
@@ -648,7 +655,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 .form-titles { color: var(--flare); opacity: 0.9; }
-.form-wins { opacity: 0.4; }
+.form-wins { opacity: 0.65; }
 
 .bracket.is-hollow .hollow-threads path { transition: stroke-opacity 400ms ease-out; }
 
@@ -1066,7 +1073,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     padding-bottom: 56px;
   }
 
-  .mark { position: static; order: 1; left: auto; right: auto; padding: 20px var(--pad) 0; }
+  /* Two 42px buttons ride fixed at the top right on this breakpoint. The
+     masthead sets left and reserves their width rather than centring
+     underneath them, where a long name ran straight through the sound
+     toggle. */
+  .mark {
+    position: static;
+    order: 1;
+    left: auto;
+    right: auto;
+    padding: 20px calc(var(--pad) + 104px) 0 var(--pad);
+    justify-items: start;
+    text-align: left;
+  }
 
   /* The cluster stays pinned on small screens: it is two round buttons, and a
      panel that opens over the board reads better than a list pushed to the end
@@ -1106,20 +1125,26 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     z-index: 6;
   }
 
+  /* The board used to bleed 6vw off each edge (112vw, negative inline margin),
+     which sliced the outer match cards in half at the literal screen edge. It
+     now fits the frame exactly. It is also taller than it is wide: a square
+     board on a phone is a decorative strip, so it takes real vertical room and
+     the camera rests on the late rounds — semis, final and trophy — where names
+     can be read. The upright shape (aspect < 1) is the signal the rig reads to
+     pick that resting frame. */
   .field {
     position: relative;
     order: 2;
-    height: auto;
-    aspect-ratio: 1;
+    width: 100%;
+    height: min(70vh, 132vw);
+    aspect-ratio: auto;
     padding: 0;
-    width: 112vw;
-    margin-inline: -6vw;
-    margin-block: -6% -10%;
+    margin: 0;
     background: radial-gradient(
-      circle at 50% 50%,
+      circle at 50% 46%,
       var(--ground) 0%,
-      var(--ground) 40%,
-      transparent 76%
+      var(--ground) 46%,
+      transparent 80%
     );
   }
   .broadcast {

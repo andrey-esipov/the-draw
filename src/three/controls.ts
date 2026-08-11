@@ -175,6 +175,25 @@ export function createControls(
     },
   };
 
+  // The frame the board actually rests on, arrives at, and returns to. On a wide
+  // screen it is the whole draw. On a portrait phone the whole draw is a field of
+  // sub-pixel specks, so rest slides onto the champion's half and the late rounds
+  // instead — where names are readable — while "Whole draw" stays a deliberate
+  // zoom-out away rather than the thing you are dropped into.
+  const restFraming: Named = {
+    target: framings.all.target.clone(),
+    radius: framings.all.radius,
+    theta: framings.all.theta,
+    phi: framings.all.phi,
+  };
+  // Below this aspect the frame is too near-square to hold 128 legible nodes: a
+  // phone upright, but also a tablet in portrait, whose canvas lands around 1.07.
+  // Fitting the whole sheet into a near-square frame is width-bound, so it recedes
+  // to a speck floating in a band of dead floor. Those shapes rest on the late
+  // rounds instead. A wide monitor never trips it, so desktop rests on the whole
+  // draw as before, and "Whole draw" stays a deliberate zoom-out away.
+  const PORTRAIT_ASPECT = 1.2;
+
   // ── Live state ──────────────────────────────────────────────────────────
   // `goal*` is where input pushes; `cur*` trails it through the smoother, and
   // that lag *is* the inertia. The camera reads from `cur*` only.
@@ -505,7 +524,7 @@ export function createControls(
   }
 
   function reset() {
-    void startFlight(framings.all, 1.5);
+    void startFlight(restFraming, 1.5);
   }
 
   function adopt() {
@@ -577,10 +596,11 @@ export function createControls(
     // Past a point, fitting every last round costs more than it buys: the board
     // recedes until 127 matches are a field of unreadable specks. But a bracket
     // that has had one half sliced off by the frame is worse than a small one —
-    // it reads as broken rather than distant, and at anything near square the
-    // old cap did exactly that. Pull back far enough to hold the whole sheet at
-    // every ordinary window shape, and only start cropping at the extremes.
-    const legibleMax = aspect >= 1.2 ? 88 : 118;
+    // it reads as broken rather than distant, and at anything near square a hard
+    // cap did exactly that: a viewport sitting right on the old 1.2 step fell to
+    // the tight side and truncated the fit. So the cap eases from 118 at square
+    // to 88 by the time the frame is comfortably wide, with no edge to fall off.
+    const legibleMax = 88 + 30 * clamp((1.35 - aspect) / 0.35, 0, 1);
     const radius = clamp(Math.min(Math.max(byWidth, byHeight), legibleMax), cage.radiusMin, cage.radiusMax);
 
     framings.all.radius = radius;
@@ -591,18 +611,57 @@ export function createControls(
     framings.all.theta = 0;
     framings.all.phi = 1.4;
 
+    computeRest(aspect, radius);
+
     if (controls.hasMoved) return;
-    goalTarget.copy(framings.all.target);
-    curTarget.copy(framings.all.target);
-    goalRadius = curRadius = radius;
-    goalTheta = curTheta = framings.all.theta;
-    goalPhi = curPhi = framings.all.phi;
+    goalTarget.copy(restFraming.target);
+    curTarget.copy(restFraming.target);
+    goalRadius = curRadius = restFraming.radius;
+    goalTheta = curTheta = restFraming.theta;
+    goalPhi = curPhi = restFraming.phi;
     writeCamera(curTarget, curRadius, curTheta, curPhi);
+  }
+
+  /**
+   * Set the resting frame for the viewport shape.
+   *
+   * On a wide frame it is the whole draw, unchanged. On a portrait phone the
+   * whole draw is illegible, so rest drops onto the business end of the sheet —
+   * the semis, final and trophy — with the champion's thread traced through
+   * them. It is framed dead centre so both vertical edges land in the clear
+   * gutter outside the semi-final column, which holds for every draw (the
+   * columns are fixed) and at any phone aspect, so no card is ever sliced by the
+   * screen edge. The quarters and the pulled-back whole draw stay a pinch away.
+   */
+  function computeRest(aspect: number, wholeRadius: number): void {
+    if (aspect >= PORTRAIT_ASPECT) {
+      restFraming.target.copy(framings.all.target);
+      restFraming.radius = wholeRadius;
+      restFraming.theta = framings.all.theta;
+      restFraming.phi = framings.all.phi;
+      return;
+    }
+    // World x of the gutter just outside the semi-final column. Framed to it, the
+    // final and both semis read in full and the vertical edges fall on clear
+    // floor; the quarters sit a pinch-out away. Measured to the semis, whose row
+    // sits on the centre line, so the downward tilt never pulls a card's corner
+    // across the frame edge the way it does for the stacked quarter-final rows.
+    const EDGE_X = 12.4;
+    const vFov = (camera.fov * Math.PI) / 180;
+    const radius = clamp(
+      EDGE_X / (Math.tan(vFov / 2) * Math.max(0.35, aspect)),
+      cage.radiusMin,
+      cage.radiusMax,
+    );
+    restFraming.target.set(0, 2.4, -0.3);
+    restFraming.radius = radius;
+    restFraming.theta = 0;
+    restFraming.phi = 1.4;
   }
 
   /** The pose the board rests on. Drives the idle drift and the run's landing. */
   function restPose(): CameraPose {
-    const a = framings.all;
+    const a = restFraming;
     sph.set(a.radius, a.phi, a.theta);
     const off = new THREE.Vector3().setFromSpherical(sph);
     return { pos: a.target.clone().add(off), look: a.target.clone() };

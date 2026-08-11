@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { Draw, Player } from '../data/types';
 
 interface Props {
@@ -14,6 +14,7 @@ function fold(s: string) {
 
 /** Type any part of a name. 128 entrants is more than the eye should have to scan. */
 export function Search({ draw, flare, onHover, onSelect }: Props) {
+  const searchId = useId();
   const [query, setQuery] = useState('');
   const [cursor, setCursor] = useState(0);
   const [open, setOpen] = useState(false);
@@ -64,6 +65,10 @@ export function Search({ draw, flare, onHover, onSelect }: Props) {
     onHover(null);
   }
 
+  const listOpen = open && query.trim() !== '';
+  const listboxId = `${searchId}-listbox`;
+  const activeOptionId = listOpen && hits[cursor] ? `${searchId}-option-${hits[cursor].id}` : undefined;
+
   return (
     <div className="search" ref={boxRef} style={{ '--flare': flare } as React.CSSProperties}>
       <svg className="search-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -76,24 +81,45 @@ export function Search({ draw, flare, onHover, onSelect }: Props) {
         value={query}
         placeholder="Find a player"
         aria-label="Find a player in this draw"
+        role="combobox"
+        aria-expanded={listOpen}
+        aria-controls={listboxId}
+        aria-autocomplete="list"
+        aria-activedescendant={activeOptionId}
         autoComplete="off"
         spellCheck={false}
         onFocus={() => setOpen(true)}
         onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
         onKeyDown={(e) => {
-          if (e.key === 'ArrowDown') { e.preventDefault(); setCursor((c) => Math.min(c + 1, hits.length - 1)); }
-          else if (e.key === 'ArrowUp') { e.preventDefault(); setCursor((c) => Math.max(c - 1, 0)); }
-          else if (e.key === 'Enter' && hits[cursor]) { e.preventDefault(); commit(hits[cursor]); }
-          else if (e.key === 'Escape') { setOpen(false); onHover(null); }
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (hits.length > 0) {
+              setOpen(true);
+              setCursor((c) => Math.min(c + 1, hits.length - 1));
+            }
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (hits.length > 0) {
+              setOpen(true);
+              setCursor((c) => Math.max(c - 1, 0));
+            }
+          } else if (e.key === 'Enter' && hits[cursor]) { e.preventDefault(); commit(hits[cursor]); }
+          else if (e.key === 'Escape') {
+            e.preventDefault();
+            if (listOpen) setOpen(false);
+            else setQuery('');
+            onHover(null);
+          }
         }}
       />
 
-      {open && query.trim() !== '' && (
-        <ul className="search-results" role="listbox" aria-label="Matching players">
+      {listOpen && (
+        <ul id={listboxId} className="search-results" role="listbox" aria-label="Matching players">
           {hits.length === 0 && <li className="search-none">No one by that name in this draw</li>}
           {hits.map((p, i) => (
             <li key={p.id}>
               <button
+                id={`${searchId}-option-${p.id}`}
                 className={`search-hit${i === cursor ? ' is-cursor' : ''}`}
                 role="option"
                 aria-selected={i === cursor}

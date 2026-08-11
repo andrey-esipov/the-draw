@@ -7,10 +7,13 @@ import {
   finalizeVessel,
   flute,
   handlePair,
+  interiorLiner,
   isWomens,
   metalMat,
+  mergePrepared,
   p,
   smoothProfile,
+  tarnishGeometry,
   toColor,
 } from './index';
 
@@ -19,12 +22,25 @@ export function createAustralianVessel(slam: SlamId, opts: VesselOpts): THREE.Gr
 }
 
 function silverMaterials(opts: VesselOpts) {
-  const base = toColor(opts.metal).lerp(new THREE.Color('#e4e8ec'), 0.55);
-  const silver = metalMat(base, { envMap: opts.envMap, roughness: 0.19, envMapIntensity: 1.5, clearcoat: 0.45 });
-  const bright = metalMat(base.clone().lerp(new THREE.Color('#ffffff'), 0.24), {
+  const base = new THREE.Color('#c8d2da').lerp(toColor(opts.metal), 0.025);
+  const silver = metalMat(base, {
     envMap: opts.envMap,
-    roughness: 0.13,
-    envMapIntensity: 1.75,
+    roughness: 0.046,
+    envMapIntensity: 0.7,
+    clearcoat: 0,
+    textureKind: 'silver',
+    normalScale: 0.06,
+    doubleSide: true,
+  });
+  const bright = metalMat(base.clone().lerp(new THREE.Color('#ffffff'), 0.42), {
+    envMap: opts.envMap,
+    roughness: 0.034,
+    envMapIntensity: 0.95,
+    clearcoat: 0,
+    textureKind: 'silver',
+    normalScale: 0.045,
+    aoIntensity: 0.45,
+    doubleSide: true,
   });
   return { silver, bright };
 }
@@ -37,6 +53,8 @@ function normanBrookes(opts: VesselOpts): THREE.Group {
   root.name = 'vessel-australian-men';
   const content = new THREE.Group();
   const { silver, bright } = silverMaterials(opts);
+  const silverParts: THREE.BufferGeometry[] = [];
+  const brightParts: THREE.BufferGeometry[] = [];
 
   const control = [
     p(0.0, 0.0),
@@ -64,19 +82,26 @@ function normanBrookes(opts: VesselOpts): THREE.Group {
     p(0.06, 1.01),
     p(0.05, 1.01),
   ];
-  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 9), 96);
+  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 13), 128);
   flute(bodyGeo, 22, 0.02, 0, (t) => Math.pow(Math.max(0, 1 - t / 0.2), 1.4));
   flute(bodyGeo, 24, 0.014, 0, (t) => Math.max(0, Math.sin(Math.max(0, (t - 0.28) / 0.42) * Math.PI)));
   flute(bodyGeo, 60, 0.0028, 0, (t) => Math.max(0, Math.sin(Math.min(t / 0.62, 1) * Math.PI)));
+  tarnishGeometry(bodyGeo, [
+    { y: 0.055, width: 0.028, strength: 0.1 },
+    { y: 0.52, width: 0.03, strength: 0.12 },
+    { y: 0.91, width: 0.025, strength: 0.08 },
+  ], 24);
   bodyGeo.computeVertexNormals();
-  content.add(new THREE.Mesh(bodyGeo, silver));
+  silverParts.push(bodyGeo);
 
   const band = beadedRing(0.53, 0.016, 58, 0.7);
-  content.add(new THREE.Mesh(band, bright));
+  brightParts.push(band);
   const rimBead = beadedRing(0.5, 0.015, 60, 1.05);
-  content.add(new THREE.Mesh(rimBead, bright));
+  brightParts.push(rimBead);
+  const footBead = beadedRing(0.3, 0.01, 48, 0.055);
+  brightParts.push(footBead);
+  brightParts.push(interiorLiner(0.49, 1.065, 0.12, 0.42));
 
-  // Large scroll handles springing from the shoulder and curling above the rim.
   const hp = handlePair(
     [
       new THREE.Vector3(0.5, 0.79, 0),
@@ -93,15 +118,17 @@ function normanBrookes(opts: VesselOpts): THREE.Group {
     (t) => 0.7 + 0.6 * Math.sin(t * Math.PI),
   );
   hp.scale(1, 1, 0.6);
-  content.add(new THREE.Mesh(hp, silver));
+  silverParts.push(hp);
 
-  // Scroll curls where the handles spring from the shoulder.
   for (const side of [-1, 1]) {
     const curl = new THREE.TorusGeometry(0.04, 0.018, 8, 24);
     curl.rotateY(Math.PI / 2);
     curl.translate(side * 0.51, 0.79, 0);
-    content.add(new THREE.Mesh(curl, bright));
+    brightParts.push(curl);
   }
+
+  content.add(new THREE.Mesh(mergePrepared(silverParts), silver));
+  content.add(new THREE.Mesh(mergePrepared(brightParts), bright));
 
   return finalizeVessel(root, content);
 }
@@ -114,6 +141,8 @@ function daphneAkhurst(opts: VesselOpts): THREE.Group {
   root.name = 'vessel-australian-women';
   const content = new THREE.Group();
   const { silver, bright } = silverMaterials(opts);
+  const silverParts: THREE.BufferGeometry[] = [];
+  const brightParts: THREE.BufferGeometry[] = [];
 
   const control = [
     p(0.0, 0.0),
@@ -135,17 +164,22 @@ function daphneAkhurst(opts: VesselOpts): THREE.Group {
     p(0.12, 0.82),
     p(0.05, 0.82),
   ];
-  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 9), 80);
+  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 12), 112);
   flute(bodyGeo, 24, 0.013, 0, (t) => Math.pow(Math.max(0, 1 - (t - 0.3) / 0.4), 1.3) * (t > 0.3 ? 1 : 0));
   flute(bodyGeo, 40, 0.006, 0, (t) => Math.max(0, Math.sin(Math.min(t / 0.7, 1) * Math.PI)));
+  tarnishGeometry(bodyGeo, [
+    { y: 0.13, width: 0.035, strength: 0.08 },
+    { y: 0.68, width: 0.035, strength: 0.11 },
+    { y: 0.94, width: 0.02, strength: 0.07 },
+  ], 24);
   bodyGeo.computeVertexNormals();
-  content.add(new THREE.Mesh(bodyGeo, silver));
+  silverParts.push(bodyGeo);
 
   const rimBand = new THREE.TorusGeometry(0.36, 0.012, 8, 72);
   rimBand.rotateX(Math.PI / 2);
   rimBand.translate(0, 0.895, 0);
   rimBand.computeVertexNormals();
-  content.add(new THREE.Mesh(rimBand, bright));
+  brightParts.push(rimBand);
 
   const lidControl = [
     p(0.05, 0.9),
@@ -161,16 +195,17 @@ function daphneAkhurst(opts: VesselOpts): THREE.Group {
     p(0.05, 1.21),
     p(0.0, 1.215),
   ];
-  const lidGeo = new THREE.LatheGeometry(smoothProfile(lidControl, 9), 80);
+  const lidGeo = new THREE.LatheGeometry(smoothProfile(lidControl, 12), 112);
   flute(lidGeo, 28, 0.008, 0, (t) => Math.max(0, Math.sin(t * Math.PI)));
+  tarnishGeometry(lidGeo, [{ y: 0.1, width: 0.03, strength: 0.06 }], 28);
   lidGeo.computeVertexNormals();
-  content.add(new THREE.Mesh(lidGeo, silver));
+  silverParts.push(lidGeo);
 
   const collar = new THREE.TorusGeometry(0.235, 0.012, 8, 64);
   collar.rotateX(Math.PI / 2);
   collar.translate(0, 1.085, 0);
   collar.computeVertexNormals();
-  content.add(new THREE.Mesh(collar, bright));
+  brightParts.push(collar);
 
   const neck = new THREE.CylinderGeometry(0.018, 0.028, 0.06, 16);
   neck.translate(0, 1.24, 0);
@@ -181,7 +216,7 @@ function daphneAkhurst(opts: VesselOpts): THREE.Group {
   spike.translate(0, 1.39, 0);
   const finial = mergeGeometries([neck, bud, spike]);
   finial.computeVertexNormals();
-  content.add(new THREE.Mesh(finial, bright));
+  brightParts.push(finial);
 
   const hp = handlePair(
     [
@@ -198,7 +233,12 @@ function daphneAkhurst(opts: VesselOpts): THREE.Group {
     (t) => 0.7 + 0.6 * Math.sin(t * Math.PI),
   );
   hp.scale(1, 1, 0.58);
-  content.add(new THREE.Mesh(hp, silver));
+  silverParts.push(hp);
+
+  brightParts.push(beadedRing(0.265, 0.008, 42, 0.12), beadedRing(0.365, 0.008, 48, 0.875));
+
+  content.add(new THREE.Mesh(mergePrepared(silverParts), silver));
+  content.add(new THREE.Mesh(mergePrepared(brightParts), bright));
 
   return finalizeVessel(root, content);
 }

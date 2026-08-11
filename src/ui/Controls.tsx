@@ -16,6 +16,32 @@ const PRESETS: Preset[] = [
   { id: 'courtside', label: 'Courtside', note: 'Low and close to the plates' },
 ];
 
+let viewSwapObserver: MutationObserver | null = null;
+
+function setAttr(el: Element, name: string, value: string) {
+  if (el.getAttribute(name) !== value) el.setAttribute(name, value);
+}
+
+function syncViewSwapSemantics() {
+  const group = document.querySelector<HTMLElement>('.viewswap');
+  if (!group) return;
+  setAttr(group, 'role', 'radiogroup');
+  setAttr(group, 'aria-label', 'Draw view');
+  group.querySelectorAll<HTMLButtonElement>('button').forEach((button) => {
+    setAttr(button, 'role', 'radio');
+    setAttr(button, 'aria-checked', String(button.classList.contains('on')));
+  });
+}
+
+function installViewSwapSemantics() {
+  if (typeof document === 'undefined' || typeof MutationObserver === 'undefined' || viewSwapObserver) return;
+  viewSwapObserver = new MutationObserver(syncViewSwapSemantics);
+  viewSwapObserver.observe(document.documentElement, { attributes: true, childList: true, subtree: true });
+  requestAnimationFrame(syncViewSwapSemantics);
+}
+
+installViewSwapSemantics();
+
 /**
  * The camera chrome: named broadcast framings plus a quiet first-load affordance
  * that teaches the drag/scroll gesture and then gets out of the way for good.
@@ -65,11 +91,13 @@ export function Controls() {
 
       <div className="camctl-rack" role="group" aria-label="Camera framings">
         <span className="camctl-eyebrow">Camera</span>
-        <div className="camctl-presets">
+        <div className="camctl-presets" role="radiogroup" aria-label="Camera framings">
           {PRESETS.map((p) => (
             <button
               key={p.id}
               type="button"
+              role="radio"
+              aria-checked={active === p.id}
               className={`camctl-preset${active === p.id ? ' is-on' : ''}`}
               onClick={() => go(p.id)}
               title={p.note}

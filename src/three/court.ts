@@ -25,10 +25,10 @@ const LINE = 0.052;
 const BASELINE = 0.095;
 const CENTRE_MARK = 0.1;
 const SCALE = 2.55;
-const TEXTURE_W = 3072;
-const TEXTURE_H = 4608;
-const MAP_W = 1024;
-const MAP_H = 1536;
+const TEXTURE_W = 1024;
+const TEXTURE_H = 1024;
+const MAP_W = 512;
+const MAP_H = 512;
 const PLANE_W_M = 42;
 const PLANE_L_M = 66;
 const NET_POST_HALF = DOUBLES_HALF + 0.92;
@@ -49,58 +49,66 @@ interface SurfacePalette {
   grain: number;
   bump: number;
   roughness: number;
+  envMapIntensity: number;
   stripe?: string;
 }
 
 interface SurfaceTextures {
   color: THREE.CanvasTexture;
   bump: THREE.CanvasTexture;
+  normal: THREE.CanvasTexture;
   roughness: THREE.CanvasTexture;
 }
 
 const PALETTES: Record<string, SurfacePalette> = {
   'australian-open': {
-    playing: '#1673b7',
-    surround: '#073845',
+    playing: '#0c4e7c',
+    surround: '#042b34',
     deep: '#03151f',
-    line: '#f5fbff',
-    lineAlpha: 0.8,
+    line: '#dce9ef',
+    lineAlpha: 0.72,
     grain: 0.06,
-    bump: 0.018,
-    roughness: 0.86,
+    bump: 0.014,
+    roughness: 0.58,
+    envMapIntensity: 0.18,
   },
   'roland-garros': {
-    playing: '#b65a2d',
-    surround: '#7a3318',
+    playing: '#774028',
+    surround: '#452216',
     deep: '#241007',
-    line: '#fff0dd',
-    lineAlpha: 0.72,
+    line: '#e0c9b3',
+    lineAlpha: 0.68,
     grain: 0.2,
-    bump: 0.075,
-    roughness: 0.96,
+    bump: 0.082,
+    roughness: 0.97,
+    envMapIntensity: 0.05,
   },
   wimbledon: {
-    playing: '#2f6936',
-    surround: '#173f27',
+    playing: '#1f462c',
+    surround: '#102b1d',
     deep: '#06180e',
-    line: '#f5f5e9',
-    lineAlpha: 0.76,
+    line: '#dde0cf',
+    lineAlpha: 0.66,
     grain: 0.1,
     bump: 0.035,
-    roughness: 0.91,
-    stripe: '#3f7a43',
+    roughness: 0.94,
+    envMapIntensity: 0.06,
+    stripe: '#2e5735',
   },
   'us-open': {
-    playing: '#17599e',
-    surround: '#356b39',
+    playing: '#0d3f72',
+    surround: '#244e2d',
     deep: '#041722',
-    line: '#f4f8f3',
-    lineAlpha: 0.8,
+    line: '#dce6df',
+    lineAlpha: 0.72,
     grain: 0.06,
-    bump: 0.02,
-    roughness: 0.84,
+    bump: 0.015,
+    roughness: 0.6,
+    envMapIntensity: 0.17,
   },
 };
+
+const surfaceTextureCache = new Map<string, SurfaceTextures>();
 
 function surfaceKey(slam: SlamId): string {
   if (slam.startsWith('australian')) return 'australian-open';
@@ -183,6 +191,10 @@ function drawSoftLine(
   g.restore();
 }
 
+function clamp255(value: number): number {
+  return Math.max(0, Math.min(255, Math.round(value)));
+}
+
 function lineNoise(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: () => number, alpha: number): void {
   g.save();
   g.globalCompositeOperation = 'destination-out';
@@ -191,6 +203,116 @@ function lineNoise(g: CanvasRenderingContext2D, x: number, y: number, w: number,
     g.fillRect(x + r() * w, y + r() * h, 1 + r() * 2, 1 + r() * 2);
   }
   g.restore();
+}
+
+function drawWornLine(
+  g: CanvasRenderingContext2D,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  width: number,
+  color: string,
+  key: string,
+  r: () => number,
+): void {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const length = Math.hypot(dx, dy) || 1;
+  const nx = -dy / length;
+  const ny = dx / length;
+  const soft = key === 'roland-garros' ? 1.95 : key === 'wimbledon' ? 1.75 : 1.45;
+  const coreAlpha = key === 'roland-garros' ? 0.82 : key === 'wimbledon' ? 0.78 : 0.94;
+
+  g.save();
+  g.lineCap = key === 'roland-garros' ? 'round' : 'square';
+  g.lineJoin = 'round';
+  g.strokeStyle = color;
+  g.globalAlpha = key === 'roland-garros' ? 0.26 : 0.18;
+  g.lineWidth = width * soft;
+  g.beginPath();
+  g.moveTo(x1, y1);
+  g.lineTo(x2, y2);
+  g.stroke();
+
+  g.globalAlpha = coreAlpha;
+  g.lineWidth = width;
+  g.beginPath();
+  const segments = 22;
+  for (let i = 0; i <= segments; i++) {
+    const t = i / segments;
+    const wander = (r() - 0.5) * width * (key === 'roland-garros' ? 0.2 : 0.12);
+    const px = x1 + dx * t + nx * wander;
+    const py = y1 + dy * t + ny * wander;
+    if (i === 0) g.moveTo(px, py);
+    else g.lineTo(px, py);
+  }
+  g.stroke();
+
+  const wearAlpha = key === 'roland-garros' ? 0.14 : key === 'wimbledon' ? 0.085 : 0.035;
+  lineNoise(
+    g,
+    Math.min(x1, x2) - width,
+    Math.min(y1, y2) - width,
+    Math.abs(dx) + width * 2,
+    Math.abs(dy) + width * 2,
+    r,
+    wearAlpha,
+  );
+  g.restore();
+}
+
+function drawClayDragArc(
+  g: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  rx: number,
+  ry: number,
+  rotate: number,
+  r: () => number,
+): void {
+  g.save();
+  g.translate(cx, cy);
+  g.rotate(rotate);
+  g.scale(rx, ry);
+  g.strokeStyle = 'rgba(255,204,154,0.16)';
+  g.lineWidth = 0.012;
+  for (let i = 0; i < 5; i++) {
+    const start = Math.PI * (0.08 + r() * 0.14);
+    const end = Math.PI * (0.72 + r() * 0.2);
+    g.beginPath();
+    g.arc(0, 0, 1 + i * 0.08, start, end);
+    g.stroke();
+  }
+  g.restore();
+}
+
+function drawFootScuffs(
+  g: CanvasRenderingContext2D,
+  x: (m: number) => number,
+  y: (m: number) => number,
+  w: (m: number) => number,
+  r: () => number,
+  color: string,
+  count: number,
+): void {
+  for (let i = 0; i < count; i++) {
+    const zone =
+      r() > 0.45
+        ? BASELINE_HALF - 1.2 + (r() - 0.5) * 1.4
+        : (r() > 0.5 ? SERVICE_FROM_NET : -SERVICE_FROM_NET) + (r() - 0.5) * 1.4;
+    const sx = (r() - 0.5) * SINGLES_WIDTH;
+    softEllipse(
+      g,
+      x(sx),
+      y(zone * (r() > 0.5 ? 1 : -1)),
+      w(0.18 + r() * 0.34),
+      w(0.06 + r() * 0.15),
+      color,
+      0.1 + r() * 0.12,
+      (r() - 0.5) * 1.7,
+    );
+  }
 }
 
 function buildSurfaceTextures(key: string, theme: SlamTheme): SurfaceTextures {
@@ -232,23 +354,31 @@ function buildSurfaceTextures(key: string, theme: SlamTheme): SurfaceTextures {
   }
 
   if (key === 'wimbledon') {
-    for (let i = -8; i < 9; i++) {
-      const stripeX = x(i * 1.36);
-      const stripeW = w(1.36);
+    for (let i = -9; i < 10; i++) {
+      const stripeX = x(i * 1.18);
+      const stripeW = w(1.18);
       const grd = g.createLinearGradient(stripeX, 0, stripeX + stripeW, 0);
       const even = i % 2 === 0;
       grd.addColorStop(0, 'rgba(255,255,255,0)');
-      grd.addColorStop(0.22, even ? rgba(p.stripe!, 0.38) : 'rgba(0,0,0,0.11)');
-      grd.addColorStop(0.78, even ? rgba(p.stripe!, 0.28) : 'rgba(255,255,255,0.035)');
+      grd.addColorStop(0.2, even ? rgba(p.stripe!, 0.25) : 'rgba(0,0,0,0.08)');
+      grd.addColorStop(0.8, even ? rgba(p.stripe!, 0.18) : 'rgba(255,255,255,0.018)');
       grd.addColorStop(1, 'rgba(255,255,255,0)');
       g.fillStyle = grd;
       g.fillRect(stripeX, y(BASELINE_HALF), stripeW, w(COURT_LENGTH));
     }
-    const worn = rgba('#d7c895', 0.28);
-    softEllipse(g, x(0), y(BASELINE_HALF - 1.3), w(3.9), w(1.0), worn, 0.9);
-    softEllipse(g, x(0), y(-BASELINE_HALF + 1.3), w(3.9), w(1.0), worn, 0.78);
-    softEllipse(g, x(-1.9), y(SERVICE_FROM_NET), w(1.4), w(0.55), worn, 0.34);
-    softEllipse(g, x(1.9), y(-SERVICE_FROM_NET), w(1.4), w(0.55), worn, 0.34);
+    const worn = rgba('#8f7557', 0.28);
+    softEllipse(g, x(0), y(BASELINE_HALF - 1.18), w(4.9), w(0.9), worn, 0.74);
+    softEllipse(g, x(0), y(-BASELINE_HALF + 1.18), w(4.7), w(0.88), worn, 0.68);
+    softEllipse(g, x(-1.65), y(SERVICE_FROM_NET * 0.52), w(1.45), w(0.46), worn, 0.32);
+    softEllipse(g, x(1.65), y(SERVICE_FROM_NET * 0.52), w(1.45), w(0.46), worn, 0.28);
+    softEllipse(g, x(-1.65), y(-SERVICE_FROM_NET * 0.52), w(1.45), w(0.46), worn, 0.28);
+    softEllipse(g, x(1.65), y(-SERVICE_FROM_NET * 0.52), w(1.45), w(0.46), worn, 0.32);
+    for (let i = 0; i < 4200; i++) {
+      const sx = x((r() - 0.5) * DOUBLES_WIDTH);
+      const sy = y((r() - 0.5) * COURT_LENGTH);
+      g.fillStyle = r() > 0.5 ? 'rgba(173,190,151,0.035)' : 'rgba(4,32,13,0.038)';
+      g.fillRect(sx, sy, 1 + r() * 2.5, 1);
+    }
   }
 
   if (key === 'roland-garros') {
@@ -261,9 +391,13 @@ function buildSurfaceTextures(key: string, theme: SlamTheme): SurfaceTextures {
       const sz = (r() > 0.5 ? SERVICE_FROM_NET : -SERVICE_FROM_NET) + (r() - 0.5) * 1.8;
       drawSoftLine(g, x(sx), y(sz), x(sx + (r() - 0.5) * 3.2), y(sz + (r() - 0.5) * 0.72), w(0.035 + r() * 0.04), '#ffd0a2', 0.11 + r() * 0.09);
     }
-    softEllipse(g, x(0), y(BASELINE_HALF - 1.2), w(4.3), w(1.15), '#f2a166', 0.22);
-    softEllipse(g, x(0), y(-BASELINE_HALF + 1.2), w(4.3), w(1.15), '#f2a166', 0.18);
-    softEllipse(g, x(0), y(0), w(2.8), w(1.1), '#e07c45', 0.08);
+    softEllipse(g, x(0), y(BASELINE_HALF - 1.2), w(4.3), w(1.15), '#9d6746', 0.16);
+    softEllipse(g, x(0), y(-BASELINE_HALF + 1.2), w(4.3), w(1.15), '#9d6746', 0.13);
+    softEllipse(g, x(0), y(0), w(2.8), w(1.1), '#8c5137', 0.055);
+    for (let i = 0; i < 18; i++) {
+      drawClayDragArc(g, x((r() - 0.5) * 6.8), y((r() - 0.5) * 18), w(0.85 + r() * 1.65), w(0.18 + r() * 0.36), (r() - 0.5) * 1.8, r);
+    }
+    drawFootScuffs(g, x, y, w, r, '#b88462', 72);
   }
 
   if (key === 'australian-open' || key === 'us-open') {
@@ -272,10 +406,19 @@ function buildSurfaceTextures(key: string, theme: SlamTheme): SurfaceTextures {
     }
     g.save();
     g.globalCompositeOperation = 'overlay';
-    for (let i = 0; i < 9000; i++) {
-      const a = 0.018 + r() * 0.035;
+    for (let i = 0; i < 12000; i++) {
+      const a = 0.014 + r() * 0.03;
       g.fillStyle = r() > 0.5 ? `rgba(255,255,255,${a})` : `rgba(0,0,0,${a})`;
       g.fillRect(r() * TEXTURE_W, r() * TEXTURE_H, 1, 1);
+    }
+    g.restore();
+    g.save();
+    g.globalCompositeOperation = 'screen';
+    for (let i = 0; i < 1200; i++) {
+      const sx = x((r() - 0.5) * DOUBLES_WIDTH);
+      const sy = y((r() - 0.5) * COURT_LENGTH);
+      g.fillStyle = `rgba(210,226,232,${0.01 + r() * 0.014})`;
+      g.fillRect(sx, sy, 1 + r() * 2, 1);
     }
     g.restore();
   }
@@ -285,8 +428,8 @@ function buildSurfaceTextures(key: string, theme: SlamTheme): SurfaceTextures {
     g.globalCompositeOperation = 'overlay';
     for (let i = 0; i < 26000; i++) {
       const size = r() > 0.94 ? 1.8 + r() * 1.5 : 1;
-      const a = 0.028 + r() * 0.09;
-      g.fillStyle = r() > 0.48 ? `rgba(255,218,176,${a})` : `rgba(80,31,14,${a * 0.8})`;
+      const a = 0.018 + r() * 0.06;
+      g.fillStyle = r() > 0.48 ? `rgba(190,142,103,${a})` : `rgba(55,24,15,${a * 0.75})`;
       g.fillRect(r() * TEXTURE_W, r() * TEXTURE_H, size, size);
     }
     g.restore();
@@ -296,37 +439,57 @@ function buildSurfaceTextures(key: string, theme: SlamTheme): SurfaceTextures {
     g.save();
     g.globalCompositeOperation = 'overlay';
     for (let i = 0; i < 13000; i++) {
-      const a = 0.016 + r() * 0.06;
-      g.fillStyle = r() > 0.44 ? `rgba(207,224,166,${a})` : `rgba(0,44,18,${a})`;
+      const a = 0.01 + r() * 0.035;
+      g.fillStyle = r() > 0.44 ? `rgba(149,170,125,${a})` : `rgba(0,34,15,${a})`;
       g.fillRect(r() * TEXTURE_W, r() * TEXTURE_H, 1 + r() * 2, 1);
     }
     g.restore();
+    for (const zc of [BASELINE_HALF - 1.05, -BASELINE_HALF + 1.05]) {
+      softEllipse(g, x(0), y(zc), w(4.8), w(0.72), rgba('#80664b', 0.34), 0.58);
+      for (let i = 0; i < 160; i++) {
+        const sx = x((r() - 0.5) * 4.9);
+        const sy = y(zc + (r() - 0.5) * 0.92);
+        g.fillStyle = r() > 0.42 ? 'rgba(122,94,67,0.12)' : 'rgba(176,162,123,0.07)';
+        g.fillRect(sx, sy, 1 + r() * 2, 1 + r() * 1.2);
+      }
+    }
+    for (const [sx, sz] of [
+      [-1.5, SERVICE_FROM_NET * 0.52],
+      [1.5, SERVICE_FROM_NET * 0.52],
+      [-1.5, -SERVICE_FROM_NET * 0.52],
+      [1.5, -SERVICE_FROM_NET * 0.52],
+    ]) {
+      softEllipse(g, x(sx), y(sz), w(1.45), w(0.42), rgba('#80664b', 0.24), 0.52);
+    }
   }
 
+  g.fillStyle =
+    key === 'wimbledon'
+      ? 'rgba(1,10,6,0.2)'
+      : key === 'roland-garros'
+        ? 'rgba(15,8,5,0.16)'
+        : 'rgba(2,9,16,0.17)';
+  g.fillRect(0, 0, TEXTURE_W, TEXTURE_H);
+
   g.save();
-  g.lineCap = key === 'roland-garros' ? 'round' : 'square';
-  g.lineJoin = 'round';
-  g.strokeStyle = rgba(p.line, p.lineAlpha);
-  g.shadowColor = key === 'roland-garros' ? rgba('#d77b45', 0.3) : rgba(theme.flare, 0.18);
-  g.shadowBlur = key === 'roland-garros' ? 4.5 : 2.8;
+  g.shadowColor = key === 'roland-garros' ? rgba('#7b3219', 0.36) : rgba(theme.flare, 0.14);
+  g.shadowBlur = key === 'roland-garros' ? 3.5 : 2.2;
 
   const lineH = (x1: number, x2: number, zm: number, width = LINE) => {
-    g.lineWidth = w(width);
-    g.beginPath();
-    g.moveTo(x(x1), y(zm));
-    g.lineTo(x(x2), y(zm));
-    g.stroke();
-    if (key === 'roland-garros') lineNoise(g, x(x1), y(zm) - w(width) * 1.2, w(x2 - x1), w(width) * 2.4, r, 0.12);
-    if (key === 'wimbledon') lineNoise(g, x(x1), y(zm) - w(width) * 0.9, w(x2 - x1), w(width) * 1.8, r, 0.06);
+    const px1 = x(x1);
+    const px2 = x(x2);
+    const py = y(zm);
+    const ww = w(width * (key === 'wimbledon' ? 0.92 : key === 'roland-garros' ? 1.04 : 1));
+    if (key === 'roland-garros') drawSoftLine(g, px1, py, px2, py, ww * 1.8, '#d58a5c', 0.22);
+    drawWornLine(g, px1, py, px2, py, ww, rgba(p.line, p.lineAlpha), key, r);
   };
   const lineV = (xm: number, z1: number, z2: number, width = LINE) => {
-    g.lineWidth = w(width);
-    g.beginPath();
-    g.moveTo(x(xm), y(z1));
-    g.lineTo(x(xm), y(z2));
-    g.stroke();
-    if (key === 'roland-garros') lineNoise(g, x(xm) - w(width) * 1.2, y(z1), w(width) * 2.4, w(z1 - z2), r, 0.12);
-    if (key === 'wimbledon') lineNoise(g, x(xm) - w(width) * 0.9, y(z1), w(width) * 1.8, w(z1 - z2), r, 0.06);
+    const px = x(xm);
+    const py1 = y(z1);
+    const py2 = y(z2);
+    const ww = w(width * (key === 'wimbledon' ? 0.92 : key === 'roland-garros' ? 1.04 : 1));
+    if (key === 'roland-garros') drawSoftLine(g, px, py1, px, py2, ww * 1.8, '#d58a5c', 0.22);
+    drawWornLine(g, px, py1, px, py2, ww, rgba(p.line, p.lineAlpha), key, r);
   };
 
   lineV(-DOUBLES_HALF, -BASELINE_HALF, BASELINE_HALF);
@@ -376,43 +539,96 @@ function buildSurfaceTextures(key: string, theme: SlamTheme): SurfaceTextures {
   g.fillRect(0, 0, TEXTURE_W, TEXTURE_H);
   g.restore();
 
-  const bump = buildUtilityMap(key, 'bump');
-  const roughness = buildUtilityMap(key, 'roughness');
+  const { bump, normal, roughness } = buildUtilityTextures(key);
   const color = new THREE.CanvasTexture(c);
   color.colorSpace = THREE.SRGBColorSpace;
   color.anisotropy = 8;
   color.needsUpdate = true;
-  return { color, bump, roughness };
+  return { color, bump, normal, roughness };
 }
 
-function buildUtilityMap(key: string, kind: 'bump' | 'roughness'): THREE.CanvasTexture {
-  const c = document.createElement('canvas');
-  c.width = MAP_W;
-  c.height = MAP_H;
-  const g = c.getContext('2d')!;
-  const img = g.createImageData(MAP_W, MAP_H);
-  const r = rand((kind === 'bump' ? 45017 : 71693) + key.length * 97);
+function buildUtilityTextures(key: string): Pick<SurfaceTextures, 'bump' | 'normal' | 'roughness'> {
+  const height = new Float32Array(MAP_W * MAP_H);
+  const rough = new Float32Array(MAP_W * MAP_H);
+  const r = rand(45017 + key.length * 97);
   for (let y = 0; y < MAP_H; y++) {
     for (let x = 0; x < MAP_W; x++) {
       const u = x / MAP_W;
       const v = y / MAP_H;
       const slow = Math.sin(u * 24 + Math.sin(v * 7) * 1.7) * 0.5 + Math.sin(v * 19 + u * 4.5) * 0.5;
       const fine = r() - 0.5;
-      let value = 128;
-      if (key === 'roland-garros') value = kind === 'bump' ? 128 + slow * 18 + fine * 74 : 225 + slow * 8 + fine * 20;
-      else if (key === 'wimbledon') value = kind === 'bump' ? 122 + slow * 10 + fine * 34 : 206 + slow * 8 + fine * 16;
-      else value = kind === 'bump' ? 126 + slow * 5 + fine * 24 : 188 + slow * 12 + fine * 20;
-      const i = (y * MAP_W + x) * 4;
-      img.data[i] = img.data[i + 1] = img.data[i + 2] = Math.max(0, Math.min(255, value));
-      img.data[i + 3] = 255;
+      const stripe = key === 'wimbledon' ? (Math.sin(u * Math.PI * 18) > 0 ? 1 : -1) : 0;
+      const nearBaseline = Math.max(
+        Math.exp(-((v - 0.32) ** 2) / 0.0018),
+        Math.exp(-((v - 0.68) ** 2) / 0.0018),
+      );
+      const centreWear = key === 'wimbledon' ? Math.exp(-((u - 0.5) ** 2) / 0.015) * Math.exp(-((v - 0.5) ** 2) / 0.05) : 0;
+      const i = y * MAP_W + x;
+      if (key === 'roland-garros') {
+        height[i] = 128 + slow * 18 + fine * 78 + nearBaseline * 16;
+        rough[i] = 230 + slow * 7 + fine * 18;
+      } else if (key === 'wimbledon') {
+        height[i] = 122 + slow * 9 + fine * 36 + stripe * 5 + nearBaseline * 12 + centreWear * 10;
+        rough[i] = 218 + slow * 6 + fine * 14 + stripe * 5 + nearBaseline * 16;
+      } else {
+        height[i] = 126 + slow * 5 + fine * 20;
+        rough[i] = 156 + slow * 18 + fine * 22;
+      }
     }
   }
-  g.putImageData(img, 0, 0);
-  const tex = new THREE.CanvasTexture(c);
-  tex.colorSpace = THREE.NoColorSpace;
-  tex.anisotropy = 8;
-  tex.needsUpdate = true;
-  return tex;
+
+  const makeGrayTexture = (values: Float32Array) => {
+    const c = document.createElement('canvas');
+    c.width = MAP_W;
+    c.height = MAP_H;
+    const g = c.getContext('2d')!;
+    const img = g.createImageData(MAP_W, MAP_H);
+    for (let i = 0; i < values.length; i++) {
+      const o = i * 4;
+      const v = clamp255(values[i]!);
+      img.data[o] = img.data[o + 1] = img.data[o + 2] = v;
+      img.data[o + 3] = 255;
+    }
+    g.putImageData(img, 0, 0);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.NoColorSpace;
+    tex.anisotropy = 8;
+    tex.needsUpdate = true;
+    return tex;
+  };
+
+  const bump = makeGrayTexture(height);
+  const roughness = makeGrayTexture(rough);
+  const nc = document.createElement('canvas');
+  nc.width = MAP_W;
+  nc.height = MAP_H;
+  const ng = nc.getContext('2d')!;
+  const nimg = ng.createImageData(MAP_W, MAP_H);
+  const at = (x: number, y: number) => height[Math.max(0, Math.min(MAP_H - 1, y)) * MAP_W + ((x + MAP_W) % MAP_W)]! / 255;
+  const scale = key === 'roland-garros' ? 6.2 : key === 'wimbledon' ? 4.2 : 2.2;
+  for (let y = 0; y < MAP_H; y++) {
+    for (let x = 0; x < MAP_W; x++) {
+      const dzdx = (at(x + 1, y) - at(x - 1, y)) * scale;
+      const dzdy = (at(x, y + 1) - at(x, y - 1)) * scale;
+      let nx = -dzdx;
+      let ny = -dzdy;
+      const nz = 1;
+      const inv = 1 / Math.hypot(nx, ny, nz);
+      nx *= inv;
+      ny *= inv;
+      const o = (y * MAP_W + x) * 4;
+      nimg.data[o] = clamp255((nx * 0.5 + 0.5) * 255);
+      nimg.data[o + 1] = clamp255((ny * 0.5 + 0.5) * 255);
+      nimg.data[o + 2] = clamp255((nz * inv * 0.5 + 0.5) * 255);
+      nimg.data[o + 3] = 255;
+    }
+  }
+  ng.putImageData(nimg, 0, 0);
+  const normal = new THREE.CanvasTexture(nc);
+  normal.colorSpace = THREE.NoColorSpace;
+  normal.anisotropy = 8;
+  normal.needsUpdate = true;
+  return { bump, normal, roughness };
 }
 
 function netTop(x: number): number {
@@ -813,7 +1029,7 @@ export function createCourt(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
     roughness: 0.9,
     metalness: 0,
     transparent: true,
-    opacity: 0.84,
+    opacity: 0.74,
     depthWrite: false,
     polygonOffset: true,
     polygonOffsetFactor: -1,
@@ -846,15 +1062,18 @@ export function createCourt(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
   net.group.scale.setScalar(SCALE);
   group.add(net.group);
 
-  const textures = new Map<string, SurfaceTextures>();
+  const usedTextureKeys = new Set<string>();
 
   function surfaceFor(key: string, theme: SlamTheme): SurfaceTextures {
-    let tex = textures.get(key);
+    let tex = surfaceTextureCache.get(key);
     if (!tex) {
       tex = buildSurfaceTextures(key, theme);
+      surfaceTextureCache.set(key, tex);
+    }
+    if (!usedTextureKeys.has(key)) {
       const aniso = renderer.capabilities.getMaxAnisotropy();
-      for (const t of [tex.color, tex.bump, tex.roughness]) t.anisotropy = aniso;
-      textures.set(key, tex);
+      for (const t of [tex.color, tex.bump, tex.normal, tex.roughness]) t.anisotropy = aniso;
+      usedTextureKeys.add(key);
     }
     return tex;
   }
@@ -865,11 +1084,14 @@ export function createCourt(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
     const tex = surfaceFor(key, theme);
     mat.map = tex.color;
     mat.bumpMap = tex.bump;
+    mat.normalMap = tex.normal;
     mat.roughnessMap = tex.roughness;
     mat.bumpScale = palette.bump;
+    mat.normalScale = new THREE.Vector2(palette.bump * 1.15, palette.bump * 1.15);
     mat.roughness = palette.roughness;
-    mat.color.set(theme.chalk).lerp(new THREE.Color(theme.groundDeep), 0.08);
-    mat.emissive = new THREE.Color(theme.groundDeep).multiplyScalar(0.08);
+    mat.envMapIntensity = palette.envMapIntensity;
+    mat.color.set('#aeb3ad');
+    mat.emissive = new THREE.Color(theme.groundDeep).multiplyScalar(0.035);
     mat.needsUpdate = true;
     net.setTheme(theme);
   }
@@ -881,10 +1103,14 @@ export function createCourt(scene: THREE.Scene, renderer: THREE.WebGLRenderer): 
       surfaceFor(surfaceKey(slam), theme);
     },
     dispose: () => {
-      textures.forEach((t) => {
+      usedTextureKeys.forEach((key) => {
+        const t = surfaceTextureCache.get(key);
+        if (!t) return;
         t.color.dispose();
         t.bump.dispose();
+        t.normal.dispose();
         t.roughness.dispose();
+        surfaceTextureCache.delete(key);
       });
       net.dispose();
       geo.dispose();

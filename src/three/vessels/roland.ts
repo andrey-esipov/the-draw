@@ -6,10 +6,13 @@ import {
   finalizeVessel,
   flute,
   handlePair,
+  interiorLiner,
   isWomens,
   metalMat,
+  mergePrepared,
   p,
   smoothProfile,
+  tarnishGeometry,
   toColor,
 } from './index';
 
@@ -18,12 +21,25 @@ export function createRolandVessel(slam: SlamId, opts: VesselOpts): THREE.Group 
 }
 
 function silverMaterials(opts: VesselOpts) {
-  const base = toColor(opts.metal).lerp(new THREE.Color('#e2e6ea'), 0.5);
-  const silver = metalMat(base, { envMap: opts.envMap, roughness: 0.21, envMapIntensity: 1.45, clearcoat: 0.45 });
-  const bright = metalMat(base.clone().lerp(new THREE.Color('#ffffff'), 0.22), {
+  const base = new THREE.Color('#c6d0d8').lerp(toColor(opts.metal), 0.025);
+  const silver = metalMat(base, {
     envMap: opts.envMap,
-    roughness: 0.14,
-    envMapIntensity: 1.7,
+    roughness: 0.05,
+    envMapIntensity: 0.72,
+    clearcoat: 0,
+    textureKind: 'silver',
+    normalScale: 0.06,
+    doubleSide: true,
+  });
+  const bright = metalMat(base.clone().lerp(new THREE.Color('#ffffff'), 0.4), {
+    envMap: opts.envMap,
+    roughness: 0.036,
+    envMapIntensity: 0.98,
+    clearcoat: 0,
+    textureKind: 'silver',
+    normalScale: 0.045,
+    aoIntensity: 0.48,
+    doubleSide: true,
   });
   return { silver, bright };
 }
@@ -36,10 +52,9 @@ function mousquetaires(opts: VesselOpts): THREE.Group {
   root.name = 'vessel-roland-men';
   const content = new THREE.Group();
   const { silver, bright } = silverMaterials(opts);
+  const silverParts: THREE.BufferGeometry[] = [];
+  const brightParts: THREE.BufferGeometry[] = [];
 
-  // A tall goblet: spreading decorated foot, knopped stem, deep rounded bowl,
-  // and a wide everted mouth. Proportion is taller than wide (real cup is
-  // 40cm x 19cm) — a chalice, not a squat coupe.
   const control = [
     p(0.0, 0.0),
     p(0.34, 0.0),
@@ -67,27 +82,31 @@ function mousquetaires(opts: VesselOpts): THREE.Group {
     p(0.06, 0.99),
     p(0.05, 0.99),
   ];
-  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 9), 96);
+  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 13), 128);
   flute(bodyGeo, 20, 0.014, 0, (t) => Math.max(0, Math.sin(Math.max(0, (t - 0.28) / 0.46) * Math.PI)));
   flute(bodyGeo, 22, 0.02, 0, (t) => Math.pow(Math.max(0, 1 - t / 0.22), 1.4));
   flute(bodyGeo, 60, 0.003, 0, (t) => Math.max(0, Math.sin(Math.min(t / 0.6, 1) * Math.PI)));
+  tarnishGeometry(bodyGeo, [
+    { y: 0.055, width: 0.03, strength: 0.1 },
+    { y: 0.53, width: 0.045, strength: 0.14 },
+    { y: 0.72, width: 0.035, strength: 0.12 },
+    { y: 0.94, width: 0.022, strength: 0.08 },
+  ], 20);
   bodyGeo.computeVertexNormals();
-  content.add(new THREE.Mesh(bodyGeo, silver));
+  silverParts.push(bodyGeo);
 
-  // Vine-leaf border at the wide aperture (generic gadroon, no wordmark).
   const rimBead = beadedRing(0.475, 0.02, 56, 1.05);
-  content.add(new THREE.Mesh(rimBead, bright));
+  brightParts.push(rimBead);
   const bellyBead = beadedRing(0.478, 0.014, 60, 0.6);
-  content.add(new THREE.Mesh(bellyBead, bright));
+  brightParts.push(bellyBead);
   const neckBand = new THREE.TorusGeometry(0.408, 0.014, 8, 84);
   neckBand.rotateX(Math.PI / 2);
   neckBand.translate(0, 0.885, 0);
   neckBand.computeVertexNormals();
-  content.add(new THREE.Mesh(neckBand, bright));
+  brightParts.push(neckBand);
+  brightParts.push(interiorLiner(0.44, 1.045, 0.11, 0.38));
+  silverParts.push(chasedLeafBand(0.455, 0.68, 42, 0.03), chasedLeafBand(0.43, 0.79, 36, 0.024));
 
-  // Swan-shaped handles: an upright loop hugging the body, rising from the
-  // belly to a swan-neck curl at the rim — the cup's signature. Kept compact
-  // so it never droops below its lower root.
   const hp = handlePair(
     [
       new THREE.Vector3(0.43, 0.99, 0),
@@ -104,15 +123,17 @@ function mousquetaires(opts: VesselOpts): THREE.Group {
     (t) => 0.6 + 0.8 * Math.sin(t * Math.PI),
   );
   hp.scale(1, 1, 0.62);
-  content.add(new THREE.Mesh(hp, silver));
+  silverParts.push(hp);
 
-  // Swan-head scroll where each neck meets the rim.
   for (const side of [-1, 1]) {
     const head = new THREE.SphereGeometry(0.028, 12, 10);
     head.scale(1.3, 1, 0.7);
     head.translate(side * 0.56, 1.02, 0);
-    content.add(new THREE.Mesh(head, bright));
+    brightParts.push(head);
   }
+
+  content.add(new THREE.Mesh(mergePrepared(silverParts), silver));
+  content.add(new THREE.Mesh(mergePrepared(brightParts), bright));
 
   return finalizeVessel(root, content);
 }
@@ -125,6 +146,8 @@ function suzanneLenglen(opts: VesselOpts): THREE.Group {
   root.name = 'vessel-roland-women';
   const content = new THREE.Group();
   const { silver, bright } = silverMaterials(opts);
+  const silverParts: THREE.BufferGeometry[] = [];
+  const brightParts: THREE.BufferGeometry[] = [];
 
   const steps = [
     { r: 0.35, h: 0.05, y: 0.025 },
@@ -134,7 +157,7 @@ function suzanneLenglen(opts: VesselOpts): THREE.Group {
   for (const s of steps) {
     const disc = new THREE.CylinderGeometry(s.r, s.r * 1.02, s.h, 64);
     disc.translate(0, s.y, 0);
-    content.add(new THREE.Mesh(disc, s === steps[2] ? bright : silver));
+    (s === steps[2] ? brightParts : silverParts).push(disc);
   }
 
   const control = [
@@ -159,20 +182,25 @@ function suzanneLenglen(opts: VesselOpts): THREE.Group {
     p(0.1, 0.96),
     p(0.05, 0.96),
   ];
-  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 9), 96);
+  const bodyGeo = new THREE.LatheGeometry(smoothProfile(control, 12), 120);
   flute(bodyGeo, 24, 0.01, 0, (t) => Math.max(0, Math.sin(Math.max(0, (t - 0.2) / 0.5) * Math.PI)));
   flute(bodyGeo, 16, 0.014, 0, (t) => Math.pow(Math.max(0, 1 - (t - 0.12) / 0.18), 1.3));
+  tarnishGeometry(bodyGeo, [
+    { y: 0.1, width: 0.03, strength: 0.08 },
+    { y: 0.52, width: 0.04, strength: 0.12 },
+    { y: 0.76, width: 0.03, strength: 0.09 },
+  ], 24);
   bodyGeo.computeVertexNormals();
-  content.add(new THREE.Mesh(bodyGeo, silver));
+  silverParts.push(bodyGeo);
 
-  content.add(new THREE.Mesh(beadedRing(0.4, 0.012, 52, 0.56), bright));
+  brightParts.push(beadedRing(0.4, 0.012, 52, 0.56));
   const neckBand = new THREE.TorusGeometry(0.323, 0.01, 8, 72);
   neckBand.rotateX(Math.PI / 2);
   neckBand.translate(0, 0.83, 0);
   neckBand.computeVertexNormals();
-  content.add(new THREE.Mesh(neckBand, bright));
+  brightParts.push(neckBand);
+  silverParts.push(chasedLeafBand(0.36, 0.68, 34, 0.018));
 
-  // Compact art-deco handles: a squared loop from belly shoulder to neck.
   const hp = handlePair(
     [
       new THREE.Vector3(0.33, 0.85, 0),
@@ -188,8 +216,35 @@ function suzanneLenglen(opts: VesselOpts): THREE.Group {
     (t) => 0.7 + 0.6 * Math.sin(t * Math.PI),
   );
   hp.scale(1, 1, 0.55);
-  content.add(new THREE.Mesh(hp, silver));
+  silverParts.push(hp);
+
+  content.add(new THREE.Mesh(mergePrepared(silverParts), silver));
+  content.add(new THREE.Mesh(mergePrepared(brightParts), bright));
 
   return finalizeVessel(root, content);
 }
 
+function chasedLeafBand(radius: number, y: number, count: number, size: number): THREE.BufferGeometry {
+  const parts: THREE.BufferGeometry[] = [];
+  for (let i = 0; i < count; i++) {
+    const a = (i / count) * Math.PI * 2;
+    // A repeating pair of laurel leaves canted into a continuous ribbon, rather
+    // than isolated specks that catch the key light as scattered white dots.
+    for (const off of [-0.35, 0.35]) {
+      const leaf = new THREE.SphereGeometry(size, 6, 4);
+      leaf.scale(2.1, 0.26, 0.5);
+      leaf.rotateZ(off > 0 ? 0.6 : -0.6);
+      leaf.rotateY(a);
+      leaf.translate(Math.cos(a) * radius, y + off * size, Math.sin(a) * radius);
+      parts.push(leaf);
+    }
+  }
+  const merged = mergePrepared(parts);
+  // Chasing sits proud of the surface but holds tarnish in its relief, so read it
+  // as slightly darkened silver, not a bright applied bead.
+  const pos = merged.getAttribute('position') as THREE.BufferAttribute;
+  const colors: number[] = [];
+  for (let i = 0; i < pos.count; i++) colors.push(0.82, 0.82, 0.82);
+  merged.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  return merged;
+}

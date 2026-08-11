@@ -26,9 +26,11 @@ interface Props {
   focusToken: number;
   onPick: (matchId: string | null) => void;
   onRunEnd: () => void;
+  /** True when the board is taking over a trophy the title screen already placed. */
+  settled?: boolean;
 }
 
-export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPick, onRunEnd }: Props) {
+export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPick, onRunEnd, settled }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const api = useRef<{
@@ -53,7 +55,13 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     // Reveal the freshly-built slam through a light-wipe rather than a hard
     // cut. The world is already set above, so the wash resolves straight into
     // it, hiding both the palette swap and 127 plates changing their text.
-    void stage.beginTransition(reduced ? 300 : 760, { reduced });
+    //
+    // Except when the title screen hands over. There the cup is already being
+    // walked in under a dark dissolve, and the board draws itself out from the
+    // final — a white wash on top of that is a third handover fighting the
+    // other two, and seen through the dissolve it turns the whole frame to
+    // grey mud. One handover at a time.
+    if (settled !== true) void stage.beginTransition(reduced ? 300 : 760, { reduced });
 
     const layout = buildBracketLayout(draw);
     const plates = createPlates(layout, draw, theme);
@@ -82,10 +90,26 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     // last thing to arrive — so the first five seconds read as a broadcast
     // opening rather than a page that finished loading.
     const ARRIVE = 2600;
+    // The board draws itself in from the final outward. It runs on its own
+    // clock rather than the camera's, because arriving from the title screen
+    // skips the arrival entirely — and that is the path most people take.
+    const BUILD = 2050;
+    const BUILD_DELAY = settled === true ? 240 : 90;
+    let buildAt = 0;
+    let built = reduced;
+    plates.setBuild(reduced ? 1 : 0);
+    connectors.setBuild(reduced ? 1 : 0);
     let arriveAt = 0;
-    let arrived = reduced;
+    // Arriving from the title screen, the trophy has just been walked into
+    // place and the board is crossfading in around it. Flying the camera in on
+    // top of that would move the one object that has to stay still.
+    let arrived = reduced || settled === true;
     let landed = reduced;
-    podium.setReveal(reduced ? 1 : 0);
+    // Order matters: this used to run after the line above and reset the reveal
+    // to zero every time, so a trophy walked in from the title screen was set
+    // present and then immediately hidden, with no arrival left to bring it
+    // back. The payoff of the whole flow was an empty plinth.
+    podium.setReveal(arrived ? 1 : 0);
 
     const controls = createControls(stage.camera, host, layout.bounds);
     controls.fit(w / h);
@@ -263,14 +287,31 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       // trophy fade in over a frame they are already flying.
       if (!arrived && (controls.hasMoved || running)) { arrived = true; podium.setReveal(1); }
 
+      // The build is never cancelled by a camera grab — half a bracket is not a
+      // state anyone should be left holding. It only ever runs to completion.
+      if (!built) {
+        if (!buildAt) buildAt = now + BUILD_DELAY;
+        const b = Math.min(1, Math.max(0, (now - buildAt) / BUILD));
+        plates.setBuild(b);
+        connectors.setBuild(b);
+        if (b >= 1) built = true;
+      }
+
       if (!arrived) {
         if (!arriveAt) arriveAt = now;
         const t = Math.min(1, (now - arriveAt) / ARRIVE);
         const ease = t * t * (3 - 2 * t);
         const rest = controls.restPose();
+        // Pure dolly on Z. The resting whole-draw frame already views the board
+        // at a shallow, near-horizontal elevation, so the floor sits close to
+        // grazing and the round-one thread runs edge-on along the lower-left. The
+        // old arrival dropped the camera below that line on its way in: the floor
+        // filled the frame as a flat grey wash and the thread bloomed into a
+        // white sweep. Dollying straight in holds the resting elevation for the
+        // whole move, so no frame rakes the floor and every one holds as a still.
         stage.camera.position.set(
           rest.pos.x,
-          rest.pos.y - (1 - ease) * 2.8,
+          rest.pos.y,
           rest.pos.z + (1 - ease) * 8.4,
         );
         stage.camera.lookAt(rest.look);
@@ -318,6 +359,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
 
       podium.update(now);
       plates.updateDetail(stage.camera, h);
+      route?.syncScale(stage.camera, h);
       stage.render();
       bootDone();
     }

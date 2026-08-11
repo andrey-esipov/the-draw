@@ -11,6 +11,8 @@ export interface Route {
   curve: THREE.Curve<THREE.Vector3> | null;
   /** 0 → 1. Draws the thread on, then holds it lit. */
   setProgress: (t: number) => void;
+  /** Match the glow width to the board's on-screen scale, so it never smears. */
+  syncScale: (camera: THREE.PerspectiveCamera, viewportH: number) => void;
   resize: (w: number, h: number) => void;
   dispose: () => void;
 }
@@ -179,7 +181,7 @@ export function createRoute(
   const group = new THREE.Group();
   const curve = routeCurve(path, apex);
   if (!curve) {
-    return { group, curve: null, setProgress: () => {}, resize: () => {}, dispose: () => group.removeFromParent() };
+    return { group, curve: null, setProgress: () => {}, syncScale: () => {}, resize: () => {}, dispose: () => group.removeFromParent() };
   }
 
   const colour = new THREE.Color(champion ? theme.flare : theme.trace);
@@ -188,7 +190,7 @@ export function createRoute(
   // them at exactly the same width, so there is no seam to see.
   const totalLength = Math.max(EPS, curve.getLength());
   const sampleCount = Math.max(96, Math.ceil(totalLength * 22));
-  const lines: { geo: LineGeometry; mat: LineMaterial }[] = [];
+  const lines: { geo: LineGeometry; mat: LineMaterial; base: number }[] = [];
 
   const make = (width: number, opacity: number) => {
     const sampled = curve.getSpacedPoints(sampleCount);
@@ -212,7 +214,7 @@ export function createRoute(
     line.renderOrder = 8;
     line.layers.enable(BLOOM_LAYER);
     group.add(line);
-    const out = { geo, mat };
+    const out = { geo, mat, base: width };
     lines.push(out);
     return out;
   };
@@ -267,10 +269,25 @@ export function createRoute(
   }
   setProgress(0);
 
+  // A world point near the board centre, to read how far the camera is standing.
+  const boardAnchor = new THREE.Vector3(0, 0.35, -0.5);
+  // Pixels a world unit spans at the resting desktop framing. Above it the glow
+  // holds its authored width; below it — the board pulled back on a phone, where
+  // a card is a few pixels tall — the width scales down with the board so the
+  // thread stays a line and never becomes a highlighter over the sheet.
+  const REF_PX_PER_UNIT = 18;
+  function syncScale(camera: THREE.PerspectiveCamera, viewportH: number) {
+    const dist = Math.max(1, camera.position.distanceTo(boardAnchor));
+    const pxPerUnit = viewportH / (2 * Math.tan((camera.fov * Math.PI) / 360) * dist);
+    const factor = Math.max(0.42, Math.min(1, pxPerUnit / REF_PX_PER_UNIT));
+    for (const line of lines) line.mat.linewidth = line.base * factor;
+  }
+
   return {
     group,
     curve,
     setProgress,
+    syncScale,
     resize: (rw, rh) => {
       lines.forEach((line) => line.mat.resolution.set(rw, rh));
     },

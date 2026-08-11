@@ -14,11 +14,20 @@ import { SlamMenu } from './ui/SlamMenu';
 import { Controls } from './ui/Controls';
 import { drawControlsBus } from './three/controls';
 import { bootDone } from './boot';
+import { TitleScreen } from './title/TitleScreen';
 
 type Tour = 'men' | 'women';
 
+/** `?enter=1` walks straight onto the board, which is what the capture rigs want. */
+const SKIP_TITLE =
+  new URLSearchParams(window.location.search).has('enter') ||
+  new URLSearchParams(window.location.search).has('slam');
+
 export function App() {
   const [slam, setSlam] = useState<SlamId>('wimbledon-men');
+  const [titled, setTitled] = useState(!SKIP_TITLE);
+  const [handedOver, setHandedOver] = useState(false);
+  const [cameFromTitle, setCameFromTitle] = useState(false);
   const [tour, setTour] = useState<Tour>('men');
   const [draw, setDraw] = useState<Draw | null>(null);
   const [hover, setHover] = useState<string | null>(null);
@@ -107,6 +116,23 @@ export function App() {
   );
   const handleRunEnd = useCallback(() => setRunning(false), []);
 
+  const handleEnter = useCallback((next: SlamId) => {
+    setSlam(next);
+    setTour(next.endsWith('-women') ? 'women' : 'men');
+    setTitled(false);
+    setCameFromTitle(true);
+    // The title screen hands over at full wash. This side picks it up at full
+    // wash too and takes it off the arriving board, so the two renderers swap
+    // under cover rather than cutting.
+    setHandedOver(true);
+    // The veil times itself now (a CSS animation, which starts on its own first
+    // painted frame), so all that is left here is to stop rendering it once it
+    // is done. Generous, because it only removes an already-invisible element.
+    window.setTimeout(() => setHandedOver(false), 1500);
+  }, []);
+
+  if (titled) return <TitleScreen onEnter={handleEnter} />;
+
   return (
     <main
       className={`stage${view === 'radial' ? ' is-radial' : ''}${shown ? ' has-player-detail' : ''}${running ? ' is-running' : ''}${flown && view === 'board' ? ' is-flown' : ''}`}
@@ -120,6 +146,7 @@ export function App() {
       }
     >
       <div className="scrim" aria-hidden="true" />
+      {handedOver && <div className="handoff" aria-hidden="true" />}
       <header className="mark" style={{ '--flare': theme.flare } as React.CSSProperties}>
         <p className="mark-word">The Draw</p>
         <h1 className="mark-slam">{theme.label}</h1>
@@ -189,6 +216,7 @@ export function App() {
                 focusToken={focusToken}
                 onPick={handlePickMatch}
                 onRunEnd={handleRunEnd}
+                settled={cameFromTitle}
               />
             ) : (
               <Bracket

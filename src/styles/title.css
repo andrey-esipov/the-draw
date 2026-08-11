@@ -1,0 +1,473 @@
+/* The doorway. Everything here sits over a full-bleed canvas, so every rule is
+   about keeping type legible on a moving metal object rather than decorating. */
+
+.title {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #04120c;
+  /* This screen renders outside .stage, which is where the rest of the app gets
+     its colour from, so it has to state its own. */
+  color: #eef3ec;
+  z-index: 30;
+}
+
+.title-canvas-holder,
+.title-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.title-head {
+  position: absolute;
+  top: clamp(44px, 12vh, 150px);
+  left: var(--pad);
+  right: var(--pad);
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 0;
+  pointer-events: none;
+  animation: title-rise 1400ms var(--ease-soft) both;
+}
+
+.title-word {
+  font-family: var(--type-datum-family);
+  font-size: 11px;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  color: rgba(238, 243, 236, 0.66);
+  margin: 0;
+}
+
+.title-claim {
+  font-family: var(--type-display-family);
+  font-variation-settings: 'opsz' 60, 'wght' 380, 'SOFT' 0, 'WONK' 1;
+  font-size: clamp(30px, 5.4vw, 74px);
+  line-height: 1.04;
+  letter-spacing: -0.014em;
+  margin: 16px 0 0;
+  max-width: 24ch;
+  text-wrap: balance;
+  color: #f2f6f0;
+}
+
+.title-claim span {
+  display: block;
+}
+
+.title-sub {
+  font-family: var(--type-caption-family);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(238, 243, 236, 0.58);
+  margin: 22px 0 0;
+}
+
+@keyframes title-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+.title-cups {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* The list spans the frame so each name can sit under its own cup, which
+     meant it also swallowed every click meant for anything behind it. */
+  pointer-events: none;
+}
+
+.title-pick {
+  pointer-events: auto;
+}
+
+.title-cup {
+  position: absolute;
+  transform: translateX(-50%);
+  margin-top: 14px;
+  animation: title-rise 1200ms var(--ease-soft) both;
+}
+.title-cup:nth-child(1) { animation-delay: 320ms; }
+.title-cup:nth-child(2) { animation-delay: 440ms; }
+.title-cup:nth-child(3) { animation-delay: 560ms; }
+.title-cup:nth-child(4) { animation-delay: 680ms; }
+
+/* The button is the whole column of space under its cup, so the pointer target
+   covers the object it names rather than only the words. */
+.title-pick {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 14px 10px 12px;
+  width: clamp(118px, 15vw, 186px);
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  cursor: pointer;
+  color: inherit;
+  border-radius: 12px;
+  transition: transform 420ms var(--ease-soft);
+}
+
+.title-name {
+  font-family: var(--type-display-family);
+  font-variation-settings: 'opsz' 30, 'wght' 420;
+  font-size: clamp(15px, 1.5vw, 20px);
+  line-height: 1.15;
+  color: #f2f6f0;
+  text-wrap: balance;
+}
+
+.title-state {
+  font-family: var(--type-datum-family);
+  font-size: 10px;
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
+  /* Reads on the darkest part of the floor at AA, and is the only place the
+     screen admits a tournament has no draw yet. */
+  color: rgba(233, 240, 232, 0.62);
+}
+
+.title-pick::after {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: var(--flare);
+  opacity: 0;
+  transform: scaleX(0.3);
+  transition: opacity 420ms var(--ease-soft), transform 420ms var(--ease-soft);
+}
+
+.title-pick:hover,
+.title-pick:focus-visible {
+  transform: translateY(-3px);
+}
+.title-pick:hover::after,
+.title-pick:focus-visible::after {
+  opacity: 0.9;
+  transform: none;
+}
+.title-pick:focus-visible {
+  outline: 2px solid var(--flare);
+  outline-offset: 4px;
+}
+
+.title-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The handover is a crossfade, not a wash. The chosen cup finishes its walk to
+   the middle at exactly the size and place the board keeps its trophy, so the
+   two frames can be dissolved through each other and the trophy never moves.
+   A bright wipe would have hidden that, which is the one thing worth showing. */
+.title-wipe {
+  position: absolute;
+  inset: 0;
+  background: #04120c;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* The cup finishes its walk at the height the board keeps it, which on the
+   board has a bracket under it and here has an empty floor. Held at a light
+   wash that room read as a void for the last third of a second, so the wash
+   goes deep enough to be a dissolve the trophy is carried through. */
+.title-wipe.is-on { opacity: 0.72; }
+
+.title.is-leaving .title-head,
+.title.is-leaving .title-cup {
+  /* An exit animation, not a transition. The entrance runs with fill-mode both,
+     and a finished animation outranks a plain declaration, so `opacity: 0` on
+     its own simply refused to apply. Clearing it with `animation: none` did
+     apply, but as an instant jump.
+
+     The curve matters more than the duration here. `--ease-soft` is an ease-out
+     (cubic-bezier(0.16, 1, 0.3, 1)), which is right for arrivals and exactly
+     wrong for departures: measured, it took the type to half opacity in 60ms
+     and to nothing by 320ms, so a nominal 420ms fade read as a pop and then a
+     long tail of nothing. A departure wants the mirror of that. It holds, then
+     goes, which keeps the type on screen while the three unchosen cups start
+     to leave, so the frame is never handed from one still thing to another.
+
+     Opacity only: the cups' transform differs between the row and the grid
+     layouts, and a keyframe would outrank both. */
+  animation-name: title-leave;
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.3);
+  animation-delay: 90ms;
+  animation-fill-mode: forwards;
+  transform: translateY(-10px) translateX(-50%);
+  transition: transform 560ms var(--ease-soft);
+}
+.title.is-leaving .title-head {
+  transform: translateY(-16px);
+}
+.title.is-leaving .title-pick {
+  pointer-events: none;
+}
+
+@keyframes title-leave {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Wide and landscape hang each name straight under its own trophy, so the row is
+   already the choice. The standalone prompt then had only the centre cup to sit
+   on and washed out against the brighter metal, so it drops to screen-reader
+   only and a resting accent under each name keeps the labels reading as controls.
+   Keyed off is-grid rather than a width, because the layout that has to match is
+   the one the scene chose: a tablet held upright is under 861px and portrait but
+   still gets a row of cups, and a media query put a two by two card list under
+   it with a band of dead screen in between. */
+.title:not(.is-grid) .title-sub {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.title:not(.is-grid) .title-pick::after {
+  opacity: 0.5;
+  transform: none;
+}
+
+@media (max-width: 860px) and (orientation: portrait), (max-width: 620px) {
+  .title-head { top: clamp(22px, 4vh, 46px); }
+  .title-claim { font-size: clamp(26px, 7.6vw, 38px); max-width: 14ch; }
+  .title-claim span {
+    display: block;
+  }
+}
+
+/* The scene draws the cups as a two by two block only on a phone, so the choices
+   repeat that block there: a card sits in the same corner as the trophy it
+   selects (top-left card under the top-left cup, and so on) instead of reading
+   as a list bolted on below a picture. The prompt caption leads straight into
+   it. */
+.title.is-grid .title-sub {
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* Fixed here resolves against .title-head, whose transform-animation makes it
+     a containing block, so the head's own offset from the top is added back out
+     to land the caption at a known fraction of the frame. */
+  top: calc(64vh - clamp(22px, 4vh, 46px));
+  margin: 0;
+  font-size: 11px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Anchored top and bottom with fr rows, so the grid fills the floor under the
+   cups rather than sitting at the base of the frame with a band of dead space
+   above it. The cups are the hero and were being given barely a quarter of the
+   frame, so the choices start lower and the cards carry less padding. */
+.title.is-grid .title-cups {
+  inset: 68vh var(--pad) clamp(14px, 2.4vh, 26px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 9px;
+}
+.title.is-grid .title-cup {
+  position: static;
+  transform: none;
+  inset: auto;
+  margin-top: 0;
+  animation-name: title-card-rise;
+}
+.title.is-grid .title-pick {
+  width: 100%;
+  height: 100%;
+  align-content: center;
+  justify-items: start;
+  gap: 6px;
+  padding: 13px 15px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(233, 240, 232, 0.12);
+}
+/* The flare rule carries the tournament's own colour, so each card is keyed to
+   its trophy by hue as well as by which corner it sits in. */
+.title.is-grid .title-pick::after {
+  display: block;
+  width: 30px;
+  opacity: 0.9;
+  transform: none;
+}
+.title.is-grid .title-pick:hover,
+.title.is-grid .title-pick:focus-visible {
+  transform: none;
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--flare);
+}
+/* Roland-Garros carries a real hyphen, a break opportunity that split it across
+   two lines; the size keeps it whole and lets only the space in Australian Open
+   wrap. */
+.title.is-grid .title-name {
+  font-size: clamp(15px, 4.3vw, 19px);
+  hyphens: none;
+}
+.title.is-grid.is-leaving .title-cup { transform: translateY(-10px); }
+
+/* A tablet held upright keeps the row, because four cups in a line is the shape
+   of this screen and a two by two block there put a card list under a picture.
+   A row cannot fill a frame that tall, so rather than stretch the cups into the
+   slack the claim takes it: at this width the type was running at 38px on a
+   768px frame, which read as a phone layout on a large screen. The tour control
+   drops below the names to close the foot. */
+@media (min-width: 620px) and (max-width: 1100px) and (orientation: portrait) {
+  .title-head { top: clamp(40px, 9vh, 120px); }
+  .title-claim {
+    font-size: clamp(38px, 6.6vw, 60px);
+    max-width: 15ch;
+  }
+  /* The base .title-tour rule sits later in the file, so its margin wins over a
+     bare .title-tour here; the extra class outranks it. Offsets are measured
+     from the top and the head's own inset added back out, because the head is
+     transform-animated and so is the containing block these resolve against:
+     a bottom offset here lands inside the headline rather than at the foot of
+     the frame. */
+  .title .title-tour {
+    position: fixed;
+    left: 50%;
+    top: calc(84vh - clamp(40px, 9vh, 120px));
+    transform: translateX(-50%);
+    margin: 0;
+  }
+  /* Two of the four names wrap at this width and two do not, which stepped the
+     player counts under them onto different lines. The name keeps two lines of
+     room whether it uses them or not, so the row of counts stays level. */
+  .title-name {
+    font-size: clamp(17px, 2.4vw, 21px);
+    min-height: 2.3em;
+  }
+  .title-pick { width: clamp(120px, 17vw, 168px); }
+}
+
+/* The cards rise in place; the desktop entrance also slid on the horizontal
+   centre, which a static grid cell has no business doing. */
+@keyframes title-card-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-head,
+  .title-cup {
+    animation: none;
+  }
+  .title-pick,
+  .title-wipe,
+  .title.is-leaving .title-head,
+  .title.is-leaving .title-cup {
+    transition-duration: 1ms;
+  }
+  .title-pick:hover,
+  .title-pick:focus-visible {
+    transform: none;
+  }
+}
+
+/* The other half of the handover. The board now draws itself out from the
+   final, so its first frame is a cup on an empty court — which is exactly the
+   frame the title screen just left on. There is no longer a bracket snapping
+   into place that needs hiding, so this is a touch of cover for the renderer
+   swap rather than a wash, and it gets out of the way of the build.
+
+   An animation rather than a transition, and deliberately so. Driving this off
+   React state meant the veil could not start leaving until a state change
+   landed, and building the board blocks the main thread for the best part of a
+   second, so the rAF-and-timer chain that was meant to time it ran late by
+   however long construction happened to take. Measured, the frame was still
+   11% down at 1900ms — the whole build watched through a fading scrim. A
+   keyframe animation starts on the element's first painted frame, which is by
+   definition the board's first frame, and runs on the compositor from there.
+   The cover is now exactly as long as it says it is, on any machine. */
+.handoff {
+  position: fixed;
+  inset: 0;
+  z-index: 28;
+  pointer-events: none;
+  background: #04120c;
+  opacity: 0;
+  animation: handoff-clear 560ms cubic-bezier(0.32, 0, 0.24, 1) forwards;
+}
+
+@keyframes handoff-clear {
+  from { opacity: 0.24; }
+  to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .handoff { animation-duration: 220ms; }
+}
+
+/* The only chrome on the screen. Sound is a real part of this piece, so it gets
+   an affordance here rather than only appearing once you are inside a draw. */
+.title-cluster {
+  position: absolute;
+  top: var(--pad);
+  right: var(--pad);
+  z-index: 6;
+}
+
+@media (max-width: 860px) and (orientation: portrait), (max-width: 620px) {
+  .title-cluster { top: 14px; }
+}
+
+/* The two draws are different tournaments with different trophies, so the
+   choice belongs on the screen where the trophies are, not buried inside a
+   menu once you are already in one of them. */
+.title-tour {
+  /* The masthead is click-through so the cups behind it stay reachable; the one
+     control living in it has to opt back in. */
+  pointer-events: auto;
+  display: inline-flex;
+  gap: 2px;
+  margin-top: 26px;
+  padding: 3px;
+  border: 1px solid rgba(238, 243, 236, 0.14);
+  border-radius: 999px;
+}
+
+.title-tour-btn {
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-family: var(--type-caption-family);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(238, 243, 236, 0.56);
+  transition: color 280ms var(--ease-soft), background 280ms var(--ease-soft);
+}
+
+.title-tour-btn:hover { color: rgba(238, 243, 236, 0.86); }
+
+.title-tour-btn.is-on {
+  background: rgba(238, 243, 236, 0.1);
+  color: #f2f6f0;
+}
+
+.title-tour-btn:focus-visible {
+  outline: 2px solid var(--flare, #d8c56a);
+  outline-offset: 2px;
+}

@@ -5,6 +5,7 @@ import type { SlamId } from '../data/types';
 import type { SlamTheme } from '../ui/theme';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { createVessel, VESSEL_HEIGHT } from './vessels';
+import { vesselStudioEnv } from './vessels/studio';
 import { BLOOM_LAYER } from './stage';
 
 const BASE = import.meta.env.BASE_URL;
@@ -328,14 +329,26 @@ export function createPodium(
     for (const mat of Array.isArray(m) ? m : m ? [m] : []) {
       const phys = mat as THREE.MeshPhysicalMaterial;
       if (!phys.isMeshPhysicalMaterial) continue;
-      phys.envMap = studioEnv;
+      // The same room the title screen lights these cups in, so the trophy is
+      // the same object at both ends of the move onto the board.
+      phys.envMap = vesselStudioEnv(renderer);
       phys.color.copy(f0);
       // Softer than a mirror. A broad highlight reveals the silhouette's
       // curvature; a sharp one just shows the room.
-      phys.roughness = Math.max(phys.roughness, 0.32);
+      phys.roughness = Math.max(phys.roughness, 0.29);
       // Keep the reflected room from filling the occluded areas, so the bowl
       // keeps genuinely dark values to read against the highlights.
-      phys.envMapIntensity = Math.min(phys.envMapIntensity, 0.55);
+      phys.envMapIntensity = Math.max(phys.envMapIntensity, 1.6);
+      // The board is a night room lit by concealed uplights, so the contrast
+      // curve the cups carry for the title set has almost nothing above its
+      // black point here and renders the trophy as a silhouette. Ease it off.
+      const curve = phys.userData.metalCurve as
+        | { uContrast: { value: number }; uBlackPoint: { value: number } }
+        | undefined;
+      if (curve) {
+        curve.uContrast.value = 1.2;
+        curve.uBlackPoint.value = 0.004;
+      }
       phys.needsUpdate = true;
     }
   });
@@ -376,15 +389,15 @@ export function createPodium(
   const rimY = PLINTH_TOP - 0.14;
   const footY = PLINTH_TOP - 0.02 + VESSEL_HEIGHT * vesselScale * 0.34;
   // Front pair, low and wide, does most of the work: rakes up the lower bowl.
-  addUplight(0xfff2df, 3.6, 2.4, 1.0, -1.9, rimY, 2.1, footY);
-  addUplight(0xfff2df, 3.6, 2.4, 1.0, 1.9, rimY, 2.1, footY);
+  addUplight(0xfff2df, 6.4, 2.4, 1.0, -1.9, rimY, 2.1, footY);
+  addUplight(0xfff2df, 6.4, 2.4, 1.0, 1.9, rimY, 2.1, footY);
   // Side wrap, cooler and weaker, so the light comes from around the base
   // rather than one direction and the handles rim-light from beneath.
-  addUplight(0xdfeaff, 1.7, 1.8, 0.9, -2.4, rimY + 0.06, -0.3, footY + 0.2);
-  addUplight(0xdfeaff, 1.7, 1.8, 0.9, 2.4, rimY + 0.06, -0.3, footY + 0.2);
+  addUplight(0xdfeaff, 3.0, 1.8, 0.9, -2.4, rimY + 0.06, -0.3, footY + 0.2);
+  addUplight(0xdfeaff, 3.0, 1.8, 0.9, 2.4, rimY + 0.06, -0.3, footY + 0.2);
   // Back rim in the tournament colour, low and behind, to lift the silhouette
   // off a near-black room without touching the upper shoulder.
-  addUplight(theme.flare, 1.9, 2.0, 0.9, 0, rimY + 0.12, -2.2, footY + 0.4);
+  addUplight(theme.flare, 3.4, 2.0, 0.9, 0, rimY + 0.12, -2.2, footY + 0.4);
 
   const TEXT_Z = 1.06;
   const texts: Text[] = [];

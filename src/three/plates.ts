@@ -53,6 +53,8 @@ export interface PlateField {
   setHighlight: (route: Set<string>, litPlayer: string | null) => void;
   /** 0 → 1 route draw progress, shared with route.setProgress(t). */
   setRouteProgress: (t: number) => void;
+  /** 0 → 1. Assembles the board outward from the final to the first round. */
+  setBuild: (t: number) => void;
   /** Fade dense early rounds in as the camera approaches them. */
   updateDetail: (camera: THREE.PerspectiveCamera, viewportH: number) => void;
   setHover: (node: PlateNode | null) => void;
@@ -99,6 +101,26 @@ function plateGeometry(): THREE.BufferGeometry {
 function easeOutExpo(t: number): number {
   if (t >= 1) return 1;
   return 1 - 2 ** (-10 * t);
+}
+
+function smooth01(t: number): number {
+  const x = THREE.MathUtils.clamp(t, 0, 1);
+  return x * x * (3 - 2 * x);
+}
+
+/**
+ * How much of the build window one round's cards take to open.
+ *
+ * The remainder is the stagger, so a wide span means the rounds overlap and the
+ * board fills as one wave rather than seven discrete steps.
+ */
+const BUILD_SPAN = 0.62;
+
+/** Local 0 → 1 for a round, given the global build front. */
+function buildPhase(round: number, maxRound: number, front: number): number {
+  if (front >= 1) return 1;
+  const delay = ((maxRound - round) / Math.max(1, maxRound - 1)) * (1 - BUILD_SPAN);
+  return THREE.MathUtils.clamp((front - delay) / BUILD_SPAN, 0, 1);
 }
 
 function roundedPerimeter(steps = 8): THREE.Vector2[] {
@@ -224,15 +246,32 @@ export function createPlates(
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const geo = plateGeometry();
+  // A plate has to read as a card, not a hole in the floor. Held at the old
+  // near-black the 120 off-route slabs were indistinguishable from the board
+  // behind them, so their names floated in a void and the field read as noise.
+  // Lifting the slab face gives every match a visible boundary without touching
+  // the champion route, whose plates are re-tinted and lit by the thread.
+  // Emissive is keyed to the ground colour's luminance so a bright slam (the
+  // AO's cyan) lands at the same plate brightness as a dark one (Wimbledon's
+  // green); otherwise bright grounds wash the slab out and names lose contrast.
+  const srgbLum = (hex: string) => {
+    const n = parseInt(hex.replace('#', ''), 16);
+    const ch = (s: number) => {
+      const v = ((n >> s) & 255) / 255;
+      return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    };
+    return 0.2126 * ch(16) + 0.7152 * ch(8) + 0.0722 * ch(0);
+  };
+  const emissiveIntensity = THREE.MathUtils.clamp(0.0396 / srgbLum(theme.ground), 0.3, 1);
   const mat = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color(theme.groundDeep).multiplyScalar(5.2),
+    color: new THREE.Color(theme.groundDeep).multiplyScalar(6.6),
     roughness: 0.28,
     metalness: 0.78,
     clearcoat: 0.9,
     clearcoatRoughness: 0.22,
     envMapIntensity: 1.6,
     emissive: new THREE.Color(theme.ground),
-    emissiveIntensity: 0.34,
+    emissiveIntensity,
   });
 
   const mesh = new THREE.InstancedMesh(geo, mat, layout.plates.length);
@@ -243,7 +282,7 @@ export function createPlates(
   );
 
   const dummy = new THREE.Object3D();
-  const base = new THREE.Color(theme.groundDeep).multiplyScalar(5.2);
+  const base = new THREE.Color(theme.groundDeep).multiplyScalar(6.6);
   const chalk = new THREE.Color(theme.chalk);
   const flare = new THREE.Color(theme.flare);
   const trace = new THREE.Color(theme.trace);
@@ -289,11 +328,21 @@ export function createPlates(
   group.add(seams);
 
   /** Two rows of type per plate, plus the score, laid on the slab face. */
-  const labels: { text: Text; node: PlateNode; player: string | null; row: 0 | 1; base: number }[] = [];
-  const scores: { text: Text; node: PlateNode; base: number }[] = [];
+  const labels: { text: Text; node: PlateNode; player: string | null; row: 0 | 1; base: number; onRoute: boolean }[] = [];
+  const scores: { text: Text; node: PlateNode; base: number; onRoute: boolean }[] = [];
 
   const atlas = buildMarkAtlas();
-  const marks: { node: PlateNode; player: string; won: boolean; x: number; y: number; w: number; h: number }[] = [];
+  const marks: {
+    node: PlateNode;
+    player: string;
+    won: boolean;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    base: number;
+    onRoute: boolean;
+  }[] = [];
 
   for (const n of layout.plates) {
     // Every plate reads the same: who played, and who came through. Set scores
@@ -338,7 +387,7 @@ export function createPlates(
       t.renderOrder = TYPE_ORDER;
       fitToWidth(t, maxW, 0.68);
       group.add(t);
-      labels.push({ text: t, node: n, player: side?.player ?? null, row: row as 0 | 1, base: t.fillOpacity });
+      labels.push({ text: t, node: n, player: side?.player ?? null, row: row as 0 | 1, base: t.fillOpacity, onRoute: false });
 
       if (p) {
         marks.push({
@@ -349,6 +398,8 @@ export function createPlates(
           y: rowY,
           w: markW,
           h: markH,
+          base: won ? 0.95 : 0.45,
+          onRoute: false,
         });
       }
 
@@ -367,7 +418,7 @@ export function createPlates(
         s.renderOrder = TYPE_ORDER;
         s.sync();
         group.add(s);
-        labels.push({ text: s, node: n, player: side.player, row: row as 0 | 1, base: s.fillOpacity });
+        labels.push({ text: s, node: n, player: side.player, row: row as 0 | 1, base: s.fillOpacity, onRoute: false });
       }
 
       if (won) {
@@ -385,7 +436,7 @@ export function createPlates(
         wm.renderOrder = TYPE_ORDER;
         wm.sync();
         group.add(wm);
-        scores.push({ text: wm, node: n, base: wm.fillOpacity });
+        scores.push({ text: wm, node: n, base: wm.fillOpacity, onRoute: false });
       }
     });
   }
@@ -437,6 +488,13 @@ export function createPlates(
   markMesh.instanceMatrix.needsUpdate = true;
   group.add(markMesh);
 
+  let hoverNode: PlateNode | null = null;
+
+  const setHover = (node: PlateNode | null) => {
+    hoverNode = node;
+    hoverStroke.set(node);
+  };
+
   function setHighlight(route: Set<string>, litPlayer: string | null) {
     layout.plates.forEach((n, i) => {
       const on = route.has(n.match.id);
@@ -451,17 +509,26 @@ export function createPlates(
     marks.forEach((m, i) => {
       const mine = m.player === litPlayer;
       const onRoute = route.has(m.node.match.id);
-      markFade[i] = mine ? 1 : onRoute ? (m.won ? 0.9 : 0.5) : m.won ? 0.5 : 0.22;
+      m.onRoute = onRoute;
+      m.base = mine ? 0.86 : onRoute ? (m.won ? 0.86 : 0.5) : m.won ? 0.6 : 0.4;
+      markFade[i] = m.base;
     });
     (markGeo.getAttribute('aFade') as THREE.InstancedBufferAttribute).needsUpdate = true;
 
     for (const l of labels) {
       const mine = l.player !== null && l.player === litPlayer;
       const onRoute = route.has(l.node.match.id);
+      l.onRoute = onRoute;
       l.text.color = mine ? flare.getHex() : chalk.getHex();
       const won = l.node.match.winner === l.player;
-      l.base = mine ? 1 : onRoute ? (won ? 0.9 : 0.5) : won ? 0.9 : 0.36;
+      l.base = mine ? 1 : onRoute ? (won ? 1 : 0.58) : won ? 1 : 0.98;
       l.text.sync();
+    }
+
+    for (const s of scores) {
+      const onRoute = route.has(s.node.match.id);
+      s.onRoute = onRoute;
+      s.base = onRoute ? 0.98 : 0.58;
     }
   }
 
@@ -470,11 +537,72 @@ export function createPlates(
   const SHARED_FADED = 0.82;
   function setRouteProgress(_t: number) {}
 
+  // ── Build ────────────────────────────────────────────────────────────────
+  // A 127-match board that is simply present has already happened by the time
+  // you look at it. Drawn from the final outward, it reads as the tournament
+  // being seeded backwards from the result — the shape of the thing arrives
+  // before the detail, which is the order the eye wants it in anyway.
+  const maxRound = layout.plates.reduce((m, n) => Math.max(m, n.round), 1);
+  let buildFront = 1;
+
+  const roundBuild = (round: number) =>
+    buildFront >= 1 ? 1 : easeOutExpo(buildPhase(round, maxRound, buildFront));
+
+  // What is written on a card arrives after the card does. Sharing the slab's
+  // curve put flags on the board a beat before there was anything under them
+  // to hold, which read as the draw dissolving rather than assembling.
+  const roundInk = (round: number) =>
+    buildFront >= 1 ? 1 : smooth01((buildPhase(round, maxRound, buildFront) - 0.5) / 0.5);
+
+  function setBuild(t: number) {
+    const next = THREE.MathUtils.clamp(t, 0, 1);
+    if (next === buildFront) return;
+    const wasDone = buildFront >= 1;
+    buildFront = next;
+    if (wasDone && next >= 1) return;
+    layout.plates.forEach((n, i) => {
+      // Width, not area. A card that scales from a point pops like confetti;
+      // one that opens along its own axis reads as a scoreboard filling in,
+      // and keeps the row's baseline steady while it does it.
+      const p = roundBuild(n.round);
+      dummy.position.set(n.x, n.y, n.z);
+      dummy.scale.set(Math.max(1e-4, n.w * p), n.h, 1);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+      dummy.position.set(n.x, n.y, n.z + 0.12);
+      dummy.scale.set(Math.max(1e-4, n.w * 0.94 * p), Math.max(0.018, n.h * 0.016), 1);
+      dummy.updateMatrix();
+      seams.setMatrixAt(i, dummy.matrix);
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+    seams.instanceMatrix.needsUpdate = true;
+  }
+
+  function labelDetail(px: number, onRoute: boolean, focused: boolean, offRouteReveal: number): number {
+    if (focused) return 1;
+    if (onRoute) return smooth01((px - 0.9) / 3.2);
+    // The house lights never go fully down. Off the route, a name still has to
+    // clear a legibility floor at the resting whole-draw framing, so the field
+    // reads as 127 matches you can name rather than texture. The px gate still
+    // holds the tiny round-one slabs quiet — they earn their detail on approach —
+    // but the readable mid and late rounds now sit well above the noise.
+    const houseLights = 0.82 + offRouteReveal * 0.18;
+    return smooth01((px - 0.9) / 2.3) * houseLights;
+  }
+
+  function visibleCut(node: PlateNode, onRoute: boolean, focused: boolean, base: number): number {
+    if (focused || onRoute) return base;
+    return node.round <= 1 ? 0.22 : node.round === 2 ? 0.16 : 0.1;
+  }
+
   function updateDetail(camera: THREE.PerspectiveCamera, viewportH: number) {
     const now = performance.now();
     hoverStroke.update(now);
     matchCard.update(now);
     const focal = viewportH / (2 * Math.tan((camera.fov * Math.PI) / 360));
+    const focusedNode = hoverNode ?? matchCard.current();
+    const cameraDrawDistance = Math.hypot(camera.position.x, camera.position.y - 0.35, camera.position.z + 0.5);
+    const offRouteReveal = smooth01((54 - cameraDrawDistance) / 20);
     // Fade is a property of the card, not of the individual line. Measured off
     // each label's own fontSize, a long name that had been shrunk to fit its
     // plate crossed the threshold before its opponent did, and the match read
@@ -482,25 +610,25 @@ export function createPlates(
     for (const l of labels) {
       tmp.set(l.node.x, l.node.y, l.node.z);
       const px = (l.node.h * 0.3 * focal) / Math.max(1, camera.position.distanceTo(tmp));
-      const lod = Math.min(1, Math.max(0, (px - 1.7) / 3.3));
-      const fade = lod * lod * (3 - 2 * lod);
-      const vis = fade > 0.02;
+      const focused = focusedNode === l.node;
+      const fade = labelDetail(px, l.onRoute, focused, offRouteReveal);
+      const vis = fade > visibleCut(l.node, l.onRoute, focused, 0.02);
       if (l.text.visible !== vis) l.text.visible = vis;
       // Close in, the loser sits well back of the winner and the eye reads the
       // result without reading the names. Far out there is no contrast budget
       // left to spend on hierarchy: holding the gap open just deletes the
       // loser, so the two lines converge as the type dissolves.
       const share = l.base + (SHARED_FADED - l.base) * (1 - fade);
-      l.text.fillOpacity = share * fade;
+      l.text.fillOpacity = share * fade * roundInk(l.node.round);
     }
     for (const s of scores) {
       tmp.set(s.node.x, s.node.y, s.node.z);
       const px = (s.text.fontSize * focal) / Math.max(1, camera.position.distanceTo(tmp));
-      const lod = Math.min(1, Math.max(0, (px - 4.0) / 3.8));
-      const fade = lod * lod * (3 - 2 * lod);
-      const vis = fade > 0.025;
+      const focused = focusedNode === s.node;
+      const fade = labelDetail(px, s.onRoute, focused, offRouteReveal);
+      const vis = fade > visibleCut(s.node, s.onRoute, focused, 0.025);
       if (s.text.visible !== vis) s.text.visible = vis;
-      s.text.fillOpacity = s.base * fade;
+      s.text.fillOpacity = s.base * fade * roundInk(s.node.round);
     }
     // Flags fade on the same terms as the names beside them. Held at full
     // strength while the type dissolved, the far rounds read as rows of bright
@@ -508,11 +636,12 @@ export function createPlates(
     let markDirty = false;
     marks.forEach((m, i) => {
       tmp.set(m.node.x, m.node.y, m.node.z);
-      const px = (m.h * focal) / Math.max(1, camera.position.distanceTo(tmp));
-      const lod = Math.min(1, Math.max(0, (px - 5.4) / 5.4));
-      const fade = lod * lod * (3 - 2 * lod);
-      const seat = m.won ? 0.95 : 0.45;
-      const next = (seat + (SHARED_FADED - seat) * (1 - fade)) * fade;      if (Math.abs((markFade[i] ?? 0) - next) > 0.004) {
+      const px = (m.node.h * 0.3 * focal) / Math.max(1, camera.position.distanceTo(tmp));
+      const focused = focusedNode === m.node;
+      const fade = labelDetail(px, m.onRoute, focused, offRouteReveal);
+      const visibleFade = fade > visibleCut(m.node, m.onRoute, focused, 0.02) ? fade : 0;
+      const next = (m.base + (SHARED_FADED - m.base) * (1 - visibleFade)) * visibleFade * roundInk(m.node.round);
+      if (Math.abs((markFade[i] ?? 0) - next) > 0.004) {
         markFade[i] = next;
         markDirty = true;
       }
@@ -532,7 +661,7 @@ export function createPlates(
   const debugOwner = Symbol('draw-card');
   debug.__drawCardOwner = debugOwner;
   debug.__drawCardHover = (matchId: string | null) => {
-    hoverStroke.set(matchId ? (layout.byMatch.get(matchId) ?? null) : null);
+    setHover(matchId ? (layout.byMatch.get(matchId) ?? null) : null);
   };
   debug.__drawCardOpen = (matchId: string | null) => {
     matchCard.set(matchId ? (layout.byMatch.get(matchId) ?? null) : null);
@@ -543,8 +672,9 @@ export function createPlates(
     mesh,
     setHighlight,
     setRouteProgress,
+    setBuild,
     updateDetail,
-    setHover: hoverStroke.set,
+    setHover,
     setExpanded: matchCard.set,
     closeExpanded: matchCard.close,
     expanded: matchCard.current,
@@ -578,8 +708,15 @@ export function createPlates(
 }
 
 /** The connectors: the elbows that make a bracket look like a bracket. */
-export function createConnectors(layout: BracketLayout, theme: SlamTheme): THREE.LineSegments {
+export type ConnectorLines = THREE.LineSegments & {
+  /** 0 → 1, matched to plates.setBuild so an elbow never precedes its card. */
+  setBuild: (t: number) => void;
+};
+
+export function createConnectors(layout: BracketLayout, theme: SlamTheme): ConnectorLines {
   const pts: number[] = [];
+  const rounds: number[] = [];
+  const maxRound = layout.plates.reduce((m, n) => Math.max(m, n.round), 1);
   for (const c of layout.connectors) {
     const { from, to } = c;
     const outX = elbowX(from, to);
@@ -604,16 +741,53 @@ export function createConnectors(layout: BracketLayout, theme: SlamTheme): THREE
       const b = chain[i + 1]!;
       if (a.distanceToSquared(b) < 1e-8) continue;
       pts.push(a.x, a.y, a.z, b.x, b.y, b.z);
+      // The elbow belongs to the earlier of the two cards it joins, so it opens
+      // behind the round it feeds rather than reaching into empty space.
+      rounds.push(from.round, from.round);
     }
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+  geo.setAttribute('aRound', new THREE.Float32BufferAttribute(rounds, 1));
+  const uniforms = { uBuild: { value: 1 }, uMaxRound: { value: maxRound }, uSpan: { value: BUILD_SPAN } };
   const mat = new THREE.LineBasicMaterial({
     color: new THREE.Color(theme.chalk),
     transparent: true,
     opacity: 0.36,
   });
-  const lines = new THREE.LineSegments(geo, mat);
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uBuild = uniforms.uBuild;
+    shader.uniforms.uMaxRound = uniforms.uMaxRound;
+    shader.uniforms.uSpan = uniforms.uSpan;
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+attribute float aRound;
+uniform float uBuild;
+uniform float uMaxRound;
+uniform float uSpan;
+varying float vBuild;`,
+      )
+      .replace(
+        '#include <begin_vertex>',
+        `#include <begin_vertex>
+float delay = ((uMaxRound - aRound) / max(1.0, uMaxRound - 1.0)) * (1.0 - uSpan);
+float phase = clamp((uBuild - delay) / uSpan, 0.0, 1.0);
+vBuild = smoothstep(0.35, 1.0, phase);`,
+      );
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying float vBuild;')
+      .replace(
+        '#include <opaque_fragment>',
+        'gl_FragColor.a *= vBuild;\n#include <opaque_fragment>',
+      );
+  };
+  const lines: ConnectorLines = Object.assign(new THREE.LineSegments(geo, mat), {
+    setBuild: (t: number) => {
+      uniforms.uBuild.value = THREE.MathUtils.clamp(t, 0, 1);
+    },
+  });
   lines.layers.disable(BLOOM_LAYER);
   return lines;
 }
