@@ -168,16 +168,24 @@ export function App() {
   useEffect(() => {
     if (!landed) return;
     const wake = () => setLanded(false);
+    // Pointer movement counts too, after a grace window: the board answers a
+    // hover by tracing that player's route, so the chrome should already be
+    // back by the time anyone is reading it. The delay keeps an idle mouse from
+    // cutting the arrival short.
+    const at = performance.now();
+    const wakeOnMove = () => { if (performance.now() - at > 1400) setLanded(false); };
     const opts = { passive: true } as const;
     window.addEventListener('pointerdown', wake, opts);
     window.addEventListener('wheel', wake, opts);
     window.addEventListener('keydown', wake, opts);
     window.addEventListener('touchstart', wake, opts);
+    window.addEventListener('pointermove', wakeOnMove, opts);
     return () => {
       window.removeEventListener('pointerdown', wake);
       window.removeEventListener('wheel', wake);
       window.removeEventListener('keydown', wake);
       window.removeEventListener('touchstart', wake);
+      window.removeEventListener('pointermove', wakeOnMove);
     };
   }, [landed]);
 

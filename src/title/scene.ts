@@ -434,10 +434,10 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
   scene.add(roomGlow);
 
   scene.add(new THREE.HemisphereLight('#1b2c26', '#030806', 0.66));
-  const key = new THREE.DirectionalLight('#fff6e8', 2.1);
+  const key = new THREE.DirectionalLight('#fff6e8', 0.9);
   key.position.set(3.4, 6.2, 5.2);
   scene.add(key);
-  const rim = new THREE.DirectionalLight('#cfe6ff', 1.75);
+  const rim = new THREE.DirectionalLight('#cfe6ff', 1.32);
   rim.position.set(-2.4, 3.6, -6);
   scene.add(rim);
 
@@ -446,6 +446,15 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
   // Point sources cannot fix that: they return a pinprick. What silver needs is
   // a large bright shape to reflect, which is why every real trophy photograph
   // is shot into softboxes. These are those softboxes.
+  //
+  // The front panel is the one to keep honest. It faces the row square-on and,
+  // large and bright, it returned across the whole belly of every bowl at one
+  // even value, so three differently shaped silver cups read as three identical
+  // white masses. A polished bowl only shows its form when the source it
+  // reflects is small enough to travel down the curve as a gradient rather than
+  // wash it flat, so the front panel is held well below the raking side pair:
+  // the sides draw the edges and separate each cup from its neighbour, the front
+  // just keeps the belly off black.
   RectAreaLightUniformsLib.init();
   const softbox = (
     w: number,
@@ -460,16 +469,22 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
     scene.add(panel);
     return panel;
   };
-  softbox(9, 5.2, 3.1, '#eaf4ff', [0, 4.1, 5.6]);
-  softbox(2.2, 4.4, 4.6, '#fff2e0', [-6.2, 2.3, 3.4]);
-  softbox(2.2, 4.4, 4.6, '#dff0ff', [6.2, 2.3, 3.4]);
+  softbox(7.6, 4.2, 0.32, '#eaf4ff', [0, 4.1, 5.6]);
+  softbox(2.2, 4.4, 2.3, '#fff2e0', [-6.2, 2.3, 3.4]);
+  softbox(2.2, 4.4, 2.3, '#dff0ff', [6.2, 2.3, 3.4]);
 
   /**
    * The curve the vessels carry by default is tuned for a bright set. Here it
    * puts its black point above almost every value in the room, which is what
-   * turned the silver cups into silhouettes. Ease it off and roughen the finish
-   * so the panels above read as a broad sheen down the bowl rather than a
-   * mirrored point.
+   * turned the silver cups into silhouettes. Silver and gold want different
+   * treatment: gold reflects the room in its own warm colour, so it keeps a
+   * gradient no matter how bright it gets and reads as a specific object even
+   * lit hard. Silver reflects the room in white, so above a certain level its
+   * highlights all clip to the same value and the bowl becomes a filtered blob.
+   * Silver therefore gets a lower reflected-room level and a deeper black point,
+   * so its highlights stay pinned to the modelled crests and beading while the
+   * rest of the bowl carries the dark of the room. Gold is left near where it
+   * was, since it was already the one cup on this row that read.
    */
   function dressForRoom(cup: THREE.Group) {
     cup.traverse((o) => {
@@ -477,14 +492,40 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
       for (const mat of Array.isArray(m) ? m : m ? [m] : []) {
         const phys = mat as THREE.MeshPhysicalMaterial;
         if (!phys.isMeshPhysicalMaterial) continue;
-        phys.roughness = Math.max(phys.roughness, 0.29);
-        phys.envMapIntensity = Math.max(phys.envMapIntensity, 1.6);
+        // Polished silver in a dark room is mostly dark: a mirror returns the
+        // black around it and only flares where a bright source falls in its
+        // angle. Roughening does the opposite of what it promises here — the
+        // dish proved a rough face under a large softbox holds the same energy
+        // spread wider, so forcing these near-mirror bodies rough only smears
+        // the key across the whole belly as one pale wash. Keep them close to
+        // their authored polish so the belly mirrors the dark and the flares
+        // stay narrow, riding the fluting and the beaded band.
+        const gold = phys.userData.metalTextureKind === 'gold';
+        phys.roughness = Math.max(phys.roughness, gold ? 0.29 : 0.14);
+        // Gold keeps a bright reflected room because its warm colour holds a
+        // gradient even when hot. Silver does not: forced up to 1.6 here, the
+        // flat belly returned the studio's bright panels at a value that clips
+        // to white across the whole face, which is what fused three different
+        // cups into three identical blobs. The vessels author a low reflected
+        // level for their bodies (~0.7) and a higher one for the raised beading
+        // and bands; honouring that authored split — capping rather than
+        // flooring — is what lets the highlights sit on the modelled crests
+        // while the plain field between them holds the dark of the room.
+        phys.envMapIntensity = gold
+          ? Math.max(phys.envMapIntensity, 1.6)
+          : Math.min(phys.envMapIntensity, 0.52);
         const curve = phys.userData.metalCurve as
           | { uContrast: { value: number }; uBlackPoint: { value: number } }
           | undefined;
         if (curve) {
-          curve.uContrast.value = 1.2;
-          curve.uBlackPoint.value = 0.004;
+          // Contrast above one multiplies the reflected room up and clips it, so
+          // silver is left at unity and given a deeper black point instead: the
+          // stretch happens downward, into shadow, not upward into more white.
+          // Silver is held just under unity so the brightest belly values roll
+          // off instead of clipping, while the deeper black point sinks the mid
+          // field into the dark of the room.
+          curve.uContrast.value = gold ? 1.2 : 0.93;
+          curve.uBlackPoint.value = gold ? 0.006 : 0.07;
         }
       }
     });
@@ -588,7 +629,11 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
   const lift = new Float32Array(TITLE_SLAMS.length);
   const spin = new Float32Array(TITLE_SLAMS.length);
   const glow = new Float32Array(TITLE_SLAMS.length);
-  const BASE_SPOT = 46;
+  // The per-cup pool that separates each trophy from its neighbour. It used to
+  // run hot enough to be a second key on the near shoulder, adding its own
+  // clipped highlight to the softbox wash; pulled back, it reads as a pool the
+  // cup stands in rather than a light thrown at its face.
+  const BASE_SPOT = 8;
 
   const project = new THREE.Vector3();
   /** Screen position of each plinth, so the type hangs off the object it names. */

@@ -257,6 +257,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
         void controls.flyTo(cinema.payoffPose, 0);
         sound.crown();
         hushGoal = HUSH_LOW;
+        hushAt = performance.now();
         onRunEnd();
         return;
       }
@@ -272,13 +273,23 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     // than hiding it keeps the trophy standing at the end of a real draw instead
     // of floating in a void, and any input brings it straight back up.
     const HUSH_LOW = 0.3;
+    // Long enough that the landing is a held frame rather than a flicker, short
+    // enough that it never fights someone who has started using the board.
+    const HUSH_GRACE = 1400;
     let hushGoal = 1;
     let hushNow = 1;
+    let hushAt = 0;
     const wake = () => { hushGoal = 1; };
+    // Moving the pointer counts too, but not straight away. Hovering a card
+    // traces that player's route, and answering a hover at three tenths reads
+    // as the board having gone to sleep. A grace window keeps an idle mouse or
+    // a nudge from cutting the arrival short.
+    const wakeOnMove = () => { if (performance.now() - hushAt > HUSH_GRACE) hushGoal = 1; };
     window.addEventListener('pointerdown', wake, { passive: true });
     window.addEventListener('wheel', wake, { passive: true });
     window.addEventListener('keydown', wake, { passive: true });
     window.addEventListener('touchstart', wake, { passive: true });
+    window.addEventListener('pointermove', wakeOnMove, { passive: true });
 
     let raf = 0;
     const clock = new THREE.Clock();
@@ -366,6 +377,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
           // endings settle on the identical payoff pose.
           void controls.flyTo(cinema.payoffPose, 0);
           hushGoal = HUSH_LOW;
+          hushAt = performance.now();
           onRunEnd();
         }
       } else if (controls.hasMoved) {
@@ -455,6 +467,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       window.removeEventListener('wheel', wake);
       window.removeEventListener('keydown', wake);
       window.removeEventListener('touchstart', wake);
+      window.removeEventListener('pointermove', wakeOnMove);
       cancelAnimationFrame(raf);
       ro.disconnect();
       host.removeEventListener('pointermove', onMove);

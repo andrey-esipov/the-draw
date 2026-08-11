@@ -162,8 +162,14 @@ export function createControls(
       phi: 1.4,
     },
     final: {
-      target: new THREE.Vector3(0, 5.6, 1),
-      radius: 26,
+      // Framed against the tallest vessel, which is Wimbledon's lidded cup with
+      // its pineapple finial. Sitting at 5.6 and 26 this preset put the trophy's
+      // top through the top of the frame on every slam — a named control that
+      // cropped the object it exists to show. Higher and further back fits the
+      // whole vessel with air above it, and still holds the final and both
+      // semi-finals underneath.
+      target: new THREE.Vector3(0, 6.6, 1),
+      radius: 33,
       theta: 0.05,
       phi: 1.4,
     },

@@ -368,14 +368,17 @@
   .title .title-tour {
     margin-top: clamp(20px, 3vh, 32px);
   }
-  /* Two of the four names wrap at this width and two do not, which stepped the
-     player counts under them onto different lines. The name keeps two lines of
-     room whether it uses them or not, so the row of counts stays level. */
+  /* Two of the four names wrapped here and two did not, which left a ragged
+     edge across the name row: "Australian Open" and "Roland-Garros" ran to two
+     lines while "Wimbledon" and "US Open" sat on one, each with a hole under it
+     where the second line would have been. Four columns of a 834px frame leave
+     208px each, so the column simply was not being given the width it had —
+     every name fits on one line at 196px, and the reserved second line goes
+     with them. */
   .title-name {
     font-size: clamp(17px, 2.4vw, 21px);
-    min-height: 2.3em;
   }
-  .title-pick { width: clamp(120px, 17vw, 168px); }
+  .title-pick { width: min(178px, 21.5vw); }
 }
 
 /* The cards rise in place; the desktop entrance also slid on the horizontal

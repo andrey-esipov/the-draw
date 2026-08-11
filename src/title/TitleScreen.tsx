@@ -106,7 +106,7 @@ export function TitleScreen({ onEnter }: Props) {
       // A portrait row hangs larger names off the plinths and puts the tour
       // control under them, so it keeps more of the foot back than a landscape
       // frame where the names sit close to the bottom edge.
-      const foot = b.width / b.height >= 1.05 ? 0.82 : 0.84;
+      const foot = b.width / b.height >= 1.05 ? 0.82 : 0.89;
       let belowTop = row ? b.height * foot : b.height;
       if (!row) {
         for (const el of belowEls) {
