@@ -454,6 +454,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       h = host!.clientHeight;
       stage.resize(w, h);
       route?.resize(w, h);
+      plates?.resize(w, h);
       controls.fit(w / h);
     }
 

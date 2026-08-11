@@ -5,6 +5,9 @@ import type { Draw, Player } from '../data/types';
 import type { SlamTheme } from '../ui/theme';
 import { elbowX, type BracketLayout, type PlateNode } from './layout';
 import { BLOOM_LAYER } from './stage';
+import { Line2 } from 'three/examples/jsm/lines/Line2.js';
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { buildMarkAtlas } from './marks';
 import { createMatchCard, type MatchCard } from './matchcard';
 
@@ -91,6 +94,8 @@ export interface PlateField {
    * cable between two things that are already related.
    */
   crownCard: (matchId: string | null) => void;
+  /** The crown stroke is screen-space width, so it needs the viewport. */
+  resize: (w: number, h: number) => void;
   /** Fade dense early rounds in as the camera approaches them. */
   updateDetail: (camera: THREE.PerspectiveCamera, viewportH: number) => void;
   setHover: (node: PlateNode | null) => void;
@@ -273,6 +278,154 @@ function createHoverStroke(theme: SlamTheme, reduced: boolean) {
   };
 }
 
+/**
+ * The mark on the final: the route's own stroke, bent into a closed loop.
+ *
+ * The thread stops at the final now rather than running on into the plinth, so
+ * the last match has to be able to say "this one" by itself. A flat shader
+ * outline could do that, but it would be a different object from the thing that
+ * just arrived — and the run's whole read is one continuous stroke. So this is
+ * built exactly as the route is built: three stacked Line2 passes in the slam's
+ * flare, an additive aura, an additive halo and a solid core, all on the bloom
+ * layer, with a bright head running ahead of the draw. The stroke that crossed
+ * the board simply carries on around the card.
+ *
+ * It draws on once, the head lands and fades, and then the loop holds with a
+ * slow breath so the card stays marked while the camera lifts to the trophy.
+ */
+function createCrownStroke(theme: SlamTheme, w: number, h: number, reduced: boolean) {
+  const group = new THREE.Group();
+  group.visible = false;
+  const colour = new THREE.Color(theme.flare);
+
+  const pts = roundedPerimeter(10);
+  const flat: number[] = [];
+  let total = 0;
+  for (let i = 0; i <= pts.length; i++) {
+    const a = pts[i % pts.length]!;
+    if (i > 0) total += a.distanceTo(pts[(i - 1) % pts.length]!);
+    flat.push(a.x, a.y, 0);
+  }
+
+  const lines: { mat: LineMaterial; geo: LineGeometry; base: number }[] = [];
+  const make = (width: number, opacity: number, additive: boolean) => {
+    const geo = new LineGeometry();
+    geo.setPositions(flat);
+    const mat = new LineMaterial({
+      color: colour.getHex(),
+      linewidth: width,
+      worldUnits: false,
+      transparent: true,
+      opacity,
+      dashed: true,
+      dashSize: 0,
+      gapSize: total,
+      depthTest: true,
+      depthWrite: false,
+      blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
+    });
+    mat.resolution.set(w, h);
+    const line = new Line2(geo, mat);
+    line.computeLineDistances();
+    line.renderOrder = 8;
+    line.layers.enable(BLOOM_LAYER);
+    group.add(line);
+    lines.push({ mat, geo, base: opacity });
+  };
+
+  // The champion route's widths and weights, so the two strokes are one family.
+  make(7, 0.08, true);
+  make(3.5, 0.18, true);
+  make(1.5, 0.82, false);
+
+  const headMat = new THREE.MeshBasicMaterial({
+    color: colour.clone().lerp(new THREE.Color(0xffffff), 0.55),
+    transparent: true,
+  });
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 18, 12), headMat);
+  head.renderOrder = 9;
+  head.layers.enable(BLOOM_LAYER);
+  group.add(head);
+
+  const SWEEP = 1150;
+  let start = 0;
+  let live = false;
+  let headR = 0.1;
+
+  const at = (t: number, out: THREE.Vector2) => {
+    const d = t * total;
+    let run = 0;
+    for (let i = 1; i <= pts.length; i++) {
+      const a = pts[(i - 1) % pts.length]!;
+      const b = pts[i % pts.length]!;
+      const seg = a.distanceTo(b);
+      if (run + seg >= d || i === pts.length) {
+        out.copy(a).lerp(b, seg > 1e-6 ? (d - run) / seg : 0);
+        return;
+      }
+      run += seg;
+    }
+  };
+  const cursor = new THREE.Vector2();
+
+  return {
+    group,
+    set: (node: PlateNode | null) => {
+      if (!node) {
+        live = false;
+        group.visible = false;
+        return;
+      }
+      live = true;
+      start = performance.now();
+      group.visible = true;
+      group.position.set(node.x, node.y, node.z + 0.235);
+      const sx = node.w + Math.max(0.12, node.h * 0.12);
+      const sy = node.h + Math.max(0.06, node.h * 0.09);
+      group.scale.set(sx, sy, 1);
+      // The head is scaled by its parent, so undo the anisotropy or it reads as
+      // an ellipse smeared along the card.
+      headR = Math.min(sx, sy) * 0.06;
+      head.scale.set(headR / sx, headR / sy, headR);
+      for (const l of lines) {
+        l.mat.dashSize = reduced ? total : 0;
+        l.mat.gapSize = reduced ? 1e-4 : total;
+        l.mat.opacity = l.base;
+      }
+      head.visible = !reduced;
+    },
+    update: (now: number) => {
+      if (!live) return;
+      const raw = reduced ? 1 : Math.min(1, (now - start) / SWEEP);
+      const p = easeOutExpo(raw);
+      for (const l of lines) {
+        l.mat.dashSize = Math.max(1e-4, total * p);
+        l.mat.gapSize = Math.max(1e-4, total * (1 - p));
+      }
+      if (raw < 1) {
+        at(p, cursor);
+        head.position.set(cursor.x, cursor.y, 0.004);
+        (head.material as THREE.MeshBasicMaterial).opacity = Math.min(1, (1 - raw) * 4);
+      } else {
+        head.visible = false;
+        // Held, not static. A slow breath keeps the mark alive under a camera
+        // that is still moving, without pulling the eye off the trophy.
+        const breath = reduced ? 1 : 0.86 + 0.14 * Math.sin((now - start - SWEEP) / 620);
+        for (const l of lines) l.mat.opacity = l.base * breath;
+      }
+    },
+    resize: (nw: number, nh: number) => {
+      for (const l of lines) l.mat.resolution.set(nw, nh);
+    },
+    dispose: () => {
+      for (const l of lines) { l.geo.dispose(); l.mat.dispose(); }
+      head.geometry.dispose();
+      headMat.dispose();
+      group.removeFromParent();
+    },
+  };
+}
+
 export function createPlates(
   layout: BracketLayout,
   draw: Draw,
@@ -335,9 +488,10 @@ export function createPlates(
 
   const hoverStroke = createHoverStroke(theme, reduced);
   group.add(hoverStroke.group);
-  // Its own instance, so marking the final cannot fight a hover happening at
-  // the same moment.
-  const crownStroke = createHoverStroke(theme, reduced);
+  // Its own object, so marking the final cannot fight a hover happening at the
+  // same moment, and so it can carry the route's stroke rather than the flat
+  // outline hover uses.
+  const crownStroke = createCrownStroke(theme, window.innerWidth, window.innerHeight, reduced);
   group.add(crownStroke.group);
   const matchCard: MatchCard = createMatchCard(draw, theme, reduced);
   group.add(matchCard.group);
@@ -748,6 +902,7 @@ export function createPlates(
     crownCard: (matchId: string | null) => {
       crownStroke.set(matchId ? (layout.byMatch.get(matchId) ?? null) : null);
     },
+    resize: (nw: number, nh: number) => crownStroke.resize(nw, nh),
     setRouteProgress,
     setBuild,
     updateDetail,
