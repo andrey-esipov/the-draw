@@ -81,6 +81,16 @@ export interface PlateField {
   /** 1 = the board at full strength, 0 = down to nothing. The run's landing
    *  takes the house lights down so the trophy has the frame to itself. */
   setHush: (k: number) => void;
+  /**
+   * Trace a running outline round one card and hold it lit.
+   *
+   * The run used to draw its thread on up into the plinth. The trophy already
+   * stands over the match that won it, so that line only made the cup look
+   * tethered. The thread stops at the final now and this marks it instead:
+   * the outline runs round the card, which says "this one" without drawing a
+   * cable between two things that are already related.
+   */
+  crownCard: (matchId: string | null) => void;
   /** Fade dense early rounds in as the camera approaches them. */
   updateDetail: (camera: THREE.PerspectiveCamera, viewportH: number) => void;
   setHover: (node: PlateNode | null) => void;
@@ -325,6 +335,10 @@ export function createPlates(
 
   const hoverStroke = createHoverStroke(theme, reduced);
   group.add(hoverStroke.group);
+  // Its own instance, so marking the final cannot fight a hover happening at
+  // the same moment.
+  const crownStroke = createHoverStroke(theme, reduced);
+  group.add(crownStroke.group);
   const matchCard: MatchCard = createMatchCard(draw, theme, reduced);
   group.add(matchCard.group);
 
@@ -656,6 +670,7 @@ export function createPlates(
   function updateDetail(camera: THREE.PerspectiveCamera, viewportH: number) {
     const now = performance.now();
     hoverStroke.update(now);
+    crownStroke.update(now);
     matchCard.update(now);
     const focal = viewportH / (2 * Math.tan((camera.fov * Math.PI) / 360));
     const focusedNode = hoverNode ?? matchCard.current();
@@ -730,6 +745,9 @@ export function createPlates(
     mesh,
     setHighlight,
     setHush,
+    crownCard: (matchId: string | null) => {
+      crownStroke.set(matchId ? (layout.byMatch.get(matchId) ?? null) : null);
+    },
     setRouteProgress,
     setBuild,
     updateDetail,
@@ -760,6 +778,7 @@ export function createPlates(
       markMesh.dispose();
       atlas.dispose();
       hoverStroke.dispose();
+      crownStroke.dispose();
       matchCard.dispose();
       group.removeFromParent();
     },

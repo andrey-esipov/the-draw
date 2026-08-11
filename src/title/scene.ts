@@ -97,19 +97,32 @@ function contactTexture(): THREE.CanvasTexture {
  * draw call.
  */
 function podiumFor(theme: ReturnType<typeof themeFor>): THREE.Mesh {
+  // The board's pedestal profile, brought to this shelf's footprint.
+  //
+  // This was its own shape and much flatter — 0.8 across and 0.35 tall, an
+  // aspect of 0.44 against the board's 1.19 — and at a shelf's viewing angle a
+  // disc that wide and that shallow has no side to read, so it rendered as a
+  // soft pillow rather than as a turned base. The board gets this right: a crisp
+  // top rim, a straight drum with a visible side, a step out, and a wider foot.
+  // Same language here, at two thirds the height, because a display stand should
+  // not stand as tall as the podium a champion's trophy sits on.
   const p: THREE.Vector2[] = [];
   const add = (x: number, y: number) => p.push(new THREE.Vector2(x, y));
-  add(0, 0);
-  add(0.6, 0);
-  add(0.645, -0.018);
-  add(0.66, -0.055);
-  add(0.66, -0.2);
-  add(0.712, -0.246);
-  add(0.79, -0.29);
-  add(0.806, -0.33);
-  add(0.8, -0.352);
-  add(0, -0.352);
-  const geo = new THREE.LatheGeometry(p, 72);
+  add(0, -0.007);
+  add(0.378, 0);
+  add(0.478, 0);
+  add(0.522, -0.029);
+  add(0.55, -0.065);
+  add(0.539, -0.108);
+  add(0.544, -0.411);
+  add(0.556, -0.433);
+  add(0.644, -0.44);
+  add(0.656, -0.483);
+  add(0.789, -0.512);
+  add(0.8, -0.599);
+  add(0.767, -0.62);
+  add(0, -0.62);
+  const geo = new THREE.LatheGeometry(p, 128);
   geo.computeVertexNormals();
   return new THREE.Mesh(
     geo,
@@ -458,7 +471,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
   // -0.24 the floor plane cut straight through every base, which is what turned
   // four turned discs into four shapes with a hard flat slice across them. The
   // floor sits at the plinths' feet instead, so each one stands on it.
-  floor.position.y = -0.3555;
+  floor.position.y = -0.6235;
   scene.add(floor);
   // Seen from almost overhead, as a phone frames this, the court stops reading
   // as a court and becomes a set of diagonals across the type.
@@ -572,7 +585,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
       fog: true,
     }),
   );
-  titleNet.position.set(0, -0.3555 + 0.51, -13.1);
+  titleNet.position.set(0, -0.6235 + 0.51, -13.1);
   titleNet.renderOrder = -20;
   scene.add(titleNet);
 
@@ -711,7 +724,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
     // hovered; left at the old height once the floor came down to meet the
     // plinths, it floated an eighth of a unit up and the reflector picked it up
     // as a bright crackled disc under each base.
-    shade.position.y = -0.3495;
+    shade.position.y = -0.6175;
     shade.renderOrder = 3;
     shades.push(shade);
     holder.add(shade);

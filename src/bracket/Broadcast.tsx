@@ -10,7 +10,7 @@ import { createRoute, type Route } from '../three/route';
 import { CARD_ASPECT } from '../three/matchcard';
 import { sound } from '../audio/sound';
 import { buildCinematic, idleDrift, type Cinematic } from '../three/cinema';
-import { createPodium, PLINTH_TOP, PODIUM_SCALE } from '../three/podium';
+import { createPodium, PODIUM_SCALE } from '../three/podium';
 import { createControls, drawControlsBus, type CameraPose } from '../three/controls';
 import { bootDone } from '../boot';
 
@@ -200,12 +200,12 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       );
       const champion = draw.rounds[draw.rounds.length - 1]?.matches[0]?.winner === id;
       championRun = champion;
-      // Only the winner's thread climbs to the plinth. Everyone else's route
-      // stops where their tournament stopped, which is the whole point.
-      const apex = champion
-        ? { x: layout.podium.x, y: layout.podium.y + PLINTH_TOP * PODIUM_SCALE, z: layout.podium.z + 1.75 }
-        : undefined;
-      route = createRoute(path, theme, champion, w, h, apex);
+      // The thread stops at the final. It used to carry on up to the plinth,
+      // which drew a line between two things that do not need one: the trophy is
+      // already standing over the match that won it, and a cable running into it
+      // made the object look tethered rather than presented. The last match is
+      // marked instead, and the camera does the rest by lifting to the cup.
+      route = createRoute(path, theme, champion, w, h, undefined);
       stage.scene.add(route.group);
       route.setProgress(reduced ? 1 : 0);
       cinema = buildCinematic(path, layout.podium, {
@@ -257,6 +257,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
         onRunEnd();
         return;
       }
+      plates.crownCard(null);
       sound.runStart();
       controls.enabled = false;
       runStart = performance.now();
@@ -358,7 +359,15 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
         // No struck-ball pip per round any more. Seven of them across the flight
         // turned a camera move into a rally the picture was not playing, and the
         // run reads calmer with only its start and its arrival marked.
-        if (!crowned && p >= 0.999) { crowned = true; sound.crown(); }
+        // The thread reaches the final and the card is marked, not wired to the
+        // cup. The outline runs round it, holds while the camera lifts, and the
+        // trophy takes the frame on its own.
+        if (!crowned && p >= 0.999) {
+          crowned = true;
+          sound.crown();
+          const finalMatch = draw.rounds[draw.rounds.length - 1]?.matches[0];
+          if (championRun && finalMatch) plates.crownCard(finalMatch.id);
+        }
         if (t >= cinema.duration) {
           running = false;
           route?.setProgress(1);
