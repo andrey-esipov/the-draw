@@ -225,11 +225,13 @@ function venusRosewaterDish(opts: VesselOpts): THREE.Group {
   // flat salver held up facing the camera: at a mirror finish its entire face
   // reflects a single softbox and it renders as a glowing white disc with no
   // decoration on it at all. The real dish is chased sterling with a satin
-  // patina in the recesses, so a broader lobe and a calmer room is both the
-  // truer material and the one that lets the gadrooning and the boss read.
+  // patina in the recesses, so the broad flat field carries a wider lobe that
+  // scatters the softbox instead of returning it whole, while the raised
+  // gadrooning and boss keep a tighter finish below so their highlights survive
+  // and the chasing still reads.
   const silver = metalMat(silverColor, {
     envMap: opts.envMap,
-    roughness: 0.31,
+    roughness: 0.50,
     envMapIntensity: 1.12,
     clearcoat: 0.02,
     textureKind: 'silver',
@@ -311,12 +313,15 @@ function venusRosewaterDish(opts: VesselOpts): THREE.Group {
   dish.add(new THREE.Mesh(mergePrepared(brightParts), silverBright));
 
   // Square to the camera the salver is a mirror pointed straight back at the key
-  // light. Laid back further and turned a few degrees off centre, the same face
-  // catches the room at a rake, which is how a plate is actually photographed
-  // and what makes the chasing on it visible at all.
-  dish.rotation.x = Math.PI / 2 - 0.36;
+  // light. The title rig is a far brighter room than the board, so the gentle
+  // rake that held on the dark stage still returned the front softbox across the
+  // whole face here and blew it to a white disc. A steeper lay-back and a much
+  // stronger yaw swing that face off the softbox bisector, so it rakes the room
+  // rather than facing it. LatheGeometry is symmetric about its own Y, so the
+  // yaw has to live on the wrapping group to actually turn the plate.
+  dish.rotation.x = Math.PI / 2 - 0.50;
   const easel = new THREE.Group();
-  easel.rotation.y = 0.26;
+  easel.rotation.y = 0.70;
   easel.add(dish);
   content.add(easel);
 

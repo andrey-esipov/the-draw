@@ -648,9 +648,14 @@ export function createControls(
     // across the frame edge the way it does for the stacked quarter-final rows.
     const EDGE_X = 12.4;
     const vFov = (camera.fov * Math.PI) / 180;
+    // The vertical framing rides on radius alone — the FOV is fixed — so the
+    // nearer a near-square portrait tablet pulls in, the higher the trophy climbs
+    // until its lid is sliced off by the header band. A phone rests near 47 and
+    // sits clean, so the tablet is not allowed any closer than that; the extra
+    // width it has just buys clear air either side of the semis.
     const radius = clamp(
       EDGE_X / (Math.tan(vFov / 2) * Math.max(0.35, aspect)),
-      cage.radiusMin,
+      44,
       cage.radiusMax,
     );
     restFraming.target.set(0, 2.4, -0.3);

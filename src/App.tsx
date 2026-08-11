@@ -23,9 +23,28 @@ const SKIP_TITLE =
   new URLSearchParams(window.location.search).has('enter') ||
   new URLSearchParams(window.location.search).has('slam');
 
+/**
+ * Whether this machine can render the 3D board at all.
+ *
+ * Most of the piece is WebGL, and on a machine without it — a locked-down
+ * corporate laptop, a browser with hardware acceleration switched off, a VM —
+ * every canvas in it renders nothing and the whole thing is a black screen with
+ * some type on it. The Radial view is SVG and shows all 128 positions, so there
+ * is a real draw to fall back to rather than an apology. Checked once, up front,
+ * because the answer cannot change within a page load.
+ */
+const HAS_WEBGL = (() => {
+  try {
+    const c = document.createElement('canvas');
+    return !!(c.getContext('webgl2') || c.getContext('webgl'));
+  } catch {
+    return false;
+  }
+})();
+
 export function App() {
   const [slam, setSlam] = useState<SlamId>('wimbledon-men');
-  const [titled, setTitled] = useState(!SKIP_TITLE);
+  const [titled, setTitled] = useState(!SKIP_TITLE && HAS_WEBGL);
   const [handedOver, setHandedOver] = useState(false);
   const [cameFromTitle, setCameFromTitle] = useState(false);
   const [tour, setTour] = useState<Tour>('men');
@@ -35,7 +54,7 @@ export function App() {
   const [prediction, setPrediction] = useState<string | null>(null);
   const [pendingName, setPendingName] = useState<string | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
-  const [view, setView] = useState<'board' | 'radial'>('board');
+  const [view, setView] = useState<'board' | 'radial'>(HAS_WEBGL ? 'board' : 'radial');
   const [playToken, setPlayToken] = useState(0);
   const [running, setRunning] = useState(false);
   const [focusToken, setFocusToken] = useState(0);
@@ -244,20 +263,28 @@ export function App() {
               {running ? 'Running the draw' : 'Run the draw'}
             </button>
             <div className="viewswap" role="group" aria-label="View">
-              <button
-                type="button"
-                className={view === 'board' ? 'on' : ''}
-                onClick={() => setView('board')}
-              >
-                Board
-              </button>
-              <button
-                type="button"
-                className={view === 'radial' ? 'on' : ''}
-                onClick={() => setView('radial')}
-              >
-                Radial
-              </button>
+              {/* Without WebGL the Board renders nothing, so offering it as a
+                  choice would be offering a black screen. The whole control
+                  goes, not just the one button: a swap with one option left in
+                  it is a toggle with nothing to toggle to. */}
+              {HAS_WEBGL && (
+                <>
+                  <button
+                    type="button"
+                    className={view === 'board' ? 'on' : ''}
+                    onClick={() => setView('board')}
+                  >
+                    Board
+                  </button>
+                  <button
+                    type="button"
+                    className={view === 'radial' ? 'on' : ''}
+                    onClick={() => setView('radial')}
+                  >
+                    Radial
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </>
