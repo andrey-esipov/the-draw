@@ -957,6 +957,41 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
    off, and the chrome is never more than one gesture away. Nothing is disabled
    while it is down — the controls fade but the wake fires on the same gesture,
    so a click meant for a button still lands on it. */
+/* The landing's own vignette. Dimming the board field got the bulk of the way
+   there, but the cards nearest the camera sit at the frame edges and the gold
+   thread runs through them at full strength, so the climax still carried bright
+   clipped clutter along its foot — the one frame most likely to be screenshotted
+   wearing the one fault it could least afford.
+
+   A vignette rather than more dimming, because the thread reaching the cup is
+   the whole argument and must not go out. This is transparent across the middle
+   where the trophy stands and closes down at the edges, so it takes the corners
+   without touching the subject. It exists only while the landing is held. */
+.stage.is-landed .field::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: radial-gradient(
+    ellipse 62% 58% at 50% 42%,
+    transparent 0%,
+    transparent 42%,
+    color-mix(in srgb, var(--ground-deep) 72%, #000) 78%,
+    color-mix(in srgb, var(--ground-deep) 88%, #000) 100%
+  );
+  animation: landed-vignette 900ms var(--ease-soft) both;
+}
+
+@keyframes landed-vignette {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage.is-landed .field::after { animation-duration: 1ms; }
+}
+
 .is-landed .camctl-hint,
 .is-landed .camctl-rack,
 .is-landed .search,
