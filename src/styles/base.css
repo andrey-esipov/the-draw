@@ -150,12 +150,80 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   z-index: 5;
   pointer-events: none;
 }
+/* Set as written, not shouted. Caps tracking exists to open up letterforms that
+   have no ascenders or descenders to separate them; on lowercase it just pulls
+   words apart, and a screen that types every small label in spaced capitals
+   reads as a template rather than as something set. Every one of these strings
+   was already authored in sentence case — only the CSS was raising it. */
 .mark-word {
   font-family: var(--type-datum-family);
-  font-size: calc(var(--type-datum-size) * 0.94);
-  letter-spacing: var(--track-caps);
-  text-transform: uppercase;
+  font-size: calc(var(--type-datum-size) * 1.02);
+  letter-spacing: 0.035em;
   opacity: 0.52;
+}
+
+/* The wordmark is the way home. The title screen is the piece's front door —
+   four modelled trophies in a dark room — and it was a one-way door: once you
+   were on a board, the trophy menu could take you to another slam but nothing
+   could take you back to the four cups.
+
+   The mark itself is the right target because that is where a wordmark always
+   goes, and it is the one piece of chrome that never fades: it stays up through
+   the run and through the landing, so the way back is never more than one click
+   away even when everything else has stood down.
+
+   The padding is cancelled by an equal negative margin, so the target grows to
+   the 44px house floor without moving a single pixel of the layout it sits in. */
+.mark-home {
+  pointer-events: auto;
+  cursor: pointer;
+  padding: 15px 20px;
+  margin: -15px -20px;
+  border-radius: 999px;
+  transition:
+    opacity 260ms var(--ease-soft),
+    letter-spacing 260ms var(--ease-soft);
+}
+.mark-home::before {
+  content: '\2190';
+  display: inline-block;
+  width: 0;
+  margin-right: 0;
+  opacity: 0;
+  transform: translateX(4px);
+  transition:
+    opacity 220ms var(--ease-soft),
+    width 260ms var(--ease-soft),
+    margin-right 260ms var(--ease-soft),
+    transform 260ms var(--ease-soft);
+}
+.mark-home:hover,
+.mark-home:focus-visible {
+  opacity: 0.94;
+}
+/* The same ring every other control in the piece wears, in the tournament's own
+   colour. Without it this one fell through to the browser default, which is a
+   blue that appears nowhere else on the screen. */
+.mark-home:focus-visible {
+  outline: 2px solid var(--flare);
+  /* Tight, because the target is 44px tall around 10px of type — any further out
+     and the ring crosses the tournament name below it. */
+  outline-offset: 1px;
+}
+/* The arrow is the only thing that says "back" rather than "title", so it only
+   appears when a pointer or a keyboard is actually on the control. Reserving its
+   width at rest would put a permanent gap beside the wordmark. */
+.mark-home:hover::before,
+.mark-home:focus-visible::before {
+  opacity: 0.8;
+  width: 1ch;
+  margin-right: 0.5ch;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark-home,
+  .mark-home::before { transition-duration: 1ms; }
 }
 .mark-slam {
   font-family: var(--type-display-family);
@@ -364,10 +432,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   transform-origin: 14px 12px;
 }
 .snd-arc { opacity: 0; transform: scaleX(0.3); }
-.snd-cut { opacity: 0.9; }
+/* The cross scales about its own centre rather than the cone's, so turning sound
+   on collapses it where it stands instead of sliding it across the icon. */
+.snd-cut { opacity: 0.9; transform-origin: 18.4px 12px; }
 .snd.is-on .snd-arc { opacity: 0.9; transform: none; }
 .snd.is-on .snd-arc-2 { transition-delay: 60ms; }
-.snd.is-on .snd-cut { opacity: 0; transform: scaleX(0.2); }
+.snd.is-on .snd-cut { opacity: 0; transform: scale(0.4); }
 .snd.is-on { color: var(--flare); border-color: color-mix(in srgb, var(--flare) 34%, transparent); }
 
 /* Live playback breathes the outer arc. Intent alone never animates: the visitor
@@ -1355,9 +1425,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .hollow-ask {
   font-family: var(--type-label-family);
   font-variation-settings: var(--type-label-settings);
-  font-size: calc(var(--type-label-size) * 1.08);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-size: calc(var(--type-label-size) * 1.24);
+  letter-spacing: 0.012em;
   fill-opacity: 0.95;
 }
 
@@ -1572,6 +1641,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .viewswap button {
   padding: 10px 17px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   border: 0;
   background: transparent;
   color: inherit;
@@ -1589,6 +1661,20 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .viewswap button.on {
   opacity: 1;
   background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+/* Two views of the same 128 positions: the bracket laid out, and the bracket
+   seen from the point every one of them is trying to reach. The marks say that
+   in the space the words need anyway, and they stay white — the tournament's
+   colour is earned by the trophy and the champion's thread, not spent on a
+   toggle. The mark carries the same opacity as its label rather than sitting at
+   its own, so the inactive side reads as one quiet unit. */
+.viewswap-mark {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  color: #eef3ec;
+  opacity: 0.92;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1773,6 +1859,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .is-flown .mark-word,
 .is-running .mark-word { opacity: 0.34; }
+/* The wordmark is also the way home, so in the corner lockup it has to stay
+   legible as a control rather than fade to a watermark like the rest of the
+   masthead. It is the only chrome that survives the run and the landing, which
+   makes it the only route back at exactly the moment everything else is down. */
+.is-flown .mark-home,
+.is-running .mark-home { opacity: 0.46; }
 .is-flown .mark-slam,
 .is-running .mark-slam {
   --type-display-size: 21px;

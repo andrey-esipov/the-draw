@@ -36,9 +36,8 @@
 
 .title-word {
   font-family: var(--type-datum-family);
-  font-size: 11px;
-  letter-spacing: var(--track-caps);
-  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.035em;
   color: rgba(238, 243, 236, 0.66);
   margin: 0;
 }
@@ -61,9 +60,8 @@
 
 .title-sub {
   font-family: var(--type-caption-family);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 12.5px;
+  letter-spacing: 0.012em;
   color: rgba(238, 243, 236, 0.58);
   margin: 22px 0 0;
 }
@@ -105,6 +103,36 @@
   margin-top: 14px;
   animation: title-rise 1200ms var(--ease-soft) both;
 }
+/* Coming back off a board, the room is already standing — only the cups are in
+   the wrong place, and the scene walks those back itself. So the DOM does not
+   replay its cold entrance, which would rise the type and stagger the cups a
+   second time against a room that is not rebuilding. It fades in over the walk
+   instead, slowly enough that the type arrives as the cups reach their plinths
+   rather than before they have set off. */
+.title.is-returning .title-head,
+.title.is-returning .title-cup {
+  animation-name: title-return;
+  animation-duration: 1450ms;
+  animation-timing-function: var(--ease-soft);
+  animation-delay: 0ms;
+  animation-fill-mode: both;
+}
+.title.is-returning .title-cup:nth-child(1),
+.title.is-returning .title-cup:nth-child(2),
+.title.is-returning .title-cup:nth-child(3),
+.title.is-returning .title-cup:nth-child(4) { animation-delay: 0ms; }
+
+@keyframes title-return {
+  0% { opacity: 0; }
+  46% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title.is-returning .title-head,
+  .title.is-returning .title-cup { animation-duration: 1ms; }
+}
+
 .title-cup:nth-child(1) { animation-delay: 320ms; }
 .title-cup:nth-child(2) { animation-delay: 440ms; }
 .title-cup:nth-child(3) { animation-delay: 560ms; }
@@ -138,9 +166,8 @@
 
 .title-state {
   font-family: var(--type-datum-family);
-  font-size: 10px;
-  letter-spacing: var(--track-caps);
-  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.03em;
   /* Reads on the darkest part of the floor at AA, and is the only place the
      screen admits a tournament has no draw yet. */
   color: rgba(233, 240, 232, 0.62);
@@ -475,9 +502,8 @@
   padding: 7px 16px;
   border-radius: 999px;
   font-family: var(--type-caption-family);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 12.5px;
+  letter-spacing: 0.008em;
   color: rgba(238, 243, 236, 0.56);
   transition: color 280ms var(--ease-soft), background 280ms var(--ease-soft);
 }

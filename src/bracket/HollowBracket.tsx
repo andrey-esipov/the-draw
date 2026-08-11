@@ -89,7 +89,7 @@ export function HollowBracket({ slam, theme, pickName }: Props) {
       ) : (
         <g>
           <text className="hollow-ask" x={CENTER.x} y={CENTER.y + 44} textAnchor="middle" fill={theme.chalk}>
-            PICK WHO REACHES HERE
+            Pick who reaches here
           </text>
           <text className="hollow-hint" x={CENTER.x} y={CENTER.y + 80} textAnchor="middle" fill={theme.chalk}>
             Select a name from the season list

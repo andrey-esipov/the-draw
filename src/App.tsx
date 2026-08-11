@@ -77,6 +77,8 @@ export function App() {
   const [playToken, setPlayToken] = useState(0);
   const [running, setRunning] = useState(false);
   const [landed, setLanded] = useState(false);
+  // Which board the viewer came back off, so the title can reverse that walk.
+  const [returnedFrom, setReturnedFrom] = useState<SlamId | null>(null);
   const [focusToken, setFocusToken] = useState(0);
   const [flown, setFlown] = useState(false);
 
@@ -153,6 +155,23 @@ export function App() {
     },
     [draw],
   );
+  // The title screen is the piece's front door, and until now it was a one-way
+  // one: once you were on a board the only way to another slam was the trophy
+  // menu, and there was no way back to the four cups at all. The wordmark is the
+  // way home, which is where a wordmark always goes.
+  const goHome = useCallback(() => {
+    setReturnedFrom(slam);
+    setTitled(true);
+    setHandedOver(false);
+    setLanded(false);
+    setFlown(false);
+    setRunning(false);
+    setPicked(null);
+    setPrediction(null);
+    setPendingName(null);
+    setView(HAS_WEBGL ? 'board' : 'radial');
+  }, [slam]);
+
   const handleRunEnd = useCallback(() => {
     setRunning(false);
     setLanded(true);
@@ -190,6 +209,7 @@ export function App() {
   }, [landed]);
 
   const handleEnter = useCallback((next: SlamId) => {
+    setReturnedFrom(null);
     setSlam(next);
     setTour(next.endsWith('-women') ? 'women' : 'men');
     setTitled(false);
@@ -204,7 +224,7 @@ export function App() {
     window.setTimeout(() => setHandedOver(false), 1500);
   }, []);
 
-  if (titled) return <TitleScreen onEnter={handleEnter} />;
+  if (titled) return <TitleScreen onEnter={handleEnter} returnFrom={returnedFrom} />;
 
   return (
     <main
@@ -221,7 +241,13 @@ export function App() {
       <div className="scrim" aria-hidden="true" />
       {handedOver && <div className="handoff" aria-hidden="true" />}
       <header className="mark" style={{ '--flare': theme.flare } as React.CSSProperties}>
-        <p className="mark-word">The Draw</p>
+        {HAS_WEBGL ? (
+          <button type="button" className="mark-word mark-home" onClick={goHome}>
+            The Draw
+          </button>
+        ) : (
+          <p className="mark-word">The Draw</p>
+        )}
         <h1 className="mark-slam">{theme.label}</h1>
         <span className="mark-rule" aria-hidden="true" />
         <p className="mark-meta">
@@ -328,6 +354,15 @@ export function App() {
                     className={view === 'board' ? 'on' : ''}
                     onClick={() => setView('board')}
                   >
+                    {/* The bracket from the app's own mark: two feeders meeting a
+                        spine, and the trophy waiting at the end of it. */}
+                    <svg className="viewswap-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                      <g fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2.4 3.9h2.9V8h3.1" />
+                        <path d="M2.4 12.1h2.9V8" />
+                      </g>
+                      <circle cx="11.6" cy="8" r="1.7" fill="currentColor" />
+                    </svg>
                     Board
                   </button>
                   <button
@@ -335,6 +370,15 @@ export function App() {
                     className={view === 'radial' ? 'on' : ''}
                     onClick={() => setView('radial')}
                   >
+                    {/* The same draw seen from its centre: every position spoked
+                        out from the one place they are all trying to reach. */}
+                    <svg className="viewswap-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                      <g fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round">
+                        <path d="M8 1.9v2.2M8 11.9v2.2M1.9 8h2.2M11.9 8h2.2" />
+                        <path d="M3.7 3.7 5.3 5.3M10.7 10.7l1.6 1.6M12.3 3.7 10.7 5.3M5.3 10.7l-1.6 1.6" />
+                      </g>
+                      <circle cx="8" cy="8" r="1.6" fill="currentColor" />
+                    </svg>
                     Radial
                   </button>
                 </>

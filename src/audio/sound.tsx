@@ -229,14 +229,21 @@ export function SoundToggle({ slam, style, className }: ToggleProps) {
           <path className="snd-arc snd-arc-1" d="M16.5 9.6a3.4 3.4 0 0 1 0 4.8" strokeWidth="1.35" />
           <path className="snd-arc snd-arc-2" d="M18.7 7.6a6.5 6.5 0 0 1 0 8.8" strokeWidth="1.2" />
         </g>
-        <path
+        {/* Muted is a cross, not a single stroke. One diagonal sitting beside the
+            cone, crossing nothing, read as a stray tick rather than as "off" —
+            it needs either to cut through the whole icon or to be an unambiguous
+            x. A cross sits exactly where the waves are when sound is on, so the
+            two states swap in the same place and say opposite things. */}
+        <g
           className="snd-cut"
-          d="M17 9.4 21.4 14.6"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.35"
           strokeLinecap="round"
-        />
+        >
+          <path d="M16.2 9.8 20.6 14.2" />
+          <path d="M20.6 9.8 16.2 14.2" />
+        </g>
       </svg>
       <span className="snd-sr">{label}</span>
     </button>

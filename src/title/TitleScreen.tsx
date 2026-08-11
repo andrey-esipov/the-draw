@@ -27,6 +27,10 @@ const APPROACH_MS = 1250;
    transition duration in title.css. The wipe is cover for the renderer swap,
    not a dissolve: it opens late enough that the cup's walk plays in the clear. */
 const WIPE_MS = 260;
+/* Slower than the outward walk. Going in, the viewer has just chosen and wants
+   to arrive; coming back, they are leaving something and the room reassembling
+   is the thing worth watching. */
+const RETURN_MS = 1450;
 
 /**
  * Only the draws that exist on file. The 2026 US Open has not been made yet, and
@@ -46,9 +50,19 @@ const DRAWN: Record<string, boolean> = {
 
 interface Props {
   onEnter: (slam: SlamId) => void;
+  /**
+   * The slam being returned from, when the viewer has come back off a board.
+   *
+   * Arriving cold and arriving back are different moments and cannot share an
+   * entrance. Cold, the room builds: type rises, cups rise in sequence. Coming
+   * back, the room is already standing and the only thing that has changed is
+   * which cup is where — so the walk is played in reverse instead, the chosen
+   * cup returning to its plinth while the other three come back up around it.
+   */
+  returnFrom?: SlamId | null;
 }
 
-export function TitleScreen({ onEnter }: Props) {
+export function TitleScreen({ onEnter, returnFrom = null }: Props) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const sceneRef = useRef<TitleScene | null>(null);
@@ -58,13 +72,19 @@ export function TitleScreen({ onEnter }: Props) {
   // the eye moves along the shelf and the tournament is audible before it is
   // chosen. SoundToggle owns the actual call.
   const [bedSlam, setBedSlam] = useState<SlamId>('wimbledon-men');
-  const [tour, setTour] = useState<TitleTour>('men');
+  const [tour, setTour] = useState<TitleTour>(returnFrom?.endsWith('-women') ? 'women' : 'men');
   // Memoised because the callbacks below close over it, and a fresh array each
   // render meant the entry handler kept handing back whichever tour was current
   // when it was first created.
   const slams = useMemo(() => titleSlams(tour), [tour]);
   const [leaving, setLeaving] = useState<number | null>(null);
   const [wipe, setWipe] = useState(false);
+  // Held for the length of the reverse walk, then dropped, so the class only
+  // suppresses the cold entrance and never sticks to a screen at rest.
+  const [returning, setReturning] = useState(returnFrom !== null);
+  // Read once. The prop is only meaningful for the mount it arrives on, and the
+  // effect below must not re-run and replay the walk if a parent re-renders.
+  const returnIdxRef = useRef(returnFrom ? titleSlams(returnFrom.endsWith('-women') ? 'women' : 'men').indexOf(returnFrom) : -1);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -136,6 +156,32 @@ export function TitleScreen({ onEnter }: Props) {
     sceneRef.current = scene;
     setAnchors(scene.anchors());
     setGrid(scene.isGrid());
+
+    // Coming back off a board, play the walk backwards. `approach` is a pure
+    // function of t against the pose it was first called from, so putting it
+    // straight to 1 snapshots the resting row and places the scene in the walked
+    // state — chosen cup centred, camera at the board's framing, the other three
+    // gone — and running t down to 0 returns every one of those to where it
+    // started. The cup goes back to its plinth, the room comes back up around it,
+    // and the court fades off, all on the same curve the outward walk used.
+    let backRaf = 0;
+    const backIdx = returnIdxRef.current;
+    if (backIdx >= 0) {
+      scene.setSelected(backIdx);
+      scene.approach(backIdx, 1);
+      const t0 = performance.now();
+      const back = () => {
+        const t = Math.min(1, (performance.now() - t0) / RETURN_MS);
+        scene.approach(backIdx, 1 - t);
+        if (t < 1) {
+          backRaf = requestAnimationFrame(back);
+        } else {
+          scene.setSelected(null);
+          setReturning(false);
+        }
+      };
+      backRaf = requestAnimationFrame(back);
+    }
     // The hold painted by index.html comes down on the first frame there is
     // something to look at, and on a first visit that frame is this one.
     bootDone();
@@ -152,6 +198,7 @@ export function TitleScreen({ onEnter }: Props) {
 
     return () => {
       window.clearTimeout(settle);
+      cancelAnimationFrame(backRaf);
       ro.disconnect();
       scene.dispose();
       canvas.remove();
@@ -209,7 +256,7 @@ export function TitleScreen({ onEnter }: Props) {
 
   return (
     <div
-      className={`title${leaving !== null ? ' is-leaving' : ''}${grid ? ' is-grid' : ''}`}
+      className={`title${leaving !== null ? ' is-leaving' : ''}${grid ? ' is-grid' : ''}${returning ? ' is-returning' : ''}`}
       ref={hostRef}
     >
       <div className="title-canvas-holder" ref={canvasRef} aria-hidden="true" />
