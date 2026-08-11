@@ -76,7 +76,10 @@ export interface TitleScene {
   dispose: () => void;
 }
 
-/** A soft ellipse of dark, so each plinth touches the floor instead of hovering. */
+/** The court surface the trophies stand on. */
+const FLOOR_Y = -0.5275;
+
+/** A soft ellipse of dark, so each trophy touches the floor instead of hovering. */
 function contactTexture(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = c.height = 128;
@@ -88,67 +91,6 @@ function contactTexture(): THREE.CanvasTexture {
   g.fillStyle = grad;
   g.fillRect(0, 0, 128, 128);
   return new THREE.CanvasTexture(c);
-}
-
-/**
- * A turned plinth rather than a truncated cone. Two stacked cones with flat
- * tops was the loudest default-three.js tell on the screen, and a lathed
- * profile with a chamfered top edge and a recessed base costs the same single
- * draw call.
- */
-function podiumFor(theme: ReturnType<typeof themeFor>): THREE.Mesh {
-  // A museum plinth: a drum with a side you can read, and almost no flange.
-  //
-  // Two shapes failed here before this one, both for the same reason. The
-  // original was 0.8 across and 0.35 tall, so shallow it had no side at all and
-  // read as a pillow. Borrowing the board's profile wholesale then over-corrected
-  // — the board steps out to a foot half again as wide as its drum, which is
-  // right for an object seen from a distance and above, but at this shelf's near
-  // eye-level that flange turns into a wide flat annulus facing the lights, and
-  // it rendered as a glowing saucer with a drum sitting on it.
-  //
-  // So: keep the board's crisp top rim and straight drum, and take the flange
-  // out. The foot is barely wider than the drum, the height is up to two thirds
-  // of the width, and the only horizontal surface facing the room is the top the
-  // trophy stands on.
-  const p: THREE.Vector2[] = [];
-  const add = (x: number, y: number) => p.push(new THREE.Vector2(x, y));
-  add(0, -0.008);
-  add(0.585, 0);
-  add(0.618, -0.014);
-  add(0.628, -0.042);
-  add(0.624, -0.075);
-  add(0.623, -0.5);
-  // Straight on down and into the floor, which clips it at -0.5275.
-  //
-  // Every version of this shape until now finished with a bevel tucking back to
-  // the axis, and that bevel is what has been reading as a glowing saucer. It
-  // faces down and out, the room's fill catches it square on, and
-  // computeVertexNormals() then averaged that crisp little band across its
-  // neighbours and smeared it into a soft pale disc a good deal wider than the
-  // band itself. Hiding the shadow, shortening the spot and hiding the mirror
-  // floor each left it untouched, which is what ruled all three out.
-  //
-  // A plinth has no visible underside anyway: it meets the floor. So the drum
-  // runs straight past the floor line and the lathe's own normals are kept, so
-  // the top rim stays a rim instead of being blended into the side.
-  add(0.623, -0.62);
-  add(0, -0.62);
-  const geo = new THREE.LatheGeometry(p, 128);
-  return new THREE.Mesh(
-    geo,
-    new THREE.MeshStandardMaterial({
-      // A base, not a statement. Barely tinted by the tournament, and dark
-      // enough that the object standing on it stays the brightest thing here.
-      // The multiplier used to be a way of finding the tint against a dim
-      // environment; with a real set behind it, the same figure turned the
-      // plinths into saturated discs competing with the trophies.
-      color: new THREE.Color(theme.fog).lerp(new THREE.Color(theme.heritage), 0.1).multiplyScalar(0.55),
-      roughness: 0.52,
-      metalness: 0.35,
-      envMapIntensity: 0.34,
-    }),
-  );
 }
 
 /** The light the room is lit by, so the empty half of the frame has a reason. */
@@ -345,7 +287,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
         let left = 1;
         let right = 0;
         for (const p of places) {
-          for (const y of [-0.35, CUP_HEIGHT * 0.6, CUP_HEIGHT * 1.24]) {
+          for (const y of [FLOOR_Y, FLOOR_Y + CUP_HEIGHT * 0.6, FLOOR_Y + CUP_HEIGHT * 1.24]) {
             for (const dx of [-0.62, 0.62]) {
               probe.set(p.x + dx, y, p.z).project(camera);
               const sy = (1 - probe.y) / 2;
@@ -478,11 +420,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
     },
   });
   floor.rotation.x = -Math.PI / 2;
-  // The plinth's lathe runs from its top at 0 down to -0.352. With the floor at
-  // -0.24 the floor plane cut straight through every base, which is what turned
-  // four turned discs into four shapes with a hard flat slice across them. The
-  // floor sits at the plinths' feet instead, so each one stands on it.
-  floor.position.y = -0.5275;
+  floor.position.y = FLOOR_Y;
   scene.add(floor);
   // Seen from almost overhead, as a phone frames this, the court stops reading
   // as a court and becomes a set of diagonals across the type.
@@ -596,7 +534,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
       fog: true,
     }),
   );
-  titleNet.position.set(0, -0.5275 + 0.51, -13.1);
+  titleNet.position.set(0, FLOOR_Y + 0.51, -13.1);
   titleNet.renderOrder = -20;
   scene.add(titleNet);
 
@@ -703,7 +641,6 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
   const spots: THREE.SpotLight[] = [];
   const baseY: number[] = [];
   const cupMats: THREE.Material[][] = [];
-  const podMats: THREE.Material[] = [];
   const shades: THREE.Mesh[] = [];
   const pairs: [THREE.Group, THREE.Group][] = [];
   const pairBase: [number, number][] = [];
@@ -715,11 +652,8 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
     scene.add(holder);
     holders.push(holder);
 
-    const pod = podiumFor(theme);
-    podMats.push(pod.material as THREE.Material);
-    holder.add(pod);
     const shade = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.05, 2.05),
+      new THREE.PlaneGeometry(1.35, 1.35),
       new THREE.MeshBasicMaterial({
         map: contactTex,
         transparent: true,
@@ -730,12 +664,9 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
       }),
     );
     shade.rotation.x = -Math.PI / 2;
-    // A hair above the floor, and the floor is a hair below the plinths' feet.
-    // Sat below the floor this was never visible and every cup looked like it
-    // hovered; left at the old height once the floor came down to meet the
-    // plinths, it floated an eighth of a unit up and the reflector picked it up
-    // as a bright crackled disc under each base.
-    shade.position.y = -0.5215;
+    // A hair above the floor, so a trophy has something under it rather than
+    // hovering. Sat below the floor it never showed at all.
+    shade.position.y = FLOOR_Y + 0.006;
     shade.renderOrder = 3;
     shades.push(shade);
     holder.add(shade);
@@ -762,7 +693,8 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
       const lift = wide ? 0.92 : id.startsWith('wimbledon') ? 1.16 : 1;
       const k = (CUP_HEIGHT / raw) * lift;
       c.scale.setScalar(k);
-      c.position.y = -box.min.y * k;
+      // The plinths are gone, so a trophy stands on the court itself.
+      c.position.y = -box.min.y * k + FLOOR_Y;
       c.traverse((o) => {
         const m = (o as THREE.Mesh).material;
         if (Array.isArray(m)) mats.push(...m);
@@ -783,7 +715,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
 
     const spot = new THREE.SpotLight(theme.flare, 19, 8.4, 0.33, 0.86, 2);
     spot.position.set(0, 3.9, 1.15);
-    spot.target.position.set(0, 0.5, 0);
+    spot.target.position.set(0, FLOOR_Y + 0.5, 0);
     holder.add(spot);
     holder.add(spot.target);
     spots.push(spot);
@@ -805,10 +737,10 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
   const BASE_SPOT = 8;
 
   const project = new THREE.Vector3();
-  /** Screen position of each plinth, so the type hangs off the object it names. */
+  /** Screen position of each trophy's foot, so the type hangs off what it names. */
   function anchors(): { x: number; y: number }[] {
     const out = holders.map((g) => {
-      project.set(g.position.x, -0.34, g.position.z).project(camera);
+      project.set(g.position.x, FLOOR_Y - 0.02, g.position.z).project(camera);
       return { x: (project.x + 1) / 2, y: (1 - project.y) / 2 };
     });
     // In a row the arc sets the outer cups further back, which projected their
@@ -905,11 +837,6 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
         m.transparent = true;
         m.opacity = a;
         m.depthWrite = a > 0.5;
-      }
-      const pm = podMats[k];
-      if (pm) {
-        pm.transparent = true;
-        pm.opacity = a;
       }
       const sp = spots[k];
       if (sp && k !== i) sp.intensity = BASE_SPOT * 1.4 * (1 - outE);

@@ -319,31 +319,16 @@ function venusRosewaterDish(opts: VesselOpts): THREE.Group {
   // stronger yaw swing that face off the softbox bisector, so it rakes the room
   // rather than facing it. LatheGeometry is symmetric about its own Y, so the
   // yaw has to live on the wrapping group to actually turn the plate.
-  // One constant for both the plate and the stand it rests on. These were two
-  // separate numbers, and when the plate's lay-back was steepened to swing its
-  // face off the softbox the legs were left where they were — so the dish leant
-  // away from its own easel and the legs floated beside it with nothing on them.
+  // The easel is gone. Two thin legs behind a large laid-back plate never read
+  // as a stand: from the shelf's angle they cleared the rim and hung beside the
+  // dish as two disconnected sticks. A salver is one object, so it is drawn as
+  // one, and the group survives only to carry the yaw.
   const LAY_BACK = 0.5;
   dish.rotation.x = Math.PI / 2 - LAY_BACK;
   const easel = new THREE.Group();
   easel.rotation.y = 0.70;
   easel.add(dish);
   content.add(easel);
-
-  const easelParts: THREE.BufferGeometry[] = [];
-  for (const side of [-1, 1]) {
-    const leg = new THREE.CylinderGeometry(0.012, 0.016, 0.5, 12);
-    leg.translate(0, 0.24, 0);
-    leg.rotateX(-LAY_BACK);
-    leg.rotateZ(side * 0.12);
-    leg.translate(side * 0.12, 0, -0.14);
-    easelParts.push(leg);
-  }
-  const crossbar = new THREE.CylinderGeometry(0.012, 0.012, 0.3, 12);
-  crossbar.rotateZ(Math.PI / 2);
-  crossbar.translate(0, 0.16, 0.02);
-  easelParts.push(crossbar);
-  easel.add(new THREE.Mesh(mergePrepared(easelParts), silver));
 
   return finalizeVessel(root, content);
 }
