@@ -252,7 +252,7 @@ export function App() {
         <span className="mark-rule" aria-hidden="true" />
         <p className="mark-meta">
           2026 <span className="dot">·</span>{' '}
-          {forthcoming ? `Draw made ${DRAW_DATE_SHORT}` : draw ? draw.event : ' '}
+          {forthcoming ? `Draw out ${DRAW_DATE_SHORT}` : draw ? draw.event : ' '}
         </p>
       </header>
 

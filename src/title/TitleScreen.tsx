@@ -325,7 +325,7 @@ export function TitleScreen({ onEnter, returnFrom = null }: Props) {
                       that reads as the app being unfinished rather than as the
                       tournament not having been made yet. Naming the date says
                       the same thing and says it about the tennis. */}
-                  {drawn ? '128 players' : `Draw made ${DRAW_DATE_SHORT}`}
+                  {drawn ? '128 players' : `Draw out ${DRAW_DATE_SHORT}`}
                 </span>
               </button>
               {!drawn && (

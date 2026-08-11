@@ -128,6 +128,55 @@ function podiumFor(theme: ReturnType<typeof themeFor>): THREE.Mesh {
 }
 
 /** The light the room is lit by, so the empty half of the frame has a reason. */
+/**
+ * The net, as a texture rather than geometry.
+ *
+ * At this distance a modelled net is a few hundred triangles resolving to a
+ * grey smear, so it is drawn once into a canvas: a solid tape along the top,
+ * then the mesh, then a fade at both ends so the net has no hard edge where the
+ * posts would be. The scene's own exponential fog does the rest — the net sits
+ * far enough back that it arrives already softened by the same air the court
+ * fades into, which is what makes it belong rather than sit on top.
+ */
+function netTexture(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 1024;
+  c.height = 96;
+  const g = c.getContext('2d')!;
+  g.clearRect(0, 0, c.width, c.height);
+  g.strokeStyle = 'rgba(226,238,228,0.5)';
+  g.lineWidth = 1;
+  for (let x = 0; x <= c.width; x += 7) {
+    g.beginPath();
+    g.moveTo(x + 0.5, 12);
+    g.lineTo(x + 0.5, c.height);
+    g.stroke();
+  }
+  for (let y = 12; y <= c.height; y += 7) {
+    g.beginPath();
+    g.moveTo(0, y + 0.5);
+    g.lineTo(c.width, y + 0.5);
+    g.stroke();
+  }
+  // The tape along the top is the part of a net you actually read at distance.
+  g.fillStyle = 'rgba(238,246,238,0.92)';
+  g.fillRect(0, 0, c.width, 11);
+  // No posts: at this size they would be two bright pins on the horizon. The
+  // net fades out instead, which reads as depth rather than as a cut.
+  const fade = g.createLinearGradient(0, 0, c.width, 0);
+  fade.addColorStop(0, 'rgba(0,0,0,1)');
+  fade.addColorStop(0.06, 'rgba(0,0,0,0)');
+  fade.addColorStop(0.94, 'rgba(0,0,0,0)');
+  fade.addColorStop(1, 'rgba(0,0,0,1)');
+  g.globalCompositeOperation = 'destination-out';
+  g.fillStyle = fade;
+  g.fillRect(0, 0, c.width, c.height);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  return t;
+}
+
 function glowTexture(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = c.height = 256;
@@ -501,6 +550,27 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
     roomGlow.position.y = glowBase.y + Math.sin(s * 0.0805 + 1.1) * 0.42;
     glowMat.opacity = 0.5 + Math.sin(s * 0.1122 + 0.6) * 0.055;
   }
+
+  // The court had its lines and no net, which is the one thing that makes a
+  // court unmistakable at a glance. It stands on the net line, back where the
+  // shader's own fade has already taken the chalk down to about a third, so it
+  // arrives at the same strength as the court around it rather than as a bright
+  // object hanging in the room.
+  const netTex = netTexture();
+  const titleNet = new THREE.Mesh(
+    new THREE.PlaneGeometry(11.8, 1.02),
+    new THREE.MeshBasicMaterial({
+      map: netTex,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      fog: true,
+    }),
+  );
+  titleNet.position.set(0, -0.24 + 0.51, -13.1);
+  titleNet.renderOrder = -20;
+  scene.add(titleNet);
 
   scene.add(new THREE.HemisphereLight('#1b2c26', '#030806', 0.66));
   const key = new THREE.DirectionalLight('#fff6e8', 0.9);
@@ -899,6 +969,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
       });
       contactTex.dispose();
       glowTex.dispose();
+      netTex.dispose();
       composer.dispose();
       renderer.dispose();
       // The board builds its own renderer the moment this one goes away. Without
