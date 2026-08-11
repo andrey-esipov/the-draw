@@ -4,15 +4,15 @@ import type { FormLine } from '../data/form';
 import { COMPLETED, seasonForm } from '../data/form';
 import type { SlamTheme } from './theme';
 
-const OPEN_DATE = 'Monday 24 August';
-const DRAW_DATE = 'Thursday 20 August';
+const OPEN_DATE = 'Monday, August 24';
+const DRAW_DATE = 'Thursday, August 20';
 /**
  * The same date, short enough to sit under a tournament name.
  *
  * Exported so the title's label and the board's masthead cannot drift from the
  * paragraph on the empty-state panel that says the same thing at length.
  */
-export const DRAW_DATE_SHORT = '20 August';
+export const DRAW_DATE_SHORT = 'August 20th';
 
 interface Props {
   theme: SlamTheme;

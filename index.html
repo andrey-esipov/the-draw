@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="icon" type="image/svg+xml" href="./mark.svg" />
+    <!-- The hold screen is the first thing anyone sees and it cannot wait for
+         the CSS bundle to arrive with the webfonts. This copy lives in public/
+         so its name is stable, and it is the same file the bundle uses, so the
+         browser has it cached by the time the app itself asks for it. -->
+    <link rel="preload" as="font" type="font/woff2" href="./fonts/fraunces.woff2" crossorigin />
     <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
     <link rel="manifest" href="./site.webmanifest" />
     <title>The Draw</title>
@@ -23,7 +28,7 @@
     <meta property="og:image" content="https://the-draw.replit.app/og.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="The four Grand Slam trophies standing on a dark tennis court, under the line: 128 players. One route to the trophy." />
+    <meta property="og:image:alt" content="The four Grand Slam trophies standing on a dark tennis court, under the line: Every Grand Slam draw. One route to the trophy." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="The Draw" />
     <meta
@@ -37,6 +42,12 @@
          second of a piece that is entirely night-lit is a white page. */
       html, body { margin: 0; height: 100%; background: #04120c; }
       #root { height: 100%; }
+      @font-face {
+        font-family: 'Fraunces Variable';
+        src: url('./fonts/fraunces.woff2') format('woff2-variations');
+        font-weight: 100 900;
+        font-display: swap;
+      }
       #boot {
         position: fixed;
         inset: 0;
@@ -46,18 +57,21 @@
         justify-items: center;
         background: #04120c;
         color: #e8ede6;
-        font-family: ui-serif, Georgia, serif;
         z-index: 40;
         transition: opacity 620ms ease;
       }
       #boot.is-gone { opacity: 0; pointer-events: none; }
+      /* The wordmark, set the same way it is set everywhere else: the serif at a
+         text optical size with the wonk off, opened up, and not shouted. This
+         was the last generic system font and the last run of capitals in the
+         piece, on the one screen every single visitor sees first. */
       #boot p {
         margin: 0;
-        font-family: ui-sans-serif, system-ui, sans-serif;
-        font-size: 11px;
-        letter-spacing: 0.28em;
-        text-transform: uppercase;
-        opacity: 0.42;
+        font-family: 'Fraunces Variable', Georgia, serif;
+        font-variation-settings: 'opsz' 20, 'SOFT' 0, 'WONK' 0, 'wght' 400;
+        font-size: 13px;
+        letter-spacing: 0.17em;
+        opacity: 0.5;
       }
       #boot span {
         display: block;

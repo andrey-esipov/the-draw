@@ -269,7 +269,7 @@ export function TitleScreen({ onEnter, returnFrom = null }: Props) {
       <div className="title-head">
         <p className="title-word">The Draw</p>
         <h1 className="title-claim">
-          <span>128 players.</span> <span>One route to the trophy.</span>
+          <span>Every Grand Slam draw.</span> <span>One route to the trophy.</span>
         </h1>
         <div className="title-tour" role="radiogroup" aria-label="Draw">
           {(['men', 'women'] as TitleTour[]).map((t) => (

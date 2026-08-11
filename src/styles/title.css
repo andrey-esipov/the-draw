@@ -46,7 +46,10 @@
 .title-claim {
   font-family: var(--type-display-family);
   font-variation-settings: 'opsz' 60, 'wght' 380, 'SOFT' 0, 'WONK' 1;
-  font-size: clamp(30px, 5.4vw, 74px);
+  /* The first line went from "128 players." to naming the subject, which is
+     nine characters longer, so the ceiling comes down a little to keep the two
+     lines close in length and the block off the frame edges. */
+  font-size: clamp(30px, 4.9vw, 66px);
   line-height: 1.04;
   letter-spacing: -0.014em;
   margin: 16px 0 0;
