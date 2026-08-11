@@ -945,6 +945,44 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   transition: opacity 420ms var(--ease-soft);
 }
 
+/* And it keeps the frame once it lands. The run finishes tight on the trophy
+   with the champion's name engraved on the plinth — the single frame this whole
+   piece is built to be remembered by — and every standing control was printed
+   over it: search, the camera rack, the run button, the view toggle, the corner
+   icons. Judged cold, that read as "signature moment resolves into busy
+   dashboard".
+
+   So the landing is held clean and the trophy has the frame to itself. This is
+   a photograph, not a mode: any pointer, wheel, key or touch takes it straight
+   off, and the chrome is never more than one gesture away. Nothing is disabled
+   while it is down — the controls fade but the wake fires on the same gesture,
+   so a click meant for a button still lands on it. */
+.is-landed .camctl-hint,
+.is-landed .camctl-rack,
+.is-landed .search,
+.is-landed .compact-note,
+.is-landed .legend,
+.is-landed .viewbar,
+.is-landed .cluster {
+  opacity: 0;
+  transition: opacity 620ms var(--ease-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-running .camctl-hint,
+  .is-running .camctl-rack,
+  .is-running .search,
+  .is-running .compact-note,
+  .is-running .legend,
+  .is-landed .camctl-hint,
+  .is-landed .camctl-rack,
+  .is-landed .search,
+  .is-landed .compact-note,
+  .is-landed .legend,
+  .is-landed .viewbar,
+  .is-landed .cluster { transition-duration: 1ms; }
+}
+
 /* ── Focus ────────────────────────────────────────────────────── */
 
 /* One ring, in the tournament's own colour, on everything that takes focus.
@@ -1176,7 +1214,23 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     pointer-events: auto;
     z-index: auto;
   }
-  .player-name, .forth-title { --type-title-size: clamp(32px, 9vw, 46px); --type-title-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 46, 'wght' 335; }
+  /* The champion's name is the one word the whole piece exists to say, and on a
+     phone it was set at 35px in Fraunces' 335 cut — a light display weight at a
+     size that is not display. Two people reading it independently both saw the
+     back half of the name fading out.
+
+     It is not fading. A uniform grey bar laid across that band renders 128 from
+     end to end, and the glyphs themselves measure 154 mean on the left half
+     against 148 on the right: four percent, which is nothing. The impression
+     comes from the board's own gradient above and right of the panel, and from
+     a light serif's thin round strokes at a small size. Worth recording,
+     because I chased three separate CSS causes that did not exist before
+     measuring properly.
+
+     What is real is that the hero word was under-scaled and under-weighted for
+     its job. Bigger and heavier, and the line beneath it lifted off 0.7. */
+  .player-name, .forth-title { --type-title-size: clamp(38px, 11vw, 48px); --type-title-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 48, 'wght' 430; }
+  .player-meta { opacity: 0.84; }
   .forth-note { max-width: none; }
   .form-list { overflow: visible; }
   .forth-form { margin-top: 26px; }
@@ -1667,21 +1721,34 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     opacity 420ms var(--ease-soft);
 }
 
-.is-flown .mark {
+/* The masthead stands down to a corner lockup once the viewer takes the camera,
+   and equally while the draw is running. The run flies the camera in among the
+   cards, and the full-size centred title printed straight across them: measured
+   on the mid-flight frame, "Wimbledon" and its 2026 line sat over a first-round
+   card and made both unreadable. Nothing else on screen competes with the board
+   at that moment and the title should not either. `is-running` cannot ride on
+   `is-flown` for this because the run disables the controls, so the rig never
+   reports having been moved. */
+.is-flown .mark,
+.is-running .mark {
   justify-items: start;
   text-align: left;
   padding-left: var(--pad);
   gap: 0;
 }
-.is-flown .mark-word { opacity: 0.34; }
-.is-flown .mark-slam {
+.is-flown .mark-word,
+.is-running .mark-word { opacity: 0.34; }
+.is-flown .mark-slam,
+.is-running .mark-slam {
   --type-display-size: 21px;
   --type-display-settings: 'opsz' 30, 'wght' 500;
   margin-top: 2px;
   opacity: 0.72;
 }
 .is-flown .mark-rule,
-.is-flown .mark-meta {
+.is-flown .mark-meta,
+.is-running .mark-rule,
+.is-running .mark-meta {
   opacity: 0;
   height: 0;
   margin-top: 0;

@@ -15,8 +15,18 @@ import { createTitleScene, GRID_ASPECT, titleSlams, type TitleScene, type TitleT
  * cannot be focused.
  */
 
-const APPROACH_MS = 1500;
-const WIPE_MS = 700;
+/* The walk was 1500ms with the three unchosen cups clear by t=0.67, which left
+   roughly 600ms of one small cup on a wireframe court with the bottom half of
+   the frame empty. Nothing in the title scene can fill that space — the thing
+   that belongs under the trophy is the bracket, and only the board can draw it.
+   So the walk hands over sooner and the cups take longer over leaving, which
+   cuts the lonely beat to about a quarter of a second and lets the board's own
+   build outward from the final be what fills the frame. */
+const APPROACH_MS = 1250;
+/* Short and shallow, and it has to stay in step with `.title-wipe`'s own
+   transition duration in title.css. The wipe is cover for the renderer swap,
+   not a dissolve: it opens late enough that the cup's walk plays in the clear. */
+const WIPE_MS = 260;
 
 /**
  * Only the draws that exist on file. The 2026 US Open has not been made yet, and
@@ -96,7 +106,7 @@ export function TitleScreen({ onEnter }: Props) {
       // A portrait row hangs larger names off the plinths and puts the tour
       // control under them, so it keeps more of the foot back than a landscape
       // frame where the names sit close to the bottom edge.
-      const foot = b.width / b.height >= 1.05 ? 0.82 : 0.76;
+      const foot = b.width / b.height >= 1.05 ? 0.82 : 0.84;
       let belowTop = row ? b.height * foot : b.height;
       if (!row) {
         for (const el of belowEls) {

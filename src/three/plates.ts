@@ -32,13 +32,36 @@ function tracking(size: number): number {
 
 /** Troika reports real advance widths only after a sync, so fit against those. */
 function fitToWidth(t: Text, maxW: number, floor: number): void {
+  const full = String(t.text ?? '');
   t.sync(() => {
     const info = (t as unknown as { textRenderInfo?: { blockBounds: number[] } }).textRenderInfo;
     if (!info) return;
     const w = info.blockBounds[2] - info.blockBounds[0];
     if (w <= maxW) return;
-    t.fontSize *= Math.max(floor, maxW / w);
+    const scale = maxW / w;
+    if (scale >= floor) {
+      t.fontSize *= scale;
+      t.letterSpacing = tracking(t.fontSize);
+      t.sync();
+      return;
+    }
+    // Shrinking alone cannot reach the limit without taking the name below the
+    // size at which it is worth printing, so it goes to the floor and then
+    // loses characters. Something has to: `maxWidth` does not clip a nowrap
+    // line, it only decides where one would wrap, so a name that overran its
+    // column simply carried on underneath the seed and the two printed on top
+    // of each other. Measured on the courtside framing, "F Auger-Aliassime"
+    // rendered its final letters through the seed digit and "Davidovich
+    // Fokina" through a 22. A clipped name reads as a long name. Two glyphs in
+    // the same place read as a broken renderer.
+    t.fontSize *= floor;
     t.letterSpacing = tracking(t.fontSize);
+    // Width is near enough linear in character count at a fixed size, so one
+    // proportional cut lands within a character, and the ellipsis is narrower
+    // than what it replaces so it cannot push the line back over.
+    const atFloor = w * floor;
+    const keep = Math.max(2, Math.floor(full.length * (maxW / atFloor)) - 1);
+    if (keep < full.length) t.text = `${full.slice(0, keep).trimEnd()}…`;
     t.sync();
   });
 }
@@ -55,6 +78,9 @@ export interface PlateField {
   setRouteProgress: (t: number) => void;
   /** 0 → 1. Assembles the board outward from the final to the first round. */
   setBuild: (t: number) => void;
+  /** 1 = the board at full strength, 0 = down to nothing. The run's landing
+   *  takes the house lights down so the trophy has the frame to itself. */
+  setHush: (k: number) => void;
   /** Fade dense early rounds in as the camera approaches them. */
   updateDetail: (camera: THREE.PerspectiveCamera, viewportH: number) => void;
   setHover: (node: PlateNode | null) => void;
@@ -355,13 +381,22 @@ export function createPlates(
       const p = side ? draw.players[side.player] : undefined;
       const rowY = n.y + (row === 0 ? n.h * 0.22 : -n.h * 0.22);
 
-      const markH = Math.min(n.h * 0.42, n.w * 0.13);
+      const markH = Math.min(n.h * 0.42, n.w * 0.115);
       const markW = markH * (4 / 3);
       const markX = n.x - n.w / 2 + n.w * 0.05 + markW / 2;
       const nameX = markX + markW / 2 + n.w * 0.04;
       const won = !!side && n.match.winner === side.player;
 
-      const nameSize = Math.max(0.2, n.h * 0.3);
+      // Sized against the card's width as well as its height. The layout table
+      // takes a plate from 0.62 to 2.30 tall across the seven rounds but only
+      // from 3.15 to 5.60 wide, so height nearly quadruples while width barely
+      // doubles. Type keyed to height alone therefore had less and less room
+      // per character the further in a match sat: measured, a round-one card
+      // fit 8.8 name-widths of text and the final fit 3.1. The most prominent
+      // cards on the board were the ones showing the least of a name. Capping
+      // against width holds the later rounds to roughly a fifth less type and
+      // leaves rounds one to four, which are 120 of the 127 cards, untouched.
+      const nameSize = Math.max(0.2, Math.min(n.h * 0.3, n.w * 0.098));
       const seedSize = nameSize * 0.6;
       const seedW = side?.seed ? seedSize * (0.6 * side.seed.length + 0.9) : 0;
       const playerSeedX = seedRight;
@@ -495,11 +530,34 @@ export function createPlates(
     hoverStroke.set(node);
   };
 
+  // The board's own dimmer. Held separately from the highlight so the two can be
+  // set in either order without one clearing the other, and repainted through
+  // the same path so a slab's colour is always the product of both.
+  let hush = 1;
+  let routeNow: Set<string> = new Set();
+  let litNow: string | null = null;
+
+  function setHush(k: number) {
+    const next = Math.max(0, Math.min(1, k));
+    if (Math.abs(next - hush) < 0.002) return;
+    hush = next;
+    paintHighlight();
+  }
+
   function setHighlight(route: Set<string>, litPlayer: string | null) {
+    routeNow = route;
+    litNow = litPlayer;
+    paintHighlight();
+  }
+
+  function paintHighlight() {
+    const route = routeNow;
+    const litPlayer = litNow;
     layout.plates.forEach((n, i) => {
       const on = route.has(n.match.id);
       const c = on ? (litPlayer && litPlayer === n.match.winner ? flare : trace) : base;
-      mesh.setColorAt(i, on ? c.clone().multiplyScalar(0.55) : base);
+      const lit = on ? c.clone().multiplyScalar(0.55) : base.clone();
+      mesh.setColorAt(i, hush >= 1 ? lit : lit.clone().multiplyScalar(hush));
     });
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
 
@@ -619,7 +677,7 @@ export function createPlates(
       // left to spend on hierarchy: holding the gap open just deletes the
       // loser, so the two lines converge as the type dissolves.
       const share = l.base + (SHARED_FADED - l.base) * (1 - fade);
-      l.text.fillOpacity = share * fade * roundInk(l.node.round);
+      l.text.fillOpacity = share * fade * roundInk(l.node.round) * hush;
     }
     for (const s of scores) {
       tmp.set(s.node.x, s.node.y, s.node.z);
@@ -628,7 +686,7 @@ export function createPlates(
       const fade = labelDetail(px, s.onRoute, focused, offRouteReveal);
       const vis = fade > visibleCut(s.node, s.onRoute, focused, 0.025);
       if (s.text.visible !== vis) s.text.visible = vis;
-      s.text.fillOpacity = s.base * fade * roundInk(s.node.round);
+      s.text.fillOpacity = s.base * fade * roundInk(s.node.round) * hush;
     }
     // Flags fade on the same terms as the names beside them. Held at full
     // strength while the type dissolved, the far rounds read as rows of bright
@@ -640,7 +698,7 @@ export function createPlates(
       const focused = focusedNode === m.node;
       const fade = labelDetail(px, m.onRoute, focused, offRouteReveal);
       const visibleFade = fade > visibleCut(m.node, m.onRoute, focused, 0.02) ? fade : 0;
-      const next = (m.base + (SHARED_FADED - m.base) * (1 - visibleFade)) * visibleFade * roundInk(m.node.round);
+      const next = (m.base + (SHARED_FADED - m.base) * (1 - visibleFade)) * visibleFade * roundInk(m.node.round) * hush;
       if (Math.abs((markFade[i] ?? 0) - next) > 0.004) {
         markFade[i] = next;
         markDirty = true;
@@ -671,6 +729,7 @@ export function createPlates(
     group,
     mesh,
     setHighlight,
+    setHush,
     setRouteProgress,
     setBuild,
     updateDetail,

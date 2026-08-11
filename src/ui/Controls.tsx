@@ -49,7 +49,7 @@ installViewSwapSemantics();
  * It never talks to the renderer directly — it drives whatever DrawControls rig
  * Broadcast has published on the shared bus, so it stays a thin, declarative skin.
  */
-export function Controls() {
+export function Controls({ running = false }: { running?: boolean }) {
   const [ready, setReady] = useState(!!drawControlsBus.current);
   const [moved, setMoved] = useState(drawControlsBus.current?.hasMoved ?? false);
   const [active, setActive] = useState<FrameTarget | null>('all');
@@ -72,6 +72,31 @@ export function Controls() {
     setMoved(true);
     drawControlsBus.current?.frame(id);
   };
+
+  // A named framing stops being the framing you are looking at the moment the
+  // camera leaves it, and it left by every route except this rack: a drag, a
+  // scroll, or the run, which flies the whole champion's route and lands on the
+  // trophy. Leaving the mark on meant the rack claimed "Whole draw" over a
+  // close-up of a cup, and `aria-checked` said the same thing to a screen
+  // reader. Nothing here should describe a frame that is not on screen.
+  useEffect(() => {
+    if (running) setActive(null);
+  }, [running]);
+
+  useEffect(() => {
+    const release = (e: Event) => {
+      const t = e.target as HTMLElement | null;
+      // The rack's own buttons set the framing rather than leaving it.
+      if (t?.closest?.('.camctl')) return;
+      setActive(null);
+    };
+    window.addEventListener('pointerdown', release, { passive: true });
+    window.addEventListener('wheel', release, { passive: true });
+    return () => {
+      window.removeEventListener('pointerdown', release);
+      window.removeEventListener('wheel', release);
+    };
+  }, []);
 
   const reset = () => {
     setActive('all');

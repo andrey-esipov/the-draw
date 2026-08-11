@@ -64,7 +64,9 @@ export interface CinematicExtras {
  * the real path, round by round, then lands one of two honest endings:
  *
  *  - Champion: builds and rises through the rounds and resolves on the trophy — the
- *    final match, a low heroic angle, then a wide held hero, then settle to establish.
+ *    final match, a low heroic angle, a wide held hero, then a push-in that settles
+ *    on the whole trophy with the champion's engraved name legible. The run ends on
+ *    the trophy, not back on the overview it started from.
  *  - Everyone else: travels their route and stops where their tournament stopped,
  *    settling cold and still on the match they lost. No faked crowning, no trophy.
  *
@@ -197,17 +199,37 @@ export function buildCinematic(
       pos: new THREE.Vector3(0, trophyCenter.y - 1.5, trophyCenter.z + 30.4),
       look: new THREE.Vector3(0, trophyCenter.y - 1.5, trophyCenter.z),
     };
-    beats.push({ at: t, dur: 3.4, pose: hero });
-    t += 3.4;
-
-    // 4. Settle back out to the establish pose — the only glide of the finale, so the
-    //    board resolves into its resting hero after the trophy has had its moment.
     beats.push({ at: t, dur: 2.2, pose: hero });
     t += 2.2;
-    beats.push({ at: t, dur: 2.4, pose: rest });
+
+    // 4. Push in and settle on the trophy — the crescendo. The camera dollies in from
+    //    the wide hero and eases up the plinth so the *whole* cup sits in frame with
+    //    real air above the finial, the champion's engraved name large and legible
+    //    across the plinth, and the last of the gold thread rising into frame beneath.
+    //    The distance is set to clear the tallest vessel (Wimbledon's lidded cup with
+    //    its pineapple finial) with headroom, so the shorter slams keep even more air;
+    //    and because the vertical FOV is fixed, the trophy frames identically at every
+    //    viewport aspect. It is pulled far enough that the trophy — not the bottom
+    //    control chrome — owns the frame and the final's card tucks behind the plinth
+    //    instead of fighting the toolbar. This is the frame the run lands on and hands
+    //    back to the viewer: the payoff is the trophy and the name, never the god's-eye
+    //    overview the board already rested on before the run began. The pose sits inside
+    //    the orbit cage (radius ~22.5, phi ~1.49 < 1.5), so handing back through
+    //    controls.flyTo reproduces it exactly with no clamp or jump.
+    const arrival: CameraPose = {
+      pos: new THREE.Vector3(2.0, trophyCenter.y - 1.19, trophyCenter.z + 22.5),
+      look: new THREE.Vector3(0, trophyCenter.y - 3.09, trophyCenter.z + 0.2),
+    };
+    beats.push({ at: t, dur: 2.6, pose: hero });
+    t += 2.6;
+    beats.push({ at: t, dur: 2.4, pose: arrival });
     t += 2.4;
+    // The board still rests on the whole draw *before* a run (endPose drives the
+    // idle breathing then), so that is unchanged. But the run itself now resolves
+    // on the trophy: the animated path ends on `arrival` above, and reduced motion
+    // cuts straight to it through payoffPose, so both land in the same close frame.
     endPose = { pos: rest.pos.clone(), look: rest.look.clone() };
-    payoffPose = { pos: hero.pos.clone(), look: hero.look.clone() };
+    payoffPose = { pos: arrival.pos.clone(), look: arrival.look.clone() };
   } else {
     // Not a champion: stop where the tournament stopped. Settle cold and still on the
     // match they lost — straight-on, centred, pulled to a quiet distance that scales

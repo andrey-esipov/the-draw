@@ -24,6 +24,25 @@ const SKIP_TITLE =
   new URLSearchParams(window.location.search).has('slam');
 
 /**
+ * `?slam=` opens straight onto one draw.
+ *
+ * It used to be read only as a reason to skip the title and was then thrown
+ * away, so every such link — including the ones the capture rigs run on —
+ * quietly served Wimbledon whatever it asked for. A parameter that is accepted
+ * and ignored is worse than one that is rejected: it answers confidently with
+ * the wrong tournament. Both the full id and the bare tournament are taken, so
+ * `?slam=australian-open` and `?slam=australian-open-women` both work, and
+ * anything unrecognised falls back rather than opening a draw at random.
+ */
+const SLAM_PARAM: SlamId | null = (() => {
+  const raw = new URLSearchParams(window.location.search).get('slam');
+  if (!raw) return null;
+  const want = raw.trim().toLowerCase();
+  const all = [...SLAM_ORDER, ...SLAM_ORDER_WOMEN];
+  return all.find((id) => id === want) ?? all.find((id) => id === `${want}-men`) ?? null;
+})();
+
+/**
  * Whether this machine can render the 3D board at all.
  *
  * Most of the piece is WebGL, and on a machine without it — a locked-down
@@ -43,11 +62,11 @@ const HAS_WEBGL = (() => {
 })();
 
 export function App() {
-  const [slam, setSlam] = useState<SlamId>('wimbledon-men');
+  const [slam, setSlam] = useState<SlamId>(SLAM_PARAM ?? 'wimbledon-men');
   const [titled, setTitled] = useState(!SKIP_TITLE && HAS_WEBGL);
   const [handedOver, setHandedOver] = useState(false);
   const [cameFromTitle, setCameFromTitle] = useState(false);
-  const [tour, setTour] = useState<Tour>('men');
+  const [tour, setTour] = useState<Tour>(SLAM_PARAM?.endsWith('-women') ? 'women' : 'men');
   const [draw, setDraw] = useState<Draw | null>(null);
   const [hover, setHover] = useState<string | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
@@ -57,6 +76,7 @@ export function App() {
   const [view, setView] = useState<'board' | 'radial'>(HAS_WEBGL ? 'board' : 'radial');
   const [playToken, setPlayToken] = useState(0);
   const [running, setRunning] = useState(false);
+  const [landed, setLanded] = useState(false);
   const [focusToken, setFocusToken] = useState(0);
   const [flown, setFlown] = useState(false);
 
@@ -87,7 +107,7 @@ export function App() {
     return () => { drop?.(); off(); };
   }, []);
 
-  useEffect(() => { setFlown(false); }, [slam, view]);
+  useEffect(() => { setFlown(false); setLanded(false); }, [slam, view]);
 
   // The board lifts the hold itself on its first rendered frame. Every other
   // landing — the radial view, a tournament not yet drawn, a draw that failed
@@ -133,7 +153,33 @@ export function App() {
     },
     [draw],
   );
-  const handleRunEnd = useCallback(() => setRunning(false), []);
+  const handleRunEnd = useCallback(() => {
+    setRunning(false);
+    setLanded(true);
+  }, []);
+
+  // The run lands tight on the trophy with the champion engraved on it. That
+  // frame is the one moment the piece is built to be remembered by, and every
+  // standing control was printed across it: the search, the whole camera rack,
+  // the run button, the view toggle, the corner icons. A signature that
+  // resolves into the same busy screen as everywhere else throws away its own
+  // climax, so the chrome stays down after the run and the trophy holds the
+  // frame alone. Anything the viewer does brings it straight back.
+  useEffect(() => {
+    if (!landed) return;
+    const wake = () => setLanded(false);
+    const opts = { passive: true } as const;
+    window.addEventListener('pointerdown', wake, opts);
+    window.addEventListener('wheel', wake, opts);
+    window.addEventListener('keydown', wake, opts);
+    window.addEventListener('touchstart', wake, opts);
+    return () => {
+      window.removeEventListener('pointerdown', wake);
+      window.removeEventListener('wheel', wake);
+      window.removeEventListener('keydown', wake);
+      window.removeEventListener('touchstart', wake);
+    };
+  }, [landed]);
 
   const handleEnter = useCallback((next: SlamId) => {
     setSlam(next);
@@ -154,7 +200,7 @@ export function App() {
 
   return (
     <main
-      className={`stage${view === 'radial' ? ' is-radial' : ''}${shown ? ' has-player-detail' : ''}${running ? ' is-running' : ''}${flown && view === 'board' ? ' is-flown' : ''}`}
+      className={`stage${view === 'radial' ? ' is-radial' : ''}${shown ? ' has-player-detail' : ''}${running ? ' is-running' : ''}${landed ? ' is-landed' : ''}${flown && view === 'board' ? ' is-flown' : ''}`}
       style={
         {
           background: theme.groundDeep,
@@ -257,7 +303,7 @@ export function App() {
               type="button"
               className="run"
               disabled={running || !shownId}
-              onClick={() => { setRunning(true); setPlayToken((n) => n + 1); }}
+              onClick={() => { setRunning(true); setLanded(false); setPlayToken((n) => n + 1); }}
             >
               <span className="run-glyph" aria-hidden="true" />
               {running ? 'Running the draw' : 'Run the draw'}
@@ -290,7 +336,7 @@ export function App() {
         </>
       )}
 
-      {!forthcoming && draw && view === 'board' && <Controls />}
+      {!forthcoming && draw && view === 'board' && <Controls running={running} />}
 
       {!forthcoming && draw && view === 'radial' && (
         <div className="legend">

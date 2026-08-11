@@ -90,7 +90,18 @@
 
 .title-cup {
   position: absolute;
-  transform: translateX(-50%);
+  /* The independent `translate` property, deliberately, not `transform`. The
+     centring used to be `transform: translateX(-50%)` and it never once
+     applied: `title-rise` below ends on `transform: none` and runs with
+     fill-mode both, and a finished animation outranks a plain declaration, so
+     every name sat with its left edge on its cup's centre instead of straddling
+     it. Measured on the title screen, the four labels were 89.8 to 97.7 css px
+     right of the cups they name — half their own width, each — which put the
+     whole strip off-centre under a row of cups that was itself centred. This is
+     the poster frame, so it was the most-looked-at misalignment in the piece.
+     `translate` composes with `transform` rather than being overwritten by it,
+     so the animation and the centring can both hold. */
+  translate: -50% 0;
   margin-top: 14px;
   animation: title-rise 1200ms var(--ease-soft) both;
 }
@@ -178,13 +189,23 @@
   background: #04120c;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 260ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* The cup finishes its walk at the height the board keeps it, which on the
-   board has a bracket under it and here has an empty floor. Held at a light
-   wash that room read as a void for the last third of a second, so the wash
-   goes deep enough to be a dissolve the trophy is carried through. */
-.title-wipe.is-on { opacity: 0.72; }
+/* This used to run to 0.72 over 700ms, from a time when the cup finished its
+   walk over an empty floor and that room read as a void. The court ramp landed
+   after it and fills that floor now, so the deep wash was solving a problem
+   that no longer existed — and paying for it heavily. Measured frame by frame,
+   it took the screen to near-black from 1350ms to 1750ms: a 400ms hole where
+   the whole composition was a small dim cup, immediately before the board
+   arrived. It read as the screen dying rather than as a handover.
+
+   It also did not match its other half. The wipe finished at 0.72 and the
+   board's `.handoff` picked up at 0.24, so the seam brightened by 0.48 in a
+   single frame. Both sides are now shallow and within 0.04 of each other, so
+   the swap is a dissolve you have to be looking for. The two scenes already
+   share a pose, a trophy and a size — there was never a cut here worth
+   hiding. */
+.title-wipe.is-on { opacity: 0.30; }
 
 .title.is-leaving .title-head,
 .title.is-leaving .title-cup {
@@ -286,6 +307,9 @@
 .title.is-grid .title-cup {
   position: static;
   transform: none;
+  /* The grid lays the cups out in cells, so each one is already where it
+     belongs and must not be pulled half its width to the left. */
+  translate: none;
   inset: auto;
   margin-top: 0;
   animation-name: title-card-rise;
@@ -328,26 +352,21 @@
    of this screen and a two by two block there put a card list under a picture.
    A row cannot fill a frame that tall, so rather than stretch the cups into the
    slack the claim takes it: at this width the type was running at 38px on a
-   768px frame, which read as a phone layout on a large screen. The tour control
-   drops below the names to close the foot. */
+   768px frame, which read as a phone layout on a large screen. The masthead sits
+   lower than it does elsewhere so the headline, its tour control and the row of
+   cups read as one centred column with balanced air above and below, rather than
+   a headline stranded at the top over a control exiled to the foot. */
 @media (min-width: 620px) and (max-width: 1100px) and (orientation: portrait) {
-  .title-head { top: clamp(40px, 9vh, 120px); }
+  .title-head { top: clamp(120px, 21vh, 280px); }
   .title-claim {
     font-size: clamp(38px, 6.6vw, 60px);
     max-width: 15ch;
   }
-  /* The base .title-tour rule sits later in the file, so its margin wins over a
-     bare .title-tour here; the extra class outranks it. Offsets are measured
-     from the top and the head's own inset added back out, because the head is
-     transform-animated and so is the containing block these resolve against:
-     a bottom offset here lands inside the headline rather than at the foot of
-     the frame. */
+  /* The tour control keeps its place under the headline, coupled to the trophies
+     it filters exactly as it is on every other breakpoint, instead of being
+     fixed to the foot of the frame away from the thing it controls. */
   .title .title-tour {
-    position: fixed;
-    left: 50%;
-    top: calc(84vh - clamp(40px, 9vh, 120px));
-    transform: translateX(-50%);
-    margin: 0;
+    margin-top: clamp(20px, 3vh, 32px);
   }
   /* Two of the four names wrap at this width and two do not, which stepped the
      player counts under them onto different lines. The name keeps two lines of
@@ -409,7 +428,7 @@
 }
 
 @keyframes handoff-clear {
-  from { opacity: 0.24; }
+  from { opacity: 0.26; }
   to { opacity: 0; }
 }
 

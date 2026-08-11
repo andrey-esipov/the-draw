@@ -256,6 +256,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
         podium.setReveal(championRun ? 1 : 0);
         void controls.flyTo(cinema.payoffPose, 0);
         sound.crown();
+        hushGoal = HUSH_LOW;
         onRunEnd();
         return;
       }
@@ -264,6 +265,20 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       runStart = performance.now();
       running = true;
     }
+
+    // The landing takes the house lights down. The run ends tight on the trophy,
+    // and the bracket carries on past all four frame edges at that distance, so
+    // the hero arrived among a ring of half-cut cards. Dimming the field rather
+    // than hiding it keeps the trophy standing at the end of a real draw instead
+    // of floating in a void, and any input brings it straight back up.
+    const HUSH_LOW = 0.3;
+    let hushGoal = 1;
+    let hushNow = 1;
+    const wake = () => { hushGoal = 1; };
+    window.addEventListener('pointerdown', wake, { passive: true });
+    window.addEventListener('wheel', wake, { passive: true });
+    window.addEventListener('keydown', wake, { passive: true });
+    window.addEventListener('touchstart', wake, { passive: true });
 
     let raf = 0;
     const clock = new THREE.Clock();
@@ -295,6 +310,11 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
         plates.setBuild(b);
         connectors.setBuild(b);
         if (b >= 1) built = true;
+      }
+
+      if (Math.abs(hushNow - hushGoal) > 0.002) {
+        hushNow += (hushGoal - hushNow) * Math.min(1, dt * 3.4);
+        plates.setHush(hushNow);
       }
 
       if (!arrived) {
@@ -337,8 +357,15 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
           running = false;
           route?.setProgress(1);
           podium.setReveal(1);
-          controls.adopt();
           controls.enabled = true;
+          // Hand the camera back already framed on the trophy. flyTo(…, 0) lands on
+          // the exact pose the run ended on, so there is no jump — but unlike adopt()
+          // it marks the rig moved, which stands the masthead down to its corner
+          // lockup. Without that the big centred title prints straight across the cup
+          // the run just arrived on. It also mirrors the reduced-motion path, so both
+          // endings settle on the identical payoff pose.
+          void controls.flyTo(cinema.payoffPose, 0);
+          hushGoal = HUSH_LOW;
           onRunEnd();
         }
       } else if (controls.hasMoved) {
@@ -424,6 +451,10 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     setLit(lit);
 
     return () => {
+      window.removeEventListener('pointerdown', wake);
+      window.removeEventListener('wheel', wake);
+      window.removeEventListener('keydown', wake);
+      window.removeEventListener('touchstart', wake);
       cancelAnimationFrame(raf);
       ro.disconnect();
       host.removeEventListener('pointermove', onMove);

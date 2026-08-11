@@ -101,6 +101,27 @@
   content: none;
 }
 
+/* The rack is chromeless on purpose: it sits directly on the board with no
+   panel behind it, and that holds as long as what is behind it is board. It is
+   not always. The run lands tight on the trophy, and at that framing the net's
+   white band ran straight through "Whole draw · Champion's half · The final ·
+   Courtside", with a post cutting between the last two; free orbiting can put
+   any bright geometry there.
+
+   A wash across the foot of the frame would fix it, but it also dimmed the
+   board's own outermost cards by 13% — paying for chrome legibility with the
+   thing the chrome is describing. A halo on the glyphs costs the scene nothing
+   and is what broadcast type over live pictures has always done. */
+.camctl-eyebrow,
+.camctl-preset-label,
+.camctl-reset,
+.camctl-hint-verb,
+.camctl-hint-keys {
+  text-shadow:
+    0 1px 2px color-mix(in srgb, var(--ground-deep) 92%, #000),
+    0 0 7px color-mix(in srgb, var(--ground-deep) 76%, #000);
+}
+
 .camctl-eyebrow {
   font-family: var(--type-label-family);
   font-variation-settings: var(--type-label-settings);

@@ -263,7 +263,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
       // plinth, so cups taken right to the edge of the frame push their own
       // labels off it. A portrait row is narrow enough that the label is a
       // larger share of the frame, so it keeps more margin back.
-      const wantW = aspect >= 1.05 ? 0.86 : 0.8;
+      const wantW = aspect >= 1.05 ? 0.86 : 0.88;
       const probe = new THREE.Vector3();
       for (let pass = 0; pass < 14; pass++) {
         camera.updateMatrixWorld();
@@ -665,7 +665,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
     // choice had been made: a still frame with no subject. They start almost at
     // once now and take longer over it, so the click is answered immediately and
     // the type hands over to something already in motion.
-    const out = Math.min(1, Math.max(0, (t - 0.05) / 0.62));
+    const out = Math.min(1, Math.max(0, (t - 0.05) / 0.75));
     const outE = out * out * (3 - 2 * out);
 
     holders.forEach((h, k) => {
