@@ -319,7 +319,12 @@ function venusRosewaterDish(opts: VesselOpts): THREE.Group {
   // stronger yaw swing that face off the softbox bisector, so it rakes the room
   // rather than facing it. LatheGeometry is symmetric about its own Y, so the
   // yaw has to live on the wrapping group to actually turn the plate.
-  dish.rotation.x = Math.PI / 2 - 0.50;
+  // One constant for both the plate and the stand it rests on. These were two
+  // separate numbers, and when the plate's lay-back was steepened to swing its
+  // face off the softbox the legs were left where they were — so the dish leant
+  // away from its own easel and the legs floated beside it with nothing on them.
+  const LAY_BACK = 0.5;
+  dish.rotation.x = Math.PI / 2 - LAY_BACK;
   const easel = new THREE.Group();
   easel.rotation.y = 0.70;
   easel.add(dish);
@@ -329,7 +334,7 @@ function venusRosewaterDish(opts: VesselOpts): THREE.Group {
   for (const side of [-1, 1]) {
     const leg = new THREE.CylinderGeometry(0.012, 0.016, 0.5, 12);
     leg.translate(0, 0.24, 0);
-    leg.rotateX(-0.34);
+    leg.rotateX(-LAY_BACK);
     leg.rotateZ(side * 0.12);
     leg.translate(side * 0.12, 0, -0.14);
     easelParts.push(leg);

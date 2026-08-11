@@ -119,8 +119,6 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     let cinema: Cinematic | null = null;
     let runStart = 0;
     let running = false;
-    let litRounds = 0;
-    let advancedTo = 0;
     let crowned = false;
     let championRun = false;
     let litId: string | null = null;
@@ -189,7 +187,6 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       const path: PlateNode[] = routeOf(layout, draw, id);
       litPath = path;
       plates.setHighlight(new Set(path.map((n) => n.match.id)), id);
-      litRounds = path.length;
       if (path.length === 0) {
         controls.focusSpan(null);
         return;
@@ -243,7 +240,6 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
 
     function play() {
       if (!cinema) return;
-      advancedTo = 0;
       crowned = false;
       plates.closeExpanded();
       restorePose = null;
@@ -359,10 +355,9 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
         const p = cinema.seek(t, stage.camera);
         route?.setProgress(p);
         podium.setReveal(championRun ? p : 0);
-        // The thread's own progress drives the build, so a pip fires as it
-        // crosses each round and the crown lands the instant it arrives.
-        const roundNow = Math.min(litRounds, Math.floor(p * litRounds) + 1);
-        while (advancedTo < roundNow) { advancedTo++; sound.advance(advancedTo, litRounds); }
+        // No struck-ball pip per round any more. Seven of them across the flight
+        // turned a camera move into a rally the picture was not playing, and the
+        // run reads calmer with only its start and its arrival marked.
         if (!crowned && p >= 0.999) { crowned = true; sound.crown(); }
         if (t >= cinema.duration) {
           running = false;

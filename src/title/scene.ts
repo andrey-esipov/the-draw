@@ -454,7 +454,11 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
     },
   });
   floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -0.24;
+  // The plinth's lathe runs from its top at 0 down to -0.352. With the floor at
+  // -0.24 the floor plane cut straight through every base, which is what turned
+  // four turned discs into four shapes with a hard flat slice across them. The
+  // floor sits at the plinths' feet instead, so each one stands on it.
+  floor.position.y = -0.3555;
   scene.add(floor);
   // Seen from almost overhead, as a phone frames this, the court stops reading
   // as a court and becomes a set of diagonals across the type.
@@ -568,7 +572,7 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
       fog: true,
     }),
   );
-  titleNet.position.set(0, -0.24 + 0.51, -13.1);
+  titleNet.position.set(0, -0.3555 + 0.51, -13.1);
   titleNet.renderOrder = -20;
   scene.add(titleNet);
 
@@ -702,10 +706,12 @@ export function createTitleScene(canvas: HTMLCanvasElement, w: number, h: number
       }),
     );
     shade.rotation.x = -Math.PI / 2;
-    // This sat below the floor and behind it in the draw order, so the contact
-    // shadow it exists to cast was never visible and every cup looked like it
-    // was hovering a little above the surface.
-    shade.position.y = -0.2335;
+    // A hair above the floor, and the floor is a hair below the plinths' feet.
+    // Sat below the floor this was never visible and every cup looked like it
+    // hovered; left at the old height once the floor came down to meet the
+    // plinths, it floated an eighth of a unit up and the reflector picked it up
+    // as a bright crackled disc under each base.
+    shade.position.y = -0.3495;
     shade.renderOrder = 3;
     shades.push(shade);
     holder.add(shade);

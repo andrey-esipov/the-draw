@@ -4,6 +4,28 @@ import type { PlateNode } from './layout';
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
+/**
+ * Constant pace through the draw, eased only at the two ends.
+ *
+ * The travel used a single ease-in-out across the whole route, which is fastest
+ * exactly where there is most to read: the middle rounds went past too quickly
+ * to take in, and the late ones arrived in a rush. This is a trapezoidal
+ * velocity profile — speed ramps up over the first twelfth, holds flat, and
+ * ramps down over the last twelfth — so every round between them is crossed at
+ * the same rate and no match is harder to see than its neighbour.
+ */
+const EDGE = 0.12;
+const evenPace = (t: number) => {
+  const x = Math.max(0, Math.min(1, t));
+  const span = 1 - EDGE;
+  if (x <= EDGE) return (x * x) / (2 * EDGE) / span;
+  if (x >= 1 - EDGE) {
+    const u = 1 - x;
+    return (span - (u * u) / (2 * EDGE)) / span;
+  }
+  return (EDGE / 2 + (x - EDGE)) / span;
+};
+
 export interface CameraPose {
   pos: THREE.Vector3;
   look: THREE.Vector3;
@@ -277,9 +299,12 @@ export function buildCinematic(
         return;
       }
       const raw = clamped / drawEnd;
-      const e = easeInOut(raw);
-      posCurve.getPoint(e, outPos);
-      lookCurve.getPoint(e, outLook);
+      const e = evenPace(raw);
+      // getPointAt, not getPoint: a spline's parameter is not its arc length, so
+      // an even parameter still runs fast where the control points are far apart.
+      // Sampling by distance is what actually makes the ground speed constant.
+      posCurve.getPointAt(e, outPos);
+      lookCurve.getPointAt(e, outLook);
       return;
     }
 
@@ -304,7 +329,7 @@ export function buildCinematic(
     const clamped = Math.max(0, Math.min(duration, time));
     // The thread is drawn on the same eased curve the camera rides, so the line
     // always arrives at the match currently centred in frame.
-    return Math.min(1, easeInOut(Math.min(1, clamped / Math.max(0.001, drawEnd))));
+    return Math.min(1, evenPace(Math.min(1, clamped / Math.max(0.001, drawEnd))));
   }
 
   function poseAt(time: number): CameraPose {
