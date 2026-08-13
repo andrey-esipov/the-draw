@@ -1,30 +1,14 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 // Bind to every interface and accept the proxy hostname so the app is reachable
 // when it runs on a hosted dev box (Replit, Codespaces) rather than localhost.
 // The app is served from the root of its own origin (there is no other site
 // mounted alongside it), so base is always '/', for both dev and build.
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), 'VITE_');
+export default defineConfig(() => {
   return {
     base: '/',
-    plugins: [
-      react(),
-      {
-        name: 'draw-build-meta',
-        generateBundle() {
-          this.emitFile({
-            type: 'asset',
-            fileName: 'build-meta.json',
-            source: JSON.stringify({
-              contractVersion: 1,
-              leagueCreationEnabled: env.VITE_DRAW_LEAGUES_ENABLED === 'true',
-            }),
-          });
-        },
-      },
-    ],
+    plugins: [react()],
     resolve: { dedupe: ['react', 'react-dom'] },
     // Express embeds Vite in middleware mode (server/index.ts), so these
     // never bind their own listener — kept in sync with PORT (server/env.ts)

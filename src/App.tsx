@@ -87,9 +87,6 @@ const LOCAL_LEAGUE_PREVIEW_MODE: LeaguePreviewMode | null = (() => {
   if (value === 'awaiting' || value === 'open' || value === 'live') return value;
   return 'auto';
 })();
-const LEAGUE_CREATION_AVAILABLE =
-  import.meta.env.VITE_DRAW_LEAGUES_ENABLED === 'true' || LOCAL_LEAGUE_PREVIEW;
-
 function useLowPowerTier(): boolean {
   const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
   const [lowPower, setLowPower] = useState(saveData);
@@ -501,7 +498,7 @@ export function App() {
         )}
       </div>
 
-      {LEAGUE_CREATION_AVAILABLE && !leagueAccess && (
+      {!leagueAccess && (
         <button
           type="button"
           className="league-launch"

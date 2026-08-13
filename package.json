@@ -13,7 +13,7 @@
     "test:integration": "vitest run --project integration",
     "test:all": "vitest run",
     "test:watch": "vitest --project unit",
-    "test:e2e": "VITE_DRAW_LEAGUES_ENABLED=true npm run build && playwright test",
+    "test:e2e": "npm run build && playwright test",
     "lint": "eslint .",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
