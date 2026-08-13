@@ -1,0 +1,1885 @@
+{
+  "id": "8eccba19-0095-4903-aace-11f7d3d10e7f",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.draw_abuse_limits": {
+      "name": "draw_abuse_limits",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "scope_kind": {
+          "name": "scope_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scope_hash": {
+          "name": "scope_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "league_id": {
+          "name": "league_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope_owner_deleted_at": {
+          "name": "scope_owner_deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "window_started_at": {
+          "name": "window_started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attempt_count": {
+          "name": "attempt_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_abuse_limits_event_scope_idx": {
+          "name": "draw_abuse_limits_event_scope_idx",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "scope_kind",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "window_started_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "draw_abuse_limits_league_scope_idx": {
+          "name": "draw_abuse_limits_league_scope_idx",
+          "columns": [
+            {
+              "expression": "league_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "scope_kind",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "window_started_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "draw_abuse_limits_cleanup_idx": {
+          "name": "draw_abuse_limits_cleanup_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_abuse_limits_event_id_draw_events_id_fk": {
+          "name": "draw_abuse_limits_event_id_draw_events_id_fk",
+          "tableFrom": "draw_abuse_limits",
+          "tableTo": "draw_events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "draw_abuse_limits_league_id_draw_leagues_id_fk": {
+          "name": "draw_abuse_limits_league_id_draw_leagues_id_fk",
+          "tableFrom": "draw_abuse_limits",
+          "tableTo": "draw_leagues",
+          "columnsFrom": [
+            "league_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_abuse_limits_scope_window_unique": {
+          "name": "draw_abuse_limits_scope_window_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "scope_kind",
+            "scope_hash",
+            "window_started_at"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draw_abuse_limits_scope_kind_valid": {
+          "name": "draw_abuse_limits_scope_kind_valid",
+          "value": "\"draw_abuse_limits\".\"scope_kind\" in ('ip', 'event', 'league', 'token', 'email')"
+        },
+        "draw_abuse_limits_scope_identifiers_valid": {
+          "name": "draw_abuse_limits_scope_identifiers_valid",
+          "value": "(\n      \"draw_abuse_limits\".\"scope_kind\" = 'event'\n      and (\n        (\"draw_abuse_limits\".\"event_id\" is not null and \"draw_abuse_limits\".\"league_id\" is null and \"draw_abuse_limits\".\"scope_owner_deleted_at\" is null)\n        or (\"draw_abuse_limits\".\"event_id\" is null and \"draw_abuse_limits\".\"league_id\" is null and \"draw_abuse_limits\".\"scope_owner_deleted_at\" is not null)\n      )\n    ) or (\n      \"draw_abuse_limits\".\"scope_kind\" = 'league'\n      and (\n        (\"draw_abuse_limits\".\"event_id\" is null and \"draw_abuse_limits\".\"league_id\" is not null and \"draw_abuse_limits\".\"scope_owner_deleted_at\" is null)\n        or (\"draw_abuse_limits\".\"event_id\" is null and \"draw_abuse_limits\".\"league_id\" is null and \"draw_abuse_limits\".\"scope_owner_deleted_at\" is not null)\n      )\n    ) or (\n      \"draw_abuse_limits\".\"scope_kind\" in ('ip', 'token', 'email')\n      and \"draw_abuse_limits\".\"event_id\" is null\n      and \"draw_abuse_limits\".\"league_id\" is null\n      and \"draw_abuse_limits\".\"scope_owner_deleted_at\" is null\n    )"
+        },
+        "draw_abuse_limits_scope_hash_valid": {
+          "name": "draw_abuse_limits_scope_hash_valid",
+          "value": "length(\"draw_abuse_limits\".\"scope_hash\") = 64"
+        },
+        "draw_abuse_limits_attempt_count_valid": {
+          "name": "draw_abuse_limits_attempt_count_valid",
+          "value": "\"draw_abuse_limits\".\"attempt_count\" >= 0"
+        },
+        "draw_abuse_limits_expiry_valid": {
+          "name": "draw_abuse_limits_expiry_valid",
+          "value": "\"draw_abuse_limits\".\"expires_at\" > \"draw_abuse_limits\".\"window_started_at\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_accepted_revisions": {
+      "name": "draw_accepted_revisions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_revision_id": {
+          "name": "source_revision_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "checksum": {
+          "name": "checksum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fetched_at": {
+          "name": "fetched_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accepted_at": {
+          "name": "accepted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parser_version": {
+          "name": "parser_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payload": {
+          "name": "payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "explicit_corrections": {
+          "name": "explicit_corrections",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "complete": {
+          "name": "complete",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "draw_accepted_revisions_event_accepted_idx": {
+          "name": "draw_accepted_revisions_event_accepted_idx",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "accepted_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_accepted_revisions_event_id_draw_events_id_fk": {
+          "name": "draw_accepted_revisions_event_id_draw_events_id_fk",
+          "tableFrom": "draw_accepted_revisions",
+          "tableTo": "draw_events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_accepted_revisions_event_id_unique": {
+          "name": "draw_accepted_revisions_event_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "event_id",
+            "id"
+          ]
+        },
+        "draw_accepted_revisions_event_id_accepted_unique": {
+          "name": "draw_accepted_revisions_event_id_accepted_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "event_id",
+            "id",
+            "accepted_at"
+          ]
+        },
+        "draw_accepted_revisions_source_identity_unique": {
+          "name": "draw_accepted_revisions_source_identity_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "event_id",
+            "source_revision_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draw_accepted_revisions_checksum_valid": {
+          "name": "draw_accepted_revisions_checksum_valid",
+          "value": "length(\"draw_accepted_revisions\".\"checksum\") = 64"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_active_submissions": {
+      "name": "draw_active_submissions",
+      "schema": "",
+      "columns": {
+        "participant_id": {
+          "name": "participant_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "league_id": {
+          "name": "league_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "submission_id": {
+          "name": "submission_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "draw_active_submissions_submission_ownership_fk": {
+          "name": "draw_active_submissions_submission_ownership_fk",
+          "tableFrom": "draw_active_submissions",
+          "tableTo": "draw_submissions",
+          "columnsFrom": [
+            "participant_id",
+            "league_id",
+            "submission_id"
+          ],
+          "columnsTo": [
+            "participant_id",
+            "league_id",
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_active_submissions_submission_unique": {
+          "name": "draw_active_submissions_submission_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "submission_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.draw_email_outbox": {
+      "name": "draw_email_outbox",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "league_id": {
+          "name": "league_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "participant_id": {
+          "name": "participant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipient_email": {
+          "name": "recipient_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recipient_hash": {
+          "name": "recipient_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "available_at": {
+          "name": "available_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "claimed_at": {
+          "name": "claimed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sent_at": {
+          "name": "sent_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_error_code": {
+          "name": "last_error_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_email_outbox_pending_idx": {
+          "name": "draw_email_outbox_pending_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "available_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "draw_email_outbox_league_idx": {
+          "name": "draw_email_outbox_league_idx",
+          "columns": [
+            {
+              "expression": "league_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "draw_email_outbox_recipient_idx": {
+          "name": "draw_email_outbox_recipient_idx",
+          "columns": [
+            {
+              "expression": "recipient_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_email_outbox_league_id_draw_leagues_id_fk": {
+          "name": "draw_email_outbox_league_id_draw_leagues_id_fk",
+          "tableFrom": "draw_email_outbox",
+          "tableTo": "draw_leagues",
+          "columnsFrom": [
+            "league_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "draw_email_outbox_participant_ownership_fk": {
+          "name": "draw_email_outbox_participant_ownership_fk",
+          "tableFrom": "draw_email_outbox",
+          "tableTo": "draw_participants",
+          "columnsFrom": [
+            "participant_id",
+            "league_id"
+          ],
+          "columnsTo": [
+            "id",
+            "league_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_email_outbox_participant_recipient_unique": {
+          "name": "draw_email_outbox_participant_recipient_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "participant_id",
+            "recipient_hash"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draw_email_outbox_kind_valid": {
+          "name": "draw_email_outbox_kind_valid",
+          "value": "\"draw_email_outbox\".\"kind\" = 'return_link'"
+        },
+        "draw_email_outbox_status_valid": {
+          "name": "draw_email_outbox_status_valid",
+          "value": "\"draw_email_outbox\".\"status\" in ('pending', 'sending', 'sent', 'failed')"
+        },
+        "draw_email_outbox_attempts_valid": {
+          "name": "draw_email_outbox_attempts_valid",
+          "value": "\"draw_email_outbox\".\"attempts\" >= 0"
+        },
+        "draw_email_outbox_recipient_hash_valid": {
+          "name": "draw_email_outbox_recipient_hash_valid",
+          "value": "length(\"draw_email_outbox\".\"recipient_hash\") = 64"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_engagement_events": {
+      "name": "draw_engagement_events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "league_id": {
+          "name": "league_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "participant_id": {
+          "name": "participant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "round": {
+          "name": "round",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "first_at": {
+          "name": "first_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_engagement_events_league_kind_idx": {
+          "name": "draw_engagement_events_league_kind_idx",
+          "columns": [
+            {
+              "expression": "league_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "kind",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "first_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_engagement_events_participant_ownership_fk": {
+          "name": "draw_engagement_events_participant_ownership_fk",
+          "tableFrom": "draw_engagement_events",
+          "tableTo": "draw_participants",
+          "columnsFrom": [
+            "participant_id",
+            "league_id"
+          ],
+          "columnsTo": [
+            "id",
+            "league_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_engagement_events_metric_unique": {
+          "name": "draw_engagement_events_metric_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "participant_id",
+            "kind",
+            "round"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draw_engagement_events_kind_valid": {
+          "name": "draw_engagement_events_kind_valid",
+          "value": "\"draw_engagement_events\".\"kind\" in ('submission', 'qualifying_return', 'recap_view', 'recap_export')"
+        },
+        "draw_engagement_events_round_valid": {
+          "name": "draw_engagement_events_round_valid",
+          "value": "\"draw_engagement_events\".\"round\" between 0 and 7"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_event_heads": {
+      "name": "draw_event_heads",
+      "schema": "",
+      "columns": {
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "accepted_revision_id": {
+          "name": "accepted_revision_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revision_accepted_at": {
+          "name": "revision_accepted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "advanced_at": {
+          "name": "advanced_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "draw_event_heads_accepted_revision_idx": {
+          "name": "draw_event_heads_accepted_revision_idx",
+          "columns": [
+            {
+              "expression": "accepted_revision_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_event_heads_event_id_draw_events_id_fk": {
+          "name": "draw_event_heads_event_id_draw_events_id_fk",
+          "tableFrom": "draw_event_heads",
+          "tableTo": "draw_events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "draw_event_heads_accepted_revision_ownership_fk": {
+          "name": "draw_event_heads_accepted_revision_ownership_fk",
+          "tableFrom": "draw_event_heads",
+          "tableTo": "draw_accepted_revisions",
+          "columnsFrom": [
+            "event_id",
+            "accepted_revision_id",
+            "revision_accepted_at"
+          ],
+          "columnsTo": [
+            "event_id",
+            "id",
+            "accepted_at"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.draw_event_operations_audit": {
+      "name": "draw_event_operations_audit",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actor": {
+          "name": "actor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "configuration": {
+          "name": "configuration",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_event_operations_audit_event_created_idx": {
+          "name": "draw_event_operations_audit_event_created_idx",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_event_operations_audit_event_id_draw_events_id_fk": {
+          "name": "draw_event_operations_audit_event_id_draw_events_id_fk",
+          "tableFrom": "draw_event_operations_audit",
+          "tableTo": "draw_events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "draw_event_operations_audit_action_valid": {
+          "name": "draw_event_operations_audit_action_valid",
+          "value": "\"draw_event_operations_audit\".\"action\" in ('configured', 'certified', 'flags_changed', 'source_status')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_events": {
+      "name": "draw_events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "draw_id": {
+          "name": "draw_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tournament": {
+          "name": "tournament",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tournament_year": {
+          "name": "tournament_year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_kind": {
+          "name": "event_kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "surface": {
+          "name": "surface",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "venue": {
+          "name": "venue",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city": {
+          "name": "city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_page": {
+          "name": "source_page",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lock_at": {
+          "name": "lock_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "completes_at": {
+          "name": "completes_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "polling_enabled": {
+          "name": "polling_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "creation_enabled": {
+          "name": "creation_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "last_attempt_at": {
+          "name": "last_attempt_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_successful_at": {
+          "name": "last_successful_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "delay_code": {
+          "name": "delay_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "failure_code": {
+          "name": "failure_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "projection_failure_code": {
+          "name": "projection_failure_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_events_active_polling_idx": {
+          "name": "draw_events_active_polling_idx",
+          "columns": [
+            {
+              "expression": "polling_enabled",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "last_attempt_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "draw_events_cleanup_idx": {
+          "name": "draw_events_cleanup_idx",
+          "columns": [
+            {
+              "expression": "completes_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_events_slug_unique": {
+          "name": "draw_events_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        },
+        "draw_events_draw_id_unique": {
+          "name": "draw_events_draw_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "draw_id"
+          ]
+        },
+        "draw_events_source_page_unique": {
+          "name": "draw_events_source_page_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "source_page"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draw_events_event_kind_valid": {
+          "name": "draw_events_event_kind_valid",
+          "value": "\"draw_events\".\"event_kind\" in ('mens_singles', 'womens_singles')"
+        },
+        "draw_events_surface_valid": {
+          "name": "draw_events_surface_valid",
+          "value": "\"draw_events\".\"surface\" in ('Hard', 'Clay', 'Grass', 'Unknown')"
+        },
+        "draw_events_lifecycle_valid": {
+          "name": "draw_events_lifecycle_valid",
+          "value": "\"draw_events\".\"completes_at\" > \"draw_events\".\"lock_at\""
+        },
+        "draw_events_source_page_https": {
+          "name": "draw_events_source_page_https",
+          "value": "\"draw_events\".\"source_page\" like 'https://%'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_leagues": {
+      "name": "draw_leagues",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invitation_generation": {
+          "name": "invitation_generation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_leagues_event_created_idx": {
+          "name": "draw_leagues_event_created_idx",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "draw_leagues_expiry_idx": {
+          "name": "draw_leagues_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_leagues_event_id_draw_events_id_fk": {
+          "name": "draw_leagues_event_id_draw_events_id_fk",
+          "tableFrom": "draw_leagues",
+          "tableTo": "draw_events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_leagues_id_event_unique": {
+          "name": "draw_leagues_id_event_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "event_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draw_leagues_invitation_generation_valid": {
+          "name": "draw_leagues_invitation_generation_valid",
+          "value": "\"draw_leagues\".\"invitation_generation\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_participant_drafts": {
+      "name": "draw_participant_drafts",
+      "schema": "",
+      "columns": {
+        "participant_id": {
+          "name": "participant_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "league_id": {
+          "name": "league_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accepted_revision_id": {
+          "name": "accepted_revision_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "picks": {
+          "name": "picks",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invalidated_match_ids": {
+          "name": "invalidated_match_ids",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_participant_drafts_league_idx": {
+          "name": "draw_participant_drafts_league_idx",
+          "columns": [
+            {
+              "expression": "league_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_participant_drafts_participant_ownership_fk": {
+          "name": "draw_participant_drafts_participant_ownership_fk",
+          "tableFrom": "draw_participant_drafts",
+          "tableTo": "draw_participants",
+          "columnsFrom": [
+            "participant_id",
+            "league_id"
+          ],
+          "columnsTo": [
+            "id",
+            "league_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "draw_participant_drafts_league_ownership_fk": {
+          "name": "draw_participant_drafts_league_ownership_fk",
+          "tableFrom": "draw_participant_drafts",
+          "tableTo": "draw_leagues",
+          "columnsFrom": [
+            "league_id",
+            "event_id"
+          ],
+          "columnsTo": [
+            "id",
+            "event_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "draw_participant_drafts_revision_ownership_fk": {
+          "name": "draw_participant_drafts_revision_ownership_fk",
+          "tableFrom": "draw_participant_drafts",
+          "tableTo": "draw_accepted_revisions",
+          "columnsFrom": [
+            "event_id",
+            "accepted_revision_id"
+          ],
+          "columnsTo": [
+            "event_id",
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "draw_participant_drafts_version_valid": {
+          "name": "draw_participant_drafts_version_valid",
+          "value": "\"draw_participant_drafts\".\"version\" > 0"
+        },
+        "draw_participant_drafts_picks_object": {
+          "name": "draw_participant_drafts_picks_object",
+          "value": "jsonb_typeof(\"draw_participant_drafts\".\"picks\") = 'object'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_participants": {
+      "name": "draw_participants",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "league_id": {
+          "name": "league_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seat": {
+          "name": "seat",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "return_generation": {
+          "name": "return_generation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "is_creator": {
+          "name": "is_creator",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "removed_at": {
+          "name": "removed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_participants_league_created_idx": {
+          "name": "draw_participants_league_created_idx",
+          "columns": [
+            {
+              "expression": "league_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "draw_participants_access_idx": {
+          "name": "draw_participants_access_idx",
+          "columns": [
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "return_generation",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_participants_league_id_draw_leagues_id_fk": {
+          "name": "draw_participants_league_id_draw_leagues_id_fk",
+          "tableFrom": "draw_participants",
+          "tableTo": "draw_leagues",
+          "columnsFrom": [
+            "league_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_participants_id_league_unique": {
+          "name": "draw_participants_id_league_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "league_id"
+          ]
+        },
+        "draw_participants_league_seat_unique": {
+          "name": "draw_participants_league_seat_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "league_id",
+            "seat"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draw_participants_seat_valid": {
+          "name": "draw_participants_seat_valid",
+          "value": "\"draw_participants\".\"seat\" between 1 and 32"
+        },
+        "draw_participants_return_generation_valid": {
+          "name": "draw_participants_return_generation_valid",
+          "value": "\"draw_participants\".\"return_generation\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_recap_facts": {
+      "name": "draw_recap_facts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "league_id": {
+          "name": "league_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "round": {
+          "name": "round",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accepted_revision_id": {
+          "name": "accepted_revision_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "facts": {
+          "name": "facts",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_recap_facts_lookup_idx": {
+          "name": "draw_recap_facts_lookup_idx",
+          "columns": [
+            {
+              "expression": "league_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "round",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "accepted_revision_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_recap_facts_league_ownership_fk": {
+          "name": "draw_recap_facts_league_ownership_fk",
+          "tableFrom": "draw_recap_facts",
+          "tableTo": "draw_leagues",
+          "columnsFrom": [
+            "league_id",
+            "event_id"
+          ],
+          "columnsTo": [
+            "id",
+            "event_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "draw_recap_facts_revision_ownership_fk": {
+          "name": "draw_recap_facts_revision_ownership_fk",
+          "tableFrom": "draw_recap_facts",
+          "tableTo": "draw_accepted_revisions",
+          "columnsFrom": [
+            "event_id",
+            "accepted_revision_id"
+          ],
+          "columnsTo": [
+            "event_id",
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_recap_facts_identity_unique": {
+          "name": "draw_recap_facts_identity_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "league_id",
+            "round",
+            "accepted_revision_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draw_recap_facts_round_valid": {
+          "name": "draw_recap_facts_round_valid",
+          "value": "\"draw_recap_facts\".\"round\" between 1 and 7"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.draw_submissions": {
+      "name": "draw_submissions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "participant_id": {
+          "name": "participant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "league_id": {
+          "name": "league_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accepted_revision_id": {
+          "name": "accepted_revision_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contract_version": {
+          "name": "contract_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "checksum": {
+          "name": "checksum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "picks": {
+          "name": "picks",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "validated_at": {
+          "name": "validated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "draw_submissions_participant_created_idx": {
+          "name": "draw_submissions_participant_created_idx",
+          "columns": [
+            {
+              "expression": "participant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "draw_submissions_participant_ownership_fk": {
+          "name": "draw_submissions_participant_ownership_fk",
+          "tableFrom": "draw_submissions",
+          "tableTo": "draw_participants",
+          "columnsFrom": [
+            "participant_id",
+            "league_id"
+          ],
+          "columnsTo": [
+            "id",
+            "league_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "draw_submissions_league_ownership_fk": {
+          "name": "draw_submissions_league_ownership_fk",
+          "tableFrom": "draw_submissions",
+          "tableTo": "draw_leagues",
+          "columnsFrom": [
+            "league_id",
+            "event_id"
+          ],
+          "columnsTo": [
+            "id",
+            "event_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "draw_submissions_revision_ownership_fk": {
+          "name": "draw_submissions_revision_ownership_fk",
+          "tableFrom": "draw_submissions",
+          "tableTo": "draw_accepted_revisions",
+          "columnsFrom": [
+            "event_id",
+            "accepted_revision_id"
+          ],
+          "columnsTo": [
+            "event_id",
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "draw_submissions_participant_league_id_unique": {
+          "name": "draw_submissions_participant_league_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "participant_id",
+            "league_id",
+            "id"
+          ]
+        },
+        "draw_submissions_participant_version_unique": {
+          "name": "draw_submissions_participant_version_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "participant_id",
+            "version"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "draw_submissions_version_valid": {
+          "name": "draw_submissions_version_valid",
+          "value": "\"draw_submissions\".\"version\" > 0"
+        },
+        "draw_submissions_checksum_valid": {
+          "name": "draw_submissions_checksum_valid",
+          "value": "length(\"draw_submissions\".\"checksum\") = 64"
+        },
+        "draw_submissions_picks_object": {
+          "name": "draw_submissions_picks_object",
+          "value": "jsonb_typeof(\"draw_submissions\".\"picks\") = 'object'"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
