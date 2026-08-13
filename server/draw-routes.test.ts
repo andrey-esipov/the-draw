@@ -222,6 +222,22 @@ describe('Draw public route boundary', () => {
     expect(oversized.status).toBe(413);
   });
 
+  it('has no first-party engagement mutation route: recap_view is auto-recorded on read and recap PNG export stays local-only', async () => {
+    const app = express();
+    mountDrawRoutes(app, {
+      database: {} as never,
+      publicUrl: 'https://draw.example.test',
+      secret: 'route-test-secret',
+    });
+    const response = await request(app, '/api/draw/engagement', {
+      method: 'POST',
+      headers: { Origin: 'https://draw.example.test', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind: 'recap_view', round: 1 }),
+    });
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ error: 'not_found' });
+  });
+
   it('runs create, join, and draft recovery through public HTTP over migrated PGlite', () => withDb(async (database) => {
     await seedApiEvent(database);
     const app = express();

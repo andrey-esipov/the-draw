@@ -1,4 +1,5 @@
 import express, { type Express, type NextFunction, type Request, type Response } from 'express';
+import type { DrawParticipantAccess } from '../shared/draw/contracts.js';
 import { db } from './db.js';
 import {
   DRAW_EMAIL_CANARY_PROVEN,
@@ -34,6 +35,7 @@ import {
   verifyDrawInvitationToken,
   verifyDrawParticipantToken,
 } from './draw-tokens.js';
+import { fragmentLink } from './draw-links.js';
 
 interface DrawRouteOptions {
   database?: DrawDatabase;
@@ -75,23 +77,15 @@ function body(req: Request): JsonBody {
   return req.body as JsonBody;
 }
 
-function recapRound(value: unknown): number | null {
-  if (!value || typeof value !== 'object' || !('projection' in value)) return null;
-  const projection = value.projection;
-  if (!projection || typeof projection !== 'object' || !('recap' in projection)) return null;
-  const recap = projection.recap;
-  if (!recap || typeof recap !== 'object' || !('state' in recap) || recap.state !== 'current') return null;
-  if (!('viewModel' in recap) || !recap.viewModel || typeof recap.viewModel !== 'object') return null;
-  const round = 'round' in recap.viewModel ? recap.viewModel.round : null;
-  return Number.isInteger(round) && Number(round) >= 1 && Number(round) <= 7 ? Number(round) : null;
+function recapRound(league: DrawParticipantAccess): number | null {
+  const recap = league.projection?.recap;
+  if (!recap || recap.state !== 'current') return null;
+  const round = recap.viewModel.round;
+  return Number.isInteger(round) && round >= 1 && round <= 7 ? round : null;
 }
 
-function hasActiveSubmission(value: unknown): boolean {
-  if (!value || typeof value !== 'object' || !('viewer' in value)) return false;
-  const viewer = value.viewer;
-  if (!viewer || typeof viewer !== 'object' || !('submission' in viewer)) return false;
-  const submission = viewer.submission;
-  return Boolean(submission && typeof submission === 'object' && 'active' in submission && submission.active);
+function hasActiveSubmission(league: DrawParticipantAccess): boolean {
+  return league.viewer.submission.active;
 }
 
 async function recordOrReport(input: {
@@ -133,10 +127,6 @@ function participant(req: Request, secret: string) {
   if (forbiddenCapabilityTransport(req)) return null;
   const token = authorizationBearer(req);
   return token ? verifyDrawParticipantToken(token, secret) : null;
-}
-
-function fragmentLink(publicUrl: string, kind: 'invite' | 'return', token: string): string {
-  return `${publicUrl.replace(/\/+$/, '')}/#${kind}=${encodeURIComponent(token)}`;
 }
 
 function routeError(error: unknown, _req: Request, res: Response, _next: NextFunction): void {
@@ -309,32 +299,6 @@ export function mountDrawRoutes(app: Express, options: DrawRouteOptions = {}): v
     }
     await Promise.all(writes);
     res.json(league);
-  });
-
-  app.post('/api/draw/engagement', mutationBoundary, async (req, res) => {
-    const claims = participant(req, secret);
-    if (!claims) return notFound(res);
-    const input = body(req);
-    if (input.kind !== 'recap_view' && input.kind !== 'recap_export') {
-      throw new DrawApiError('invalid_request', 422, { field: 'kind' });
-    }
-    if (!Number.isInteger(input.round)) {
-      throw new DrawApiError('invalid_request', 422, { field: 'round' });
-    }
-    try {
-      await recordDrawEngagement({
-        database,
-        leagueId: claims.leagueId,
-        participantId: claims.participantId,
-        kind: input.kind,
-        round: Number(input.round),
-        now: options.now?.() ?? new Date(),
-      });
-    } catch {
-      drawAnalyticsFailure(input.kind);
-      throw new DrawApiError('not_found', 404);
-    }
-    res.status(204).end();
   });
 
   app.post('/api/draw/email', mutationBoundary, async (req, res) => {

@@ -115,8 +115,8 @@ describe('private league capability bootstrap', () => {
         leagueId: 'league-1',
         participantId: 'creator-1',
         eventKind: 'mens_singles',
-        invitationLink: 'https://example.test/draw/#invite=invite-secret',
-        returnLink: 'https://example.test/draw/#return=creator-secret',
+        invitationLink: 'https://example.test/#invite=invite-secret',
+        returnLink: 'https://example.test/#return=creator-secret',
       }), { status: 201, headers: { 'Content-Type': 'application/json' } });
     });
     const created = await createLeague('us-open:2026-men', 'Friends', 'Creator', createFetch);
@@ -129,7 +129,7 @@ describe('private league capability bootstrap', () => {
       return new Response(JSON.stringify({
         participantId: 'friend-1',
         seat: 2,
-        returnLink: 'https://example.test/draw/#return=friend-secret',
+        returnLink: 'https://example.test/#return=friend-secret',
       }), { status: 201, headers: { 'Content-Type': 'application/json' } });
     });
     const joined = await joinLeague({ kind: 'invitation', token: 'invite-secret' }, 'Friend', joinFetch);

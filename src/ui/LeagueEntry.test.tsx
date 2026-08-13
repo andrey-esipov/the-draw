@@ -7,7 +7,7 @@ afterEach(cleanup);
 
 describe('private league entry', () => {
   it('joins with a bounded literal name and returns the private link immediately', async () => {
-    const join = vi.fn().mockResolvedValue({ returnLink: 'https://example.test/draw/#return=secret' });
+    const join = vi.fn().mockResolvedValue({ returnLink: 'https://example.test/#return=secret' });
     render(<LeagueEntry mode="join" leagueName={'<b>Friends</b>\u202e'} seatsRemaining={3} lockAt="2026-08-24T15:00:00Z" onJoin={join} />);
     expect(screen.getByRole('heading').textContent).toBe('<b>Friends</b>');
     fireEvent.change(screen.getByLabelText('Your display name'), { target: { value: 'A'.repeat(61) } });
@@ -24,7 +24,7 @@ describe('private league entry', () => {
     const join = vi.fn()
       .mockRejectedValueOnce(new Error('network'))
       .mockRejectedValueOnce(new Error('network'))
-      .mockResolvedValue({ returnLink: 'https://example.test/draw/#return=secret' });
+      .mockResolvedValue({ returnLink: 'https://example.test/#return=secret' });
     render(<LeagueEntry mode="join" leagueName="Friends" seatsRemaining={3} lockAt="2026-08-24T15:00:00Z" onJoin={join} />);
     const name = screen.getByLabelText('Your display name');
     fireEvent.change(name, { target: { value: 'Andrey' } });

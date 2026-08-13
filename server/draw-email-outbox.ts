@@ -11,6 +11,7 @@ import {
 } from './env.js';
 import { drawEmailOutbox, drawLeagues, drawParticipants } from './schema.js';
 import { mintDrawParticipantToken } from './draw-tokens.js';
+import { fragmentLink } from './draw-links.js';
 
 type DrawEmailDatabase = typeof db;
 export type DrawEmailTransport = (input: {
@@ -99,7 +100,7 @@ export async function processNextDrawEmail(
         owner.participant.returnGeneration,
         dependencies.secret,
       );
-      const returnLink = `${dependencies.publicUrl.replace(/\/+$/, '')}/draw/#return=${encodeURIComponent(token)}`;
+      const returnLink = fragmentLink(dependencies.publicUrl, 'return', token);
       await dependencies.send({
         to: claimed.recipientEmail!,
         returnLink,

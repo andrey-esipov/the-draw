@@ -60,7 +60,7 @@ describe('Draw transactional email outbox', () => {
     })).toBe('sent');
     expect(send).toHaveBeenCalledWith({
       to: 'ada@example.com',
-      returnLink: expect.stringMatching(/^https:\/\/draw\.example\.test\/draw\/#return=/),
+      returnLink: expect.stringMatching(/^https:\/\/draw\.example\.test\/#return=/),
       idempotencyKey: expect.any(String),
     });
     const sentArgument = send.mock.calls[0]![0];
@@ -94,7 +94,7 @@ describe('Draw transactional email outbox', () => {
       lastErrorCode: 'delivery_failed',
     });
     expect(JSON.stringify(row)).not.toContain('provider included');
-    expect(JSON.stringify(row)).not.toContain('/draw/#return=');
+    expect(JSON.stringify(row)).not.toContain('/#return=');
     await database.update(drawEmailOutbox).set({ availableAt: now });
     expect(await processNextDrawEmail({
       database,
