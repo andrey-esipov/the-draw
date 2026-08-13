@@ -245,9 +245,10 @@ def read_bracket(body: str, slots: int, rounds: int, pad: bool) -> list[list[dic
                 if parsed:
                     sets.append(parsed)
             entries.append({**player, "seed": seed, "sets": sets})
-        matches = [
-            {"top": entries[i], "bottom": entries[i + 1]} for i in range(0, len(entries), 2)
-        ]
+        matches = []
+        for index in range(0, len(entries), 2):
+            status = params.get(f"RD{round_index}-status{index // 2 + 1}", "").strip().lower()
+            matches.append({"top": entries[index], "bottom": entries[index + 1], "status": status})
         out.append(matches)
     return out
 
@@ -258,9 +259,10 @@ def slug(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", stripped.lower()).strip("-")
 
 
-def build(key: str) -> dict:
+def build(key: str, wikitext: str | None = None) -> dict:
     meta = slam_spec(key)
-    wikitext = fetch_wikitext(meta["page"])
+    if wikitext is None:
+        wikitext = fetch_wikitext(meta["page"])
 
     # Best-of-five and best-of-three draws use different bracket templates.
     suffix = f"Tennis{meta['bestOf']}"
@@ -311,6 +313,36 @@ def build(key: str) -> dict:
             for side, entry in zip(sides, (match["top"], match["bottom"])):
                 if entry and entry["won"] and side:
                     winner = side["player"]
+            terminal = None
+            if winner:
+                winner_side = next(side for side in sides if side and side["player"] == winner)
+                status = match["status"]
+                notes = {
+                    score["note"].lower()
+                    for side in sides
+                    if side
+                    for score in side["sets"]
+                    if "note" in score
+                }
+                if status in {"w/o", "walkover"} or notes & {"w/o", "walkover"}:
+                    terminal = "walkover"
+                elif status in {"ret.", "retired"} or notes & {"r", "ret", "ret.", "def", "def."}:
+                    terminal = "retirement"
+                elif sum(1 for score in winner_side["sets"] if score["won"]) < (meta["bestOf"] + 1) // 2:
+                    winner = None
+                else:
+                    terminal = "completed"
+            for side in sides:
+                if side:
+                    side["sets"] = [score for score in side["sets"] if score["games"] is not None]
+            if terminal == "walkover":
+                for side in sides:
+                    if side:
+                        side["sets"] = []
+            elif terminal == "retirement":
+                loser = next((side for side in sides if side and side["player"] != winner), None)
+                if loser and loser["sets"]:
+                    loser["sets"][-1]["retired"] = True
             out_matches.append(
                 {
                     "id": f"r{round_index + 1}m{position + 1}",
@@ -392,9 +424,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--slam", choices=sorted(SLAMS) + ["all"], required=True)
     parser.add_argument("--out", default=None)
+    parser.add_argument("--wikitext", type=Path, default=None)
+    parser.add_argument("--compare", type=Path, default=None)
     args = parser.parse_args()
 
     if args.slam == "all":
+        if args.wikitext or args.compare:
+            parser.error("--wikitext and --compare require one --slam")
         failures = 0
         for index, key in enumerate(sorted(SLAMS)):
             if index:
@@ -414,7 +450,7 @@ def main() -> int:
             write(draw, Path(f"public/draws/{key}.json"))
         return 1 if failures else 0
 
-    draw = build(args.slam)
+    draw = build(args.slam, args.wikitext.read_text() if args.wikitext else None)
     problems = verify(draw)
     if problems:
         print(f"REJECTED {args.slam}: {len(problems)} problem(s)", file=sys.stderr)
@@ -422,6 +458,13 @@ def main() -> int:
             print("  -", problem, file=sys.stderr)
         return 1
 
+    if args.compare:
+        expected = json.loads(args.compare.read_text())
+        if draw != expected:
+            print(f"REJECTED {args.slam}: completed draw differs from parity oracle", file=sys.stderr)
+            return 1
+        print(f"{args.slam}: completed draw matches {args.compare}")
+        return 0
     write(draw, Path(args.out or f"public/draws/{args.slam}.json"))
     return 0
 

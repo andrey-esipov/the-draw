@@ -1,0 +1,29 @@
+{
+  "complete": {
+    "file": "complete-wimbledon-men.wiki",
+    "revisionId": "100"
+  },
+  "partial": {
+    "file": "partial-mid-round.wiki",
+    "revisionId": "101"
+  },
+  "suspended": {
+    "file": "suspended.wiki",
+    "revisionId": "102"
+  },
+  "withdrawal": {
+    "file": "pre-lock-withdrawal.wiki",
+    "revisionId": "103"
+  },
+  "corrected": {
+    "file": "corrected-revision.wiki",
+    "revisionId": "104",
+    "explicitCorrections": [
+      "r1m2"
+    ]
+  },
+  "walkover": {
+    "file": "walkover.wiki",
+    "revisionId": "105"
+  }
+}
