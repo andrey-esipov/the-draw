@@ -262,7 +262,7 @@ describe('league-aware shell', () => {
     fetcher.mockRestore();
   });
 
-  it('shows an honest "no longer available" refusal instead of a misleading network error when a draw is retired mid-creation', async () => {
+  it('shows an honest unavailable refusal instead of a misleading network error when a draw is retired mid-creation', async () => {
     const fetcher = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
       JSON.stringify({ error: 'not_found' }),
       { status: 404, headers: { 'Content-Type': 'application/json' } },
@@ -271,7 +271,7 @@ describe('league-aware shell', () => {
     fireEvent.change(screen.getByLabelText('League name'), { target: { value: 'Friday Night Draw' } });
     fireEvent.change(screen.getByLabelText('Your display name'), { target: { value: 'Ada' } });
     fireEvent.click(screen.getByRole('button', { name: 'Create private league' }));
-    expect(await screen.findByText('This draw is no longer available for new leagues.')).toBeTruthy();
+    expect(await screen.findByText('This draw is not available for a new league right now.')).toBeTruthy();
     expect(screen.queryByText('Your place could not be created. Check your connection and try again.')).toBeNull();
     fetcher.mockRestore();
   });
