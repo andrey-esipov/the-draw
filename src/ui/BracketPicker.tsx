@@ -322,9 +322,15 @@ export function BracketPicker({
   const round = draw.rounds.find((item) => item.round === activeRound) ?? draw.rounds[0]!;
   const remainingThisRound = round.matches.filter((match) => !picks[match.id]).length;
   const canSubmit = count === total && affected.length === 0 && draftPersisted && !effectiveLocked && !submitting;
+  // Locks all pick interaction for the entire submitting/reload window, not just
+  // while the draw itself is locked. Without this, a conflict-triggered
+  // `onReload` can resolve while the user is mid-pick: the reload swaps in a
+  // fresh key-based remount of the picker, silently discarding any picks made
+  // during the await.
+  const interactionLocked = effectiveLocked || submitting;
 
   const choose = (matchId: string, playerId: string) => {
-    if (effectiveLocked) return;
+    if (interactionLocked) return;
     const result = pickWinner(draw, picksRef.current, matchId, playerId);
     picksRef.current = result.picks;
     setPicks(result.picks);
@@ -346,6 +352,7 @@ export function BracketPicker({
   };
 
   const seedFill = () => {
+    if (interactionLocked) return;
     setFillSnapshot(picksRef.current);
     const filled = fillRemainingBySeed(draw, picksRef.current);
     picksRef.current = filled;
@@ -356,6 +363,7 @@ export function BracketPicker({
   };
 
   const undoFill = () => {
+    if (interactionLocked) return;
     if (!fillSnapshot) return;
     picksRef.current = fillSnapshot;
     setPicks(fillSnapshot);
@@ -398,7 +406,7 @@ export function BracketPicker({
               : `Choose every winner. Your picks stay private until ${exactTime(lockAt)}.`}</p>
         </div>
         <div className="picker-tools">
-          {!effectiveLocked && (fillSnapshot
+          {!interactionLocked && (fillSnapshot
             ? <button type="button" onClick={undoFill}>Undo seed fill</button>
             : <button type="button" onClick={seedFill}>Fill remaining by seed</button>)}
           <span>Seed fill chooses the lower seed number only where you have not picked. It never submits.</span>
@@ -423,7 +431,7 @@ export function BracketPicker({
             <h2>{round.name}</h2>
           </div>
           <div className="matchup-list">
-            {round.matches.map((match) => <Matchup key={match.id} draw={draw} match={match} round={round} picks={picks} affected={affected.includes(match.id)} locked={effectiveLocked} onPick={choose} />)}
+            {round.matches.map((match) => <Matchup key={match.id} draw={draw} match={match} round={round} picks={picks} affected={affected.includes(match.id)} locked={interactionLocked} onPick={choose} />)}
           </div>
           {round.round === draw.rounds.length && picks[round.matches[0]?.id ?? ''] && (
             <div className="champion-ceremony" role="status">

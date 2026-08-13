@@ -101,6 +101,43 @@ describe('bracket picker', () => {
     expect(screen.getByText(/Reloading your saved bracket/i)).toBeTruthy();
   });
 
+  it('locks every pick and the seed-fill tools for the entire submitting/reload window so a race pick cannot be silently discarded', async () => {
+    const draw = smallDraw();
+    let resolveReload: () => void = () => {};
+    const reload = vi.fn(() => new Promise<void>((resolve) => { resolveReload = resolve; }));
+    const submit = vi.fn().mockRejectedValue({ code: 'draft_conflict' });
+    render(<BracketPicker
+      draw={draw}
+      initialPicks={fillRemainingBySeed(draw, {})}
+      version={7}
+      affectedMatchIds={[]}
+      locked={false}
+      lockAt="2026-08-24T15:00:00Z"
+      onSave={vi.fn()}
+      onSubmit={submit}
+      onReload={reload}
+    />);
+    fireEvent.click(screen.getByRole('button', { name: 'Submit bracket' }));
+    await waitFor(() => expect(reload).toHaveBeenCalledOnce());
+
+    // Mid-reload (onReload's promise has not resolved yet): every pick button
+    // and the seed-fill tool must be disabled/inert, not merely disabled by
+    // the still-true `submitting` flag on the submit button alone.
+    const group = screen.getByRole('group', { name: /First round, match 1/i });
+    const pickButtons = group.querySelectorAll('button');
+    expect([...pickButtons].every((button) => button.hasAttribute('disabled'))).toBe(true);
+    expect(screen.queryByRole('button', { name: 'Fill remaining by seed' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Undo seed fill' })).toBeNull();
+
+    const before = pickButtons[0]!.getAttribute('aria-pressed');
+    fireEvent.click(pickButtons[0]!);
+    expect(pickButtons[0]!.getAttribute('aria-pressed')).toBe(before);
+    expect(submit).toHaveBeenCalledTimes(1);
+
+    resolveReload();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Submit bracket' }).hasAttribute('disabled')).toBe(false));
+  });
+
   it('marks stale affected branches for repair and blocks submission', () => {
     render(<BracketPicker draw={smallDraw()} initialPicks={{ r1m1: 'p1' }} version={2} affectedMatchIds={['r1m1', 'r2m1']} locked={false} lockAt="2026-08-24T15:00:00Z" onSave={vi.fn()} onSubmit={vi.fn()} />);
     expect(screen.getByText(/2 picks need repair/i)).toBeTruthy();
