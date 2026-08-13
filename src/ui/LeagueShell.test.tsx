@@ -242,6 +242,40 @@ describe('league-aware shell', () => {
     fetcher.mockRestore();
   });
 
+  it('shows an honest "already locked" refusal instead of a misleading network error when creating a league for a draw past its lock time', async () => {
+    // Regression: a historical/closed draw can still report `state: 'ready'` from the
+    // availability check (it has a canonical revision) even though its lockAt has already
+    // passed. The server correctly refuses league creation with a distinct `locked` error,
+    // but the create-flow used to let that fall through LeagueEntry's generic catch-all
+    // ("Check your connection and try again."), which reads as a network failure rather
+    // than the true, non-retriable "this draw already locked" outcome.
+    const fetcher = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
+      JSON.stringify({ error: 'locked', details: { lockAt: '2026-08-24T15:00:00.000Z' } }),
+      { status: 409, headers: { 'Content-Type': 'application/json' } },
+    ));
+    render(<LeagueShell state={{ kind: 'create', eventSlug: 'us-open-2026-men', eventName: 'US Open' }} />);
+    fireEvent.change(screen.getByLabelText('League name'), { target: { value: 'Friday Night Draw' } });
+    fireEvent.change(screen.getByLabelText('Your display name'), { target: { value: 'Ada' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Create private league' }));
+    expect(await screen.findByText('This draw has already locked and can no longer accept new leagues.')).toBeTruthy();
+    expect(screen.queryByText('Your place could not be created. Check your connection and try again.')).toBeNull();
+    fetcher.mockRestore();
+  });
+
+  it('shows an honest "no longer available" refusal instead of a misleading network error when a draw is retired mid-creation', async () => {
+    const fetcher = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
+      JSON.stringify({ error: 'not_found' }),
+      { status: 404, headers: { 'Content-Type': 'application/json' } },
+    ));
+    render(<LeagueShell state={{ kind: 'create', eventSlug: 'us-open-2026-men', eventName: 'US Open' }} />);
+    fireEvent.change(screen.getByLabelText('League name'), { target: { value: 'Friday Night Draw' } });
+    fireEvent.change(screen.getByLabelText('Your display name'), { target: { value: 'Ada' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Create private league' }));
+    expect(await screen.findByText('This draw is no longer available for new leagues.')).toBeTruthy();
+    expect(screen.queryByText('Your place could not be created. Check your connection and try again.')).toBeNull();
+    fetcher.mockRestore();
+  });
+
   it('moves straight to an explicit loading-participant transition on Start picking, never back to the create form', async () => {
     // Regression: the links -> picking handoff used to clear `links` before loadParticipant
     // resolved, letting React fall through to state.kind ('create') and briefly re-render

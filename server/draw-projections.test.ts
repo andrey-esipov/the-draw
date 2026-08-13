@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { Draw } from '../shared/draw/contracts.js';
 import * as drawRecaps from './draw-recaps.js';
-import { isDrawRecapFacts, type DrawRecapFacts } from './draw-recaps.js';
+import { isDrawRecapFacts, priorRoundState, type DrawRecapFacts } from './draw-recaps.js';
 import { readAndAdvanceDrawRecap, resolveDrawRecapViewModel } from './draw-projections.js';
 import { drawAcceptedRevisions, drawEvents, drawLeagues, drawRecapFacts } from './schema.js';
 import { useTestDb as setupTestDb } from './test-pglite.js';
@@ -130,7 +130,6 @@ describe('recap persistence and read projection', () => {
       sourceFreshness: 'current' as const,
       correctionReplay: 'not_needed' as const,
       delayReason: null,
-      previousDraw: null,
       submissions: [],
       participants: [{ id: 'person', displayName: 'Private Name', removed: false }],
     };
@@ -139,16 +138,23 @@ describe('recap persistence and read projection', () => {
     // Poll 1: only round 1 is complete.
     expect(await readAndAdvanceDrawRecap({ ...base, currentDraw: draw1 })).toMatchObject({ state: 'updating' });
     expect(deriveSpy).toHaveBeenCalledTimes(1);
-    expect(deriveSpy).toHaveBeenLastCalledWith(draw1, null, [], 1);
+    expect(deriveSpy).toHaveBeenLastCalledWith(draw1, priorRoundState(draw1, 1), [], 1);
     deriveSpy.mockClear();
 
     // Poll 2: round 2 also completes now. Only the missing round (2) should be derived --
-    // round 1's already-cached facts must not be recomputed on every subsequent poll.
+    // round 1's already-cached facts must not be recomputed on every subsequent poll. The
+    // round-2 "previous" state must be round 1's real completed result (draw1's shape), not
+    // whatever accepted revision preceded this poll -- recap facts are round-over-round.
     const draw2 = twoRoundDraw(true);
     const result = await readAndAdvanceDrawRecap({ ...base, currentDraw: draw2 });
     expect(result.state).toBe('updating');
     expect(deriveSpy).toHaveBeenCalledTimes(1);
-    expect(deriveSpy).toHaveBeenCalledWith(draw2, null, [], 2);
+    expect(deriveSpy).toHaveBeenCalledWith(draw2, priorRoundState(draw2, 2), [], 2);
+    // The synthesized round-2 "previous" must carry round 1's real result forward and mask
+    // round 2 back to undecided -- i.e. behave like round 1's own completed state, not like
+    // whatever accepted revision happened to precede this poll.
+    expect(priorRoundState(draw2, 2).rounds[0]).toEqual(draw1.rounds[0]);
+    expect(priorRoundState(draw2, 2).rounds[1]!.matches[0]).toMatchObject({ winner: null, terminal: 'incomplete' });
 
     const rows = await database.select().from(drawRecapFacts);
     expect(rows.map((row) => row.round).sort()).toEqual([1, 2]);
@@ -198,7 +204,6 @@ describe('recap persistence and read projection', () => {
       correctionReplay: 'not_needed' as const,
       delayReason: null,
       currentDraw: draw,
-      previousDraw: null,
       submissions: [],
       participants: [{ id: 'person', displayName: 'Private Name', removed: false }],
     };
@@ -216,7 +221,6 @@ describe('recap persistence and read projection', () => {
       ...base,
       acceptedRevisionId: revisions[1]!.id,
       sourceRevisionId: '2',
-      previousDraw: draw,
     })).toMatchObject({ state: 'updating', acceptedRevisionId: revisions[1]!.id });
     const rows = await database.select().from(drawRecapFacts);
     expect(rows).toHaveLength(2);

@@ -49,6 +49,26 @@ export function newestCompletedDrawRound(draw: Draw): number | null {
   return completed.length ? Math.max(...completed) : null;
 }
 
+// Recap facts must be round-over-round (what changed because *this* round finished), not
+// revision-over-revision (what changed since whatever accepted revision happened to precede
+// it). A round can complete across many accepted revisions as individual matches finish, so
+// comparing against the literal previous revision only captures the last incremental change.
+// This synthesizes "the draw as it stood immediately before `round` started" by masking that
+// round and every later round back to incomplete, leaving earlier rounds' real results intact.
+export function priorRoundState(draw: Draw, round: number): Draw {
+  return {
+    ...draw,
+    rounds: draw.rounds.map((entry) => (
+      entry.round < round
+        ? entry
+        : {
+          ...entry,
+          matches: entry.matches.map((match) => ({ ...match, winner: null, terminal: 'incomplete' as const })),
+        }
+    )),
+  };
+}
+
 function picks(submission: ScoringSubmission): Record<string, string> {
   return submission.picks && typeof submission.picks === 'object' && !Array.isArray(submission.picks)
     ? submission.picks as Record<string, string>

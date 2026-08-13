@@ -4,7 +4,7 @@ import type {
   DrawRecapProjection,
   DrawRecapViewModel,
 } from '../shared/draw/contracts.js';
-import { deriveDrawRecapFacts, isCompletedRound, isDrawRecapFacts, type DrawRecapFacts } from './draw-recaps.js';
+import { deriveDrawRecapFacts, isCompletedRound, isDrawRecapFacts, priorRoundState, type DrawRecapFacts } from './draw-recaps.js';
 import type { ScoringSubmission } from './draw-scoring.js';
 import { drawRecapFacts } from './schema.js';
 
@@ -32,7 +32,6 @@ export interface DrawRecapProjectionInput {
   correctionReplay: 'not_needed' | 'replayed';
   delayReason: string | null;
   currentDraw: Draw;
-  previousDraw: Draw | null;
   submissions: ScoringSubmission[];
   participants: ParticipantName[];
 }
@@ -48,7 +47,7 @@ function participantName(participants: Map<string, ParticipantName>, id: string)
 
 export function resolveDrawRecapViewModel(
   facts: DrawRecapFacts,
-  input: Omit<DrawRecapProjectionInput, 'database' | 'previousDraw' | 'submissions'>,
+  input: Omit<DrawRecapProjectionInput, 'database' | 'submissions'>,
 ): DrawRecapViewModel {
   const participants = new Map(input.participants.map((participant) => [participant.id, participant]));
   return {
@@ -113,7 +112,12 @@ export async function readAndAdvanceDrawRecap(input: DrawRecapProjectionInput): 
 
   const missingRounds = completedRounds.filter((round) => !existingByRound.has(round));
   for (const round of missingRounds) {
-    const facts = deriveDrawRecapFacts(input.currentDraw, input.previousDraw, input.submissions, round);
+    const facts = deriveDrawRecapFacts(
+      input.currentDraw,
+      priorRoundState(input.currentDraw, round),
+      input.submissions,
+      round,
+    );
     if (!facts) continue;
     await input.database.insert(drawRecapFacts).values({
       leagueId: input.leagueId,

@@ -149,7 +149,9 @@ export function LeagueEntry(props: Props) {
       const code = caught instanceof Error ? caught.message : '';
       setError(code === 'league_full' ? 'This league filled before your place could be created.'
         : code === 'invitation_closed' ? 'This invitation closed before your place could be created.'
-          : 'Your place could not be created. Check your connection and try again.');
+          : code === 'draw_locked' ? 'This draw has already locked and can no longer accept new leagues.'
+            : code === 'draw_unavailable' ? 'This draw is no longer available for new leagues.'
+              : 'Your place could not be created. Check your connection and try again.');
     } finally {
       setBusy(false);
     }

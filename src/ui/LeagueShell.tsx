@@ -277,7 +277,20 @@ export function LeagueShell({
           mode="create"
           eventName={state.eventName}
           onCreate={async (leagueName, displayName, idempotencyKey) => {
-            const result = await createLeague(state.eventSlug, leagueName, displayName, fetcher, idempotencyKey);
+            let result;
+            try {
+              result = await createLeague(state.eventSlug, leagueName, displayName, fetcher, idempotencyKey);
+            } catch (error) {
+              // A historical/closed draw can still be "available" (it has a canonical
+              // revision) while its lock time has passed, or an operator can have retired
+              // it after it was advertised. Both are honest, non-retriable outcomes -- they
+              // must never fall through to the generic "check your connection" message.
+              if (error instanceof LeagueApiError) {
+                if (error.code === 'locked') throw new Error('draw_locked', { cause: error });
+                if (error.status === 404) throw new Error('draw_unavailable', { cause: error });
+              }
+              throw error;
+            }
             setCapability(result.capability);
             const nextLinks = { invitationLink: result.invitationLink, returnLink: result.returnLink };
             setLinks(nextLinks);

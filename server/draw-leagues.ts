@@ -847,7 +847,6 @@ export async function readDrawLeague(
     correctionReplay,
     delayReason,
     currentDraw: canonical.draw,
-    previousDraw: previousRevision ? asDraw(previousRevision.payload) : null,
     submissions: scoringSubmissions,
     participants: participants.map((participant) => ({
       id: participant.id,

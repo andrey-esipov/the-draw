@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Draw } from '../shared/draw/contracts.js';
-import { completedRecapRounds, deriveDrawRecapFacts } from './draw-recaps.js';
+import { completedRecapRounds, deriveDrawRecapFacts, priorRoundState } from './draw-recaps.js';
 import type { ScoringSubmission } from './draw-scoring.js';
 
 function draw(roundOne: Array<string | null>, final: string | null = null): Draw {
@@ -113,5 +113,30 @@ describe('completed-round recap derivation', () => {
     expect(first.rarestCorrectCall?.participantId).toBe('one');
     expect(corrected.rarestCorrectCall?.participantId).toBe('two');
     expect(corrected.highestImpactMiss?.participantId).toBe('one');
+  });
+
+  it('derives round-over-round movement (against the immediately prior round), not against whatever accepted revision preceded it', () => {
+    const current = draw(['a', 'c'], 'a');
+    // priorRoundState synthesizes "the draw as of right before round 2 started": round 1's
+    // real results kept, round 2 (and later) masked back to incomplete.
+    const priorToFinal = priorRoundState(current, 2);
+    expect(priorToFinal).toEqual(draw(['a', 'c']));
+
+    const submissions = [
+      submission('one', 1, 'a'), // correct every round, including the final.
+      submission('two', 2, 'c'), // correct through the semis, wrong on the final (picked 'c', not 'a').
+    ];
+    const facts = deriveDrawRecapFacts(current, priorToFinal, submissions, 2)!;
+    expect(facts.movements).toEqual(expect.arrayContaining([
+      expect.objectContaining({ participantId: 'one', previousRank: 1, rank: 1, movement: 0 }),
+      expect.objectContaining({ participantId: 'two', previousRank: 1, rank: 2, movement: -1 }),
+    ]));
+
+    // The bug this guards against: comparing round 2 against whatever accepted revision
+    // happened to precede it (here simulated by a missing/null previous, matching a first-ever
+    // computation with no earlier revision on record) silently drops every movement instead of
+    // reporting the real round-over-round change.
+    const withoutRoundBoundary = deriveDrawRecapFacts(current, null, submissions, 2)!;
+    expect(withoutRoundBoundary.movements).toEqual([]);
   });
 });
