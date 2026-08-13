@@ -4,7 +4,7 @@ import type {
   DrawRecapProjection,
   DrawRecapViewModel,
 } from '../shared/draw/contracts.js';
-import { deriveDrawRecapFacts, isDrawRecapFacts, type DrawRecapFacts } from './draw-recaps.js';
+import { deriveDrawRecapFacts, isCompletedRound, isDrawRecapFacts, type DrawRecapFacts } from './draw-recaps.js';
 import type { ScoringSubmission } from './draw-scoring.js';
 import { drawRecapFacts } from './schema.js';
 
@@ -86,14 +86,11 @@ export function resolveDrawRecapViewModel(
 }
 
 export async function readAndAdvanceDrawRecap(input: DrawRecapProjectionInput): Promise<DrawRecapProjection> {
+  // Cheap structural check first: whether a round is complete never requires deriving full recap
+  // facts (movements, rarest call, etc.), so only compute facts for rounds that actually need them.
   const completedRounds = input.currentDraw.rounds
-    .filter((round) => deriveDrawRecapFacts(
-      input.currentDraw,
-      input.previousDraw,
-      input.submissions,
-      round.round,
-    ))
-    .map((round) => round.round);
+    .map((round) => round.round)
+    .filter((round) => isCompletedRound(input.currentDraw, round));
   if (!completedRounds.length) return { state: 'none' };
 
   const existing = await input.database.select({
@@ -103,8 +100,10 @@ export async function readAndAdvanceDrawRecap(input: DrawRecapProjectionInput): 
     eq(drawRecapFacts.leagueId, input.leagueId),
     eq(drawRecapFacts.acceptedRevisionId, input.acceptedRevisionId),
   )).orderBy(desc(drawRecapFacts.round));
+  const existingByRound = new Map(existing.map((row) => [row.round, row.facts]));
+  const maxCompletedRound = Math.max(...completedRounds);
   const newest = existing[0];
-  if (newest && isDrawRecapFacts(newest.facts) && newest.round === Math.max(...completedRounds)) {
+  if (newest && isDrawRecapFacts(newest.facts) && newest.round === maxCompletedRound) {
     return {
       state: 'current',
       acceptedRevisionId: input.acceptedRevisionId,
@@ -112,7 +111,8 @@ export async function readAndAdvanceDrawRecap(input: DrawRecapProjectionInput): 
     };
   }
 
-  for (const round of completedRounds) {
+  const missingRounds = completedRounds.filter((round) => !existingByRound.has(round));
+  for (const round of missingRounds) {
     const facts = deriveDrawRecapFacts(input.currentDraw, input.previousDraw, input.submissions, round);
     if (!facts) continue;
     await input.database.insert(drawRecapFacts).values({

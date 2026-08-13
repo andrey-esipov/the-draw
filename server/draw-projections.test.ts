@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { Draw } from '../shared/draw/contracts.js';
+import * as drawRecaps from './draw-recaps.js';
 import { isDrawRecapFacts, type DrawRecapFacts } from './draw-recaps.js';
 import { readAndAdvanceDrawRecap, resolveDrawRecapViewModel } from './draw-projections.js';
 import { drawAcceptedRevisions, drawEvents, drawLeagues, drawRecapFacts } from './schema.js';
@@ -37,7 +38,123 @@ function completedDraw(): Draw {
   };
 }
 
+function twoRoundDraw(round2Decided: boolean): Draw {
+  return {
+    id: 'draw',
+    tournament: 'Fixture',
+    year: 2026,
+    event: 'Singles',
+    surface: 'Hard',
+    venue: 'Court',
+    city: 'City',
+    bestOf: 3,
+    source: { wikipedia: 'Fixture', url: 'https://example.test' },
+    players: {
+      a: { id: 'a', name: 'A Player', short: 'A', country: null, seed: null },
+      b: { id: 'b', name: 'B Player', short: 'B', country: null, seed: null },
+      c: { id: 'c', name: 'C Player', short: 'C', country: null, seed: null },
+      d: { id: 'd', name: 'D Player', short: 'D', country: null, seed: null },
+    },
+    rounds: [
+      {
+        round: 1,
+        name: 'Semifinal',
+        matches: [
+          {
+            id: 'r1m1', round: 1, position: 0,
+            sides: ['a', 'b'].map((player) => ({ player, seed: null, sets: [] })),
+            winner: 'a', terminal: 'completed',
+          },
+          {
+            id: 'r1m2', round: 1, position: 1,
+            sides: ['c', 'd'].map((player) => ({ player, seed: null, sets: [] })),
+            winner: 'c', terminal: 'completed',
+          },
+        ],
+      },
+      {
+        round: 2,
+        name: 'Final',
+        matches: [{
+          id: 'r2m1', round: 2, position: 0,
+          sides: ['a', 'c'].map((player) => ({ player, seed: null, sets: [] })),
+          winner: round2Decided ? 'a' : null,
+          terminal: round2Decided ? 'completed' : undefined,
+        }],
+      },
+    ],
+  };
+}
+
 describe('recap persistence and read projection', () => {
+  it('does not recompute already-cached rounds when a later round newly completes (cache-hit perf guard)', () => withDb(async (database) => {
+    const draw1 = twoRoundDraw(false);
+    const [event] = await database.insert(drawEvents).values({
+      slug: 'fixture-2r',
+      drawId: 'fixture-2r',
+      tournament: 'Fixture',
+      tournamentYear: 2026,
+      eventKind: 'mens_singles',
+      surface: 'Hard',
+      venue: 'Court',
+      city: 'City',
+      sourcePage: 'https://example.test/draw',
+      lockAt: new Date('2026-08-01T00:00:00Z'),
+      completesAt: new Date('2026-09-01T00:00:00Z'),
+    }).returning();
+    const [revision] = await database.insert(drawAcceptedRevisions).values({
+      eventId: event!.id,
+      sourceRevisionId: '1',
+      checksum: '1'.repeat(64),
+      fetchedAt: new Date('2026-08-01T00:00:00Z'),
+      acceptedAt: new Date('2026-08-01T00:01:00Z'),
+      parserVersion: 'u8',
+      payload: { draw: draw1 },
+      explicitCorrections: [],
+      complete: false,
+    }).returning();
+    const [league] = await database.insert(drawLeagues).values({
+      eventId: event!.id,
+      name: 'Private names',
+      expiresAt: new Date('2026-10-01T00:00:00Z'),
+    }).returning();
+    const base = {
+      database,
+      leagueId: league!.id,
+      leagueName: league!.name,
+      eventId: event!.id,
+      eventLabel: 'Fixture 2026',
+      acceptedRevisionId: revision!.id,
+      sourceRevisionId: '1',
+      acceptedAt: '2026-08-01T00:01:00.000Z',
+      sourceFreshness: 'current' as const,
+      correctionReplay: 'not_needed' as const,
+      delayReason: null,
+      previousDraw: null,
+      submissions: [],
+      participants: [{ id: 'person', displayName: 'Private Name', removed: false }],
+    };
+    const deriveSpy = vi.spyOn(drawRecaps, 'deriveDrawRecapFacts');
+
+    // Poll 1: only round 1 is complete.
+    expect(await readAndAdvanceDrawRecap({ ...base, currentDraw: draw1 })).toMatchObject({ state: 'updating' });
+    expect(deriveSpy).toHaveBeenCalledTimes(1);
+    expect(deriveSpy).toHaveBeenLastCalledWith(draw1, null, [], 1);
+    deriveSpy.mockClear();
+
+    // Poll 2: round 2 also completes now. Only the missing round (2) should be derived --
+    // round 1's already-cached facts must not be recomputed on every subsequent poll.
+    const draw2 = twoRoundDraw(true);
+    const result = await readAndAdvanceDrawRecap({ ...base, currentDraw: draw2 });
+    expect(result.state).toBe('updating');
+    expect(deriveSpy).toHaveBeenCalledTimes(1);
+    expect(deriveSpy).toHaveBeenCalledWith(draw2, null, [], 2);
+
+    const rows = await database.select().from(drawRecapFacts);
+    expect(rows.map((row) => row.round).sort()).toEqual([1, 2]);
+    deriveSpy.mockRestore();
+  }));
+
   it('appends once per accepted revision, returns updating before current, and preserves corrections', () => withDb(async (database) => {
     const draw = completedDraw();
     const [event] = await database.insert(drawEvents).values({
