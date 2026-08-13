@@ -4,7 +4,7 @@ import type {
   DrawRecapProjection,
   DrawRecapViewModel,
 } from '../shared/draw/contracts.js';
-import { deriveDrawRecapFacts, isCompletedRound, isDrawRecapFacts, priorRoundState, type DrawRecapFacts } from './draw-recaps.js';
+import { afterRoundState, deriveDrawRecapFacts, isCompletedRound, isDrawRecapFacts, priorRoundState, type DrawRecapFacts } from './draw-recaps.js';
 import type { ScoringSubmission } from './draw-scoring.js';
 import { drawRecapFacts } from './schema.js';
 
@@ -113,7 +113,7 @@ export async function readAndAdvanceDrawRecap(input: DrawRecapProjectionInput): 
   const missingRounds = completedRounds.filter((round) => !existingByRound.has(round));
   for (const round of missingRounds) {
     const facts = deriveDrawRecapFacts(
-      input.currentDraw,
+      afterRoundState(input.currentDraw, round),
       priorRoundState(input.currentDraw, round),
       input.submissions,
       round,

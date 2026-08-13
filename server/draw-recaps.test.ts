@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Draw } from '../shared/draw/contracts.js';
-import { completedRecapRounds, deriveDrawRecapFacts, priorRoundState } from './draw-recaps.js';
+import { afterRoundState, completedRecapRounds, deriveDrawRecapFacts, priorRoundState } from './draw-recaps.js';
 import type { ScoringSubmission } from './draw-scoring.js';
 
 function draw(roundOne: Array<string | null>, final: string | null = null): Draw {
@@ -138,5 +138,25 @@ describe('completed-round recap derivation', () => {
     // reporting the real round-over-round change.
     const withoutRoundBoundary = deriveDrawRecapFacts(current, null, submissions, 2)!;
     expect(withoutRoundBoundary.movements).toEqual([]);
+  });
+
+  it('bounds the round-1 recap to round-1 results even after later rounds have since completed', () => {
+    // Regression: readAndAdvanceDrawRecap can catch up several completed rounds in one pass
+    // (e.g. after a backfill), deriving round 1's recap facts once round 2 has *also* already
+    // completed. Passing the unbounded, fully-current draw as `current` lets round-1 facts leak
+    // round-2 outcomes -- a champion pick that is still alive as of round 1 (round 2 hasn't been
+    // recapped yet) is wrongly reported as already broken by round 2's real, later result.
+    const current = draw(['a', 'c'], 'a'); // round 1 decided (a, c advance); final decided: a wins.
+    const priorToRoundOne = priorRoundState(current, 1); // nothing decided yet.
+    const submissions = [
+      submission('one', 1, 'a'), // champion pick 'a' -- the eventual, real winner.
+      submission('two', 2, 'c'), // champion pick 'c' -- correct through round 1, eliminated in round 2's final.
+    ];
+
+    const leaked = deriveDrawRecapFacts(current, priorToRoundOne, submissions, 1)!;
+    expect(leaked.survivingChampions.map((entry) => entry.participantId)).not.toContain('two');
+
+    const bounded = deriveDrawRecapFacts(afterRoundState(current, 1), priorToRoundOne, submissions, 1)!;
+    expect(bounded.survivingChampions.map((entry) => entry.participantId).sort()).toEqual(['one', 'two']);
   });
 });

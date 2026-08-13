@@ -223,6 +223,44 @@ describe('Draw operations', () => {
     });
   });
 
+  it('stays readiness-relevant for an active event with canonical history whose polling is disabled', async () => {
+    // Regression: readinessRelevant used to be derived from pollingActive (which itself
+    // requires pollingEnabled), so an event that is still active (hasn't completed) but has
+    // had polling disabled -- an operator mistake, a misconfiguration, anything short of the
+    // tournament actually finishing -- could silently drop out of /api/ready even while it has
+    // canonical history and a genuinely unhealthy source state. Readiness relevance must be
+    // keyed on lifecycle (now vs. completesAt) alone, not on the polling flag.
+    await configureDrawEvent(base, { database, actor: 'andrey', reason: 'active-disabled-polling fixture' });
+    const [event] = await database.select().from(drawEvents).where(sql`slug = ${base.slug}`);
+    const revisionId = crypto.randomUUID();
+    await database.execute(sql`
+      INSERT INTO draw_accepted_revisions (
+        id, event_id, source_revision_id, checksum, fetched_at, accepted_at,
+        parser_version, payload, explicit_corrections, complete
+      ) VALUES (
+        ${revisionId}, ${event!.id}, '101', ${'a'.repeat(64)},
+        '2026-08-11T16:00:00Z', '2026-08-11T16:00:00Z', 'mediawiki-v1', '{}', '[]', true
+      )
+    `);
+    await database.execute(sql`
+      INSERT INTO draw_event_heads (event_id, accepted_revision_id, revision_accepted_at, advanced_at)
+      VALUES (${event!.id}, ${revisionId}, '2026-08-11T16:00:00Z', '2026-08-11T16:00:00Z')
+    `);
+    // pollingEnabled stays false (configureDrawEvent's default; never certified), and "now" is
+    // well before completesAt (2026-08-20T20:00:00Z) -- the event is still active.
+    await database.execute(sql`
+      UPDATE draw_events SET last_successful_at = '2026-08-11T16:00:00Z' WHERE slug = ${base.slug}
+    `);
+    const health = await drawSourceHealth(database, new Date('2026-08-15T00:00:00Z'));
+    expect(health.events[0]).toMatchObject({
+      state: 'stale',
+      pollingEnabled: false,
+      pollingActive: false,
+      readinessRelevant: true,
+      hasCanonicalAcceptedRevision: true,
+    });
+  });
+
   it('keeps free-text source and projection diagnostics out of public health', async () => {
     await configureDrawEvent(base, { database, actor: 'andrey', reason: 'health fixture' });
     await database.execute(sql`

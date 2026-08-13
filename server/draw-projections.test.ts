@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { Draw } from '../shared/draw/contracts.js';
 import * as drawRecaps from './draw-recaps.js';
-import { isDrawRecapFacts, priorRoundState, type DrawRecapFacts } from './draw-recaps.js';
+import { afterRoundState, isDrawRecapFacts, priorRoundState, type DrawRecapFacts } from './draw-recaps.js';
 import { readAndAdvanceDrawRecap, resolveDrawRecapViewModel } from './draw-projections.js';
 import { drawAcceptedRevisions, drawEvents, drawLeagues, drawRecapFacts } from './schema.js';
 import { useTestDb as setupTestDb } from './test-pglite.js';
@@ -138,7 +138,7 @@ describe('recap persistence and read projection', () => {
     // Poll 1: only round 1 is complete.
     expect(await readAndAdvanceDrawRecap({ ...base, currentDraw: draw1 })).toMatchObject({ state: 'updating' });
     expect(deriveSpy).toHaveBeenCalledTimes(1);
-    expect(deriveSpy).toHaveBeenLastCalledWith(draw1, priorRoundState(draw1, 1), [], 1);
+    expect(deriveSpy).toHaveBeenLastCalledWith(afterRoundState(draw1, 1), priorRoundState(draw1, 1), [], 1);
     deriveSpy.mockClear();
 
     // Poll 2: round 2 also completes now. Only the missing round (2) should be derived --
@@ -149,12 +149,16 @@ describe('recap persistence and read projection', () => {
     const result = await readAndAdvanceDrawRecap({ ...base, currentDraw: draw2 });
     expect(result.state).toBe('updating');
     expect(deriveSpy).toHaveBeenCalledTimes(1);
-    expect(deriveSpy).toHaveBeenCalledWith(draw2, priorRoundState(draw2, 2), [], 2);
+    expect(deriveSpy).toHaveBeenCalledWith(afterRoundState(draw2, 2), priorRoundState(draw2, 2), [], 2);
     // The synthesized round-2 "previous" must carry round 1's real result forward and mask
     // round 2 back to undecided -- i.e. behave like round 1's own completed state, not like
     // whatever accepted revision happened to precede this poll.
     expect(priorRoundState(draw2, 2).rounds[0]).toEqual(draw1.rounds[0]);
     expect(priorRoundState(draw2, 2).rounds[1]!.matches[0]).toMatchObject({ winner: null, terminal: 'incomplete' });
+    // The round-2 "current" must not be the fully-unbounded current draw either -- for the
+    // final round this happens to already equal draw2 (no later rounds exist to mask), but the
+    // call must go through afterRoundState so any later round would be masked out.
+    expect(afterRoundState(draw2, 2).rounds[1]!.matches[0]).toMatchObject({ winner: 'a', terminal: 'completed' });
 
     const rows = await database.select().from(drawRecapFacts);
     expect(rows.map((row) => row.round).sort()).toEqual([1, 2]);

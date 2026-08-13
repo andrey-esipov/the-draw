@@ -311,14 +311,21 @@ export async function drawSourceHealth(
       else if (!event.lastSuccessfulAt) state = 'never_fetched';
       else if (freshnessAgeMs !== null && freshnessAgeMs > DRAW_FRESHNESS_TARGET_MS) state = 'stale';
       else state = 'current';
-      // Once an event's lifecycle has completed (now > completesAt) and stopped being
-      // actively polled, its freshness/staleness is historical, not a live-production
-      // concern — a finished tournament must not keep failing readiness forever. An event
-      // that completed without ever acquiring canonical history is still a real problem,
-      // so it stays readiness-relevant regardless of lifecycle state.
+      // Once an event's lifecycle has completed (now > completesAt), its freshness/staleness
+      // is historical, not a live-production concern — a finished tournament must not keep
+      // failing readiness forever. An event that completed without ever acquiring canonical
+      // history is still a real problem, so it stays readiness-relevant regardless of
+      // lifecycle state. Readiness relevance is intentionally keyed on lifecycle (now vs.
+      // completesAt) alone, NOT on the operator's pollingEnabled flag: an event that is still
+      // active (hasn't completed) but has had polling disabled -- misconfiguration, an
+      // operator mistake, anything short of the tournament actually finishing -- must keep
+      // failing readiness if its source health is unhealthy, not be silently excluded because
+      // polling happens to be off. pollingActive stays a separate, purely descriptive signal
+      // of whether polling is both enabled and within the active lifecycle window.
       const hasCanonicalAcceptedRevision = Boolean(sourceRevisionId);
-      const pollingActive = event.pollingEnabled && now <= event.completesAt;
-      const readinessRelevant = pollingActive || !hasCanonicalAcceptedRevision;
+      const lifecycleActive = now <= event.completesAt;
+      const pollingActive = event.pollingEnabled && lifecycleActive;
+      const readinessRelevant = lifecycleActive || !hasCanonicalAcceptedRevision;
       return {
         id: event.id,
         slug: event.slug,

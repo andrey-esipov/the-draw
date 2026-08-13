@@ -69,6 +69,30 @@ export function priorRoundState(draw: Draw, round: number): Draw {
   };
 }
 
+// The mirror of priorRoundState: "the draw as it stood immediately after `round` finished,"
+// masking every later round back to incomplete while leaving `round` and everything earlier
+// intact. deriveDrawRecapFacts scores submissions and evaluates champion state against
+// whichever draw is passed as `current`, so passing the unmasked, fully-current draw lets a
+// round-N recap leak later-round outcomes -- movements/ranks reflect the tournament's present
+// score rather than the score as of round N, and survivingChampions can show a champion pick
+// as already eliminated by a round that hasn't even been recapped yet. Bounding `current` to
+// afterRoundState(draw, round) fixes this: it does not affect the highest-impact-miss
+// "lost future points" calculation, which only needs later rounds' match ids/positions (to
+// know a submission still had a live pick there), not their real outcomes.
+export function afterRoundState(draw: Draw, round: number): Draw {
+  return {
+    ...draw,
+    rounds: draw.rounds.map((entry) => (
+      entry.round <= round
+        ? entry
+        : {
+          ...entry,
+          matches: entry.matches.map((match) => ({ ...match, winner: null, terminal: 'incomplete' as const })),
+        }
+    )),
+  };
+}
+
 function picks(submission: ScoringSubmission): Record<string, string> {
   return submission.picks && typeof submission.picks === 'object' && !Array.isArray(submission.picks)
     ? submission.picks as Record<string, string>
