@@ -1,6 +1,6 @@
 import { createHash, createHmac } from 'node:crypto';
 import { and, asc, desc, eq, inArray, lt, max, sql } from 'drizzle-orm';
-import type { AcceptedDrawRevision, Draw } from '../shared/draw/contracts.js';
+import type { AcceptedDrawRevision, Draw, DrawEventKind, DrawParticipantAccess } from '../shared/draw/contracts.js';
 import { downstreamMatchIds, drawMatches } from '../shared/draw/validation.js';
 import { deriveStandings, type ScoringSubmission } from './draw-scoring.js';
 import { readAndAdvanceDrawRecap } from './draw-projections.js';
@@ -693,7 +693,7 @@ export async function submitDrawBracket(
 export async function readDrawLeague(
   capability: Capability & { participantId: string },
   dependencies: Dependencies,
-) {
+): Promise<DrawParticipantAccess> {
   const database = dependencies.database ?? db;
   const now = dependencies.now?.() ?? new Date();
   const owner = await leagueParticipant(capability, database, now);
@@ -711,7 +711,7 @@ export async function readDrawLeague(
       id: owner.league.id,
       name: owner.league.name,
       eventSlug: owner.event.slug,
-      eventKind: owner.event.eventKind,
+      eventKind: owner.event.eventKind as DrawEventKind,
       lockAt: owner.event.lockAt.toISOString(),
       revealed,
     },
@@ -854,18 +854,22 @@ export async function readDrawLeague(
       displayName: participant.displayName,
       removed: Boolean(participant.removedAt),
     })),
-  }).catch(() => ({
-    state: 'updating' as const,
-    acceptedRevisionId: canonical.revision.id,
-  }));
-  const scoredIds = new Set(standings.map((standing) => standing.participantId));
+  }).catch((error) => {
+    // A genuine DB/projection failure here must never be indistinguishable from the normal
+    // "still computing" state -- that hides a real outage behind a success-shaped fallback.
+    // Log it (mirroring drawAnalyticsFailure's pattern) and surface a distinct, truthful
+    // "unavailable" recap state instead of a fabricated 'updating'.
+    console.error(`[draw-recap] projection_failed league=${owner.league.id} revision=${canonical.revision.id}`, error);
+    return { state: 'unavailable' as const, acceptedRevisionId: canonical.revision.id };
+  });
+  const submittedIds = new Set(scoringSubmissions.map((submission) => submission.participantId));
   return {
     ...base,
     viewer: {
       draft: { exists: false, version: 0, pickCount: 0 },
       submission: {
-        active: scoredIds.has(owner.participant.id),
-        complete: scoredIds.has(owner.participant.id),
+        active: submittedIds.has(owner.participant.id),
+        complete: submittedIds.has(owner.participant.id),
       },
     },
     projection: {
@@ -892,7 +896,7 @@ export async function readDrawLeague(
         seat: participant.seat,
         displayName: participant.removedAt ? 'Removed player' : participant.displayName,
         removed: Boolean(participant.removedAt),
-        submitted: scoredIds.has(participant.id),
+        submitted: submittedIds.has(participant.id),
       })),
       recap,
     },

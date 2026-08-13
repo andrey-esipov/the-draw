@@ -18,12 +18,13 @@ const stateCopy: Record<DrawPathState, { mark: string; label: string }> = {
   broken: { mark: '×', label: 'Broken' },
   unresolved: { mark: '○', label: 'Unresolved' },
   'changed-opponent': { mark: '◇', label: 'Advanced, opponent changed' },
+  withdrawn: { mark: '⊘', label: 'Player withdrawn, unscorable' },
 };
 
 function defaultRound(standing: DrawLeagueStanding | null): number | null {
   if (!standing?.path.length) return null;
   const attentionRound = standing.path
-    .filter((step) => step.state === 'unresolved' || step.state === 'changed-opponent')
+    .filter((step) => step.state === 'unresolved' || step.state === 'changed-opponent' || step.state === 'withdrawn')
     .reduce<number | null>((earliest, step) => earliest === null ? step.round : Math.min(earliest, step.round), null);
   return attentionRound ?? Math.max(...standing.path.map((step) => step.round));
 }
@@ -167,6 +168,7 @@ export function LeagueStandings({
                             </span>
                           )}
                           {!standing && <small>No submitted bracket</small>}
+                          {standing?.unscorable && <small className="standing-unscorable">Partial score · a pick is unscorable (player withdrawn)</small>}
                         </th>
                         <td>{standing?.score ?? '—'}</td>
                         <td>{standing?.maxPossible ?? '—'}</td>
@@ -194,12 +196,15 @@ export function LeagueStandings({
                 <p>{selected.participantId === viewerParticipantId ? 'Your submitted path' : 'Submitted path'}</p>
                 <h2 id="path-title" ref={pathTitleRef} tabIndex={-1}>{safeLiteralText(selected.displayName, 60)}</h2>
                 <span>{selected.score} points · {selected.maxPossible}-point ceiling</span>
+                {selected.unscorable && (
+                  <span className="standing-unscorable">A withdrawn player made one pick unscorable; other rounds still score normally.</span>
+                )}
               </header>
               {rounds.length > 0 && (
                 <nav className="path-rounds" aria-label="Submitted path rounds">
                   <div className="path-rounds-scroll" ref={roundNavRef}>
                     {rounds.map(({ round, name, steps }) => {
-                      const attentionCount = steps.filter((step) => step.state === 'unresolved' || step.state === 'changed-opponent').length;
+                      const attentionCount = steps.filter((step) => step.state === 'unresolved' || step.state === 'changed-opponent' || step.state === 'withdrawn').length;
                       const aliveCount = steps.filter((step) => step.state === 'alive').length;
                       const brokenCount = steps.filter((step) => step.state === 'broken').length;
                       const status = attentionCount > 0

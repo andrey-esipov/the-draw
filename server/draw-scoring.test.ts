@@ -42,13 +42,37 @@ describe('canonical draw scoring', () => {
     expect(result.path[4]).toMatchObject({ points: 16, state: 'changed-opponent', predictedOpponentId: 'b', acceptedOpponentId: 'c' });
   });
 
-  it('withholds a submission whose predicted player no longer exists in the canonical draw', () => {
-    const submitted = draw([null]);
+  it('withholds only the still-undecided pick affected by a withdrawal, keeping already-decided rounds scored', () => {
+    const submitted = draw([null, null]);
     const stale = submission(submitted);
+    stale.picks = { r1m1: 'a', r2m1: 'a' };
+    // 'a' actually won round 1 (a decided, historical fact) then withdrew before round 2 was played.
+    const canonical = draw(['a', null]);
+    delete canonical.players.a;
+    const result = scoreSubmission(canonical, stale)!;
+    expect(result).not.toBeNull();
+    expect(result.unscorable).toBe(true);
+    expect(result.path[0]).toMatchObject({ matchId: 'r1m1', state: 'alive', predictedWinnerId: 'a' });
+    expect(result.path[1]).toMatchObject({ matchId: 'r2m1', state: 'withdrawn', predictedWinnerId: 'a' });
+    expect(result.score).toBe(1);
+    expect(result.maxPossible).toBe(1);
+    expect(result.correctByRound).toEqual([1, 0]);
+  });
+
+  it('reports unscorable: false and a real submission for ordinary scored brackets', () => {
+    const source = draw(Array(7).fill(null));
+    expect(scoreSubmission(draw(Array(7).fill('a')), submission(source))?.unscorable).toBe(false);
+  });
+
+  it('still includes a withdrawn-affected submission in standings rather than dropping it', () => {
+    const submitted = draw([null]);
+    const stale = submission(submitted, 'withdrawn-participant');
     stale.picks = { r1m1: 'b' };
     const canonical = draw([null], 'c');
     delete canonical.players.b;
-    expect(scoreSubmission(canonical, stale)).toBeNull();
+    const standings = deriveStandings(canonical, [stale]);
+    expect(standings).toHaveLength(1);
+    expect(standings[0]).toMatchObject({ participantId: 'withdrawn-participant', unscorable: true, score: 0 });
   });
 
   it.each(['retirement', 'walkover'] as const)('scores a %s only when it names a winner', (terminal) => {

@@ -37,7 +37,7 @@ function terminalWinner(match: Draw['rounds'][number]['matches'][number]): strin
     : null;
 }
 
-function isCompletedRound(draw: Draw, round: number): boolean {
+export function isCompletedRound(draw: Draw, round: number): boolean {
   const matches = draw.rounds.find((candidate) => candidate.round === round)?.matches ?? [];
   return matches.length > 0 && matches.every((match) => terminalWinner(match));
 }

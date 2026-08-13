@@ -205,6 +205,7 @@ function previewProjection(draw: Draw, state: PreviewState): DrawLeagueProjectio
       score: scores[index] ?? 42,
       maxPossible: (scores[index] ?? 42) + 64 - index * 7,
       movement: [1, -1, 0][index] ?? 0,
+      unscorable: false,
       champion: {
         playerId: championId,
         playerName: draw.players[championId]!.name,

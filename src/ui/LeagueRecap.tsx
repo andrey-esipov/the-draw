@@ -24,6 +24,16 @@ export function LeagueRecap({ recap }: Props) {
   );
 
   if (recap.state === 'none') return null;
+  if (recap.state === 'unavailable') {
+    return (
+      <section className="round-paper is-unavailable" aria-live="polite">
+        <p className="round-paper-edition">Round paper · unavailable</p>
+        <h2>This round&rsquo;s recap could not be computed</h2>
+        <p>Standings above still reflect the accepted revision. Try reloading in a moment.</p>
+        <code>Accepted revision {recap.acceptedRevisionId.slice(0, 12)}</code>
+      </section>
+    );
+  }
   if (recap.state === 'updating') {
     return (
       <section className="round-paper is-updating" aria-live="polite" aria-busy="true">

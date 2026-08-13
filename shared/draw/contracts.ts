@@ -126,7 +126,7 @@ export interface DrawParticipantAccess {
   projection: DrawLeagueProjection | null;
 }
 
-export type DrawPathState = 'alive' | 'broken' | 'unresolved' | 'changed-opponent';
+export type DrawPathState = 'alive' | 'broken' | 'unresolved' | 'changed-opponent' | 'withdrawn';
 export type DrawChampionState = 'alive' | 'broken' | 'unresolved';
 
 export interface DrawPathStepProjection {
@@ -155,6 +155,7 @@ export interface DrawLeagueStanding {
   score: number;
   maxPossible: number;
   movement: number | null;
+  unscorable: boolean;
   champion: {
     playerId: string;
     playerName: string;
@@ -253,4 +254,5 @@ export interface DrawRecapViewModel {
 export type DrawRecapProjection =
   | { state: 'none' }
   | { state: 'updating'; acceptedRevisionId: string }
+  | { state: 'unavailable'; acceptedRevisionId: string }
   | { state: 'current'; acceptedRevisionId: string; viewModel: DrawRecapViewModel };

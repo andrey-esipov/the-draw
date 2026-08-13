@@ -57,6 +57,14 @@ describe('round paper', () => {
     expect(screen.queryByRole('button', { name: /Download/ })).toBeNull();
   });
 
+  it('shows a distinct unavailable state instead of pretending recap is still updating', () => {
+    render(<LeagueRecap recap={{ state: 'unavailable', acceptedRevisionId: 'new-revision' }} />);
+    expect(screen.getByRole('heading', { name: /could not be computed/ })).toBeTruthy();
+    expect(screen.getByText(/new-revision/)).toBeTruthy();
+    expect(screen.queryByText(/Rebuilding this round/)).toBeNull();
+    expect(screen.queryByRole('button', { name: /Download/ })).toBeNull();
+  });
+
   it('exports only after explicit keyboard action and keeps retry on failure', async () => {
     const download = vi.spyOn(recapExport, 'downloadRecapPng')
       .mockRejectedValueOnce(new recapExport.RecapExportError('encode_failed'))

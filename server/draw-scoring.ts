@@ -121,10 +121,13 @@ export function scoreSubmission(canonicalDraw: Draw, submission: ScoringSubmissi
   const picks = asCompletePicks(submission.submittedDraw, submission.picks);
   if (!picks) return null;
   const canonicalMatchIds = new Set(allMatches(canonicalDraw).map((match) => match.id));
-  if (
-    allMatches(submission.submittedDraw).some((match) => !canonicalMatchIds.has(match.id))
-    || Object.values(picks).some((playerId) => !canonicalDraw.players[playerId])
-  ) return null;
+  if (allMatches(submission.submittedDraw).some((match) => !canonicalMatchIds.has(match.id))) return null;
+  // A structural revision (e.g. a pre-lock withdrawal replaced by a lucky loser) can leave one or
+  // more picked player IDs absent from the canonical roster. That makes only those specific picks
+  // unscorable -- it must not null out an otherwise-valid submission and hide it from standings.
+  const withdrawnPickedIds = new Set(
+    Object.values(picks).filter((playerId) => !canonicalDraw.players[playerId]),
+  );
   const eliminated = new Set<string>();
   for (const match of allMatches(canonicalDraw)) {
     const winner = terminalWinner(match);
@@ -133,6 +136,7 @@ export function scoreSubmission(canonicalDraw: Draw, submission: ScoringSubmissi
   }
   let score = 0;
   let maxPossible = 0;
+  let hasUnscorablePick = false;
   const correctByRound = canonicalDraw.rounds.map(() => 0);
   const path: DrawPathStepProjection[] = [];
   for (const round of canonicalDraw.rounds) {
@@ -142,13 +146,20 @@ export function scoreSubmission(canonicalDraw: Draw, submission: ScoringSubmissi
       const entrants = predictedEntrants(submission.submittedDraw, picks, match);
       const predictedOpponent = entrants.find((id) => id !== predictedWinner) ?? null;
       const winner = terminalWinner(match);
-      const state = pathState(match, predictedWinner, predictedOpponent);
+      // Only an undecided match can be made unscorable by a withdrawal: once a match has a real,
+      // decided winner, whether the predicted player is still in the current roster afterward is
+      // irrelevant to whether that decided outcome was predicted correctly.
+      const predictedWithdrawn = !winner && withdrawnPickedIds.has(predictedWinner);
+      if (predictedWithdrawn) hasUnscorablePick = true;
+      const state = predictedWithdrawn ? 'withdrawn' : pathState(match, predictedWinner, predictedOpponent);
       const points = pointsForRound(round.round);
-      if (winner === predictedWinner) {
-        score += points;
-        correctByRound[round.round - 1] = (correctByRound[round.round - 1] ?? 0) + 1;
-      } else if (!winner && !eliminated.has(predictedWinner)) {
-        maxPossible += points;
+      if (!predictedWithdrawn) {
+        if (winner === predictedWinner) {
+          score += points;
+          correctByRound[round.round - 1] = (correctByRound[round.round - 1] ?? 0) + 1;
+        } else if (!winner && !eliminated.has(predictedWinner)) {
+          maxPossible += points;
+        }
       }
       const acceptedOpponent = winner
         ? match.sides.find((side) => side.player !== winner)?.player ?? null
@@ -180,6 +191,7 @@ export function scoreSubmission(canonicalDraw: Draw, submission: ScoringSubmissi
     score,
     maxPossible: score + maxPossible,
     movement: null,
+    unscorable: hasUnscorablePick,
     champion: {
       playerId: championId ?? '',
       playerName: name(submission.submittedDraw, championId ?? null) ?? 'Unavailable',

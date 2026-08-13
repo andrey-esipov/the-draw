@@ -8,7 +8,7 @@ afterEach(cleanup);
 
 const states: DrawPathState[] = ['alive', 'broken', 'unresolved', 'changed-opponent'];
 
-function standing(participantId: string, seat: number, rank: number): DrawLeagueStanding {
+function standing(participantId: string, seat: number, rank: number, unscorable = false): DrawLeagueStanding {
   return {
     participantId,
     seat,
@@ -19,6 +19,7 @@ function standing(participantId: string, seat: number, rank: number): DrawLeague
     score: 17,
     maxPossible: 81,
     movement: null,
+    unscorable,
     champion: { playerId: 'a', playerName: 'A. Player', state: participantId === 'you' ? 'alive' : 'broken' },
     correctByRound: [1, 0, 0, 1, 0, 0, 0],
     submission: { version: 1, checksum: 'a'.repeat(64), picks: { r1m1: 'a' } },
@@ -162,5 +163,28 @@ describe('post-lock league standings', () => {
     expect(screen.getByRole('heading', { name: 'No submitted brackets' })).toBeTruthy();
     expect(screen.getByText(/Incomplete drafts stayed private/)).toBeTruthy();
     expect(screen.queryByText(/r1m1/)).toBeNull();
+  });
+
+  it('shows an unscorable submission truthfully instead of hiding it as "no submitted bracket"', () => {
+    const affected = standing('you', 1, 1, true);
+    affected.path = affected.path.map((step, index) => (
+      index === 2 ? { ...step, state: 'withdrawn' as const, acceptedWinnerId: null, acceptedWinnerName: null } : step
+    ));
+    render(<LeagueStandings
+      leagueName="Friends"
+      eventKind="mens_singles"
+      viewerParticipantId="you"
+      participantCount={1}
+      projection={projection({
+        standings: [affected],
+        participants: [{ id: 'you', seat: 1, displayName: 'Andrey', removed: false, submitted: true }],
+      })}
+    />);
+    expect(screen.queryByText('No submitted bracket')).toBeNull();
+    expect(screen.getByText(/Partial score · a pick is unscorable/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Andrey/ }));
+    expect(screen.getByText(/A withdrawn player made one pick unscorable/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Round 3, 1 match/ }));
+    expect(screen.getByText(/Player withdrawn, unscorable/)).toBeTruthy();
   });
 });

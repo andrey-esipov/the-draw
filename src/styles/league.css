@@ -568,7 +568,8 @@
 }
 
 .round-paper footer,
-.round-paper.is-updating code {
+.round-paper.is-updating code,
+.round-paper.is-unavailable code {
   display: block;
   margin-top: 24px;
   color: var(--league-muted);
@@ -586,20 +587,27 @@
   margin-top: 4px;
 }
 
-.round-paper.is-updating {
+.round-paper.is-updating,
+.round-paper.is-unavailable {
   max-width: 1440px;
 }
 
-.round-paper.is-updating h2 {
+.round-paper.is-updating h2,
+.round-paper.is-unavailable h2 {
   max-width: 22ch;
   font-size: clamp(30px, 4vw, 52px);
 }
 
-.round-paper.is-updating > p:not(.round-paper-edition) {
+.round-paper.is-updating > p:not(.round-paper-edition),
+.round-paper.is-unavailable > p:not(.round-paper-edition) {
   max-width: 64ch;
   margin-top: 16px;
   color: var(--league-muted);
   line-height: 1.5;
+}
+
+.round-paper.is-unavailable h2 {
+  color: #ffd0c7;
 }
 
 .clubhouse-layout {
@@ -887,6 +895,17 @@
 .submitted-path li.is-broken strong {
   color: var(--league-muted);
   text-decoration: line-through;
+}
+
+.submitted-path li.is-withdrawn strong {
+  color: #ffd0c7;
+  text-decoration: line-through;
+}
+
+.standing-unscorable {
+  display: block;
+  margin-top: 4px;
+  color: #ffd0c7;
 }
 
 .path-empty,

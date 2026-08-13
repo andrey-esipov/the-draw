@@ -17,6 +17,7 @@ import {
   submitDrawBracket,
 } from './draw-leagues.js';
 import { processNextDrawEmail } from './draw-email-outbox.js';
+import * as drawProjections from './draw-projections.js';
 import {
   drawAcceptedRevisions,
   drawActiveSubmissions,
@@ -553,6 +554,20 @@ describe('Draw league capability service over migrated PGlite', () => {
       removed: true,
       submitted: false,
     });
+  }));
+
+  it('surfaces a distinct unavailable recap state instead of a fake updating state on projection failure', () => withDb(async (database) => {
+    const state = await createdLeague(database);
+    const other = { leagueId: state.league.id, participantId: state.participant.id, generation: 0 };
+    const spy = vi.spyOn(drawProjections, 'readAndAdvanceDrawRecap').mockRejectedValueOnce(new Error('boom'));
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const revealed = await readDrawLeague(other, { database, secret, now: () => atLock });
+    expect(revealed.projection?.recap).toMatchObject({ state: 'unavailable', acceptedRevisionId: state.revision.id });
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('projection_failed'), expect.any(Error));
+    spy.mockRestore();
+    errorSpy.mockRestore();
+    const recovered = await readDrawLeague(other, { database, secret, now: () => atLock });
+    expect(recovered.projection?.recap.state).not.toBe('unavailable');
   }));
 
   it('makes email states explicit, deduplicates, and preserves the participant capability', () => withDb(async (database) => {
