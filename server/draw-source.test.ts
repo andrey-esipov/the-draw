@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import type { Draw, DrawSourceRevisionInput } from '../shared/draw/contracts.js';
-import { parseMediaWikiRevision } from './draw-source.js';
+import { drawEventSourceIdentityConfigured, parseMediaWikiRevision } from './draw-source.js';
 
 const fixtures = resolve(process.cwd(), 'tools/fixtures/mediawiki');
 const oracle = JSON.parse(
@@ -257,5 +257,32 @@ describe('MediaWiki draw source qualification', () => {
     expect(sharedSource).not.toMatch(/from ['"](?:react|react-dom|.*server\/|.*draw\/src)/);
     expect(serverSource).not.toMatch(/from ['"].*draw\/src/);
     expect(drawTypes).not.toMatch(/from ['"].*server\//);
+  });
+
+  describe('drawEventSourceIdentityConfigured', () => {
+    const real = { surface: 'Grass', venue: 'All England Club', city: 'London' };
+
+    it('is unconfigured when any placeholder field is still the operator-pending sentinel', () => {
+      expect(drawEventSourceIdentityConfigured(real)).toBe(true);
+      expect(drawEventSourceIdentityConfigured({ ...real, surface: 'Unknown' })).toBe(false);
+      expect(drawEventSourceIdentityConfigured({ ...real, venue: 'Unconfigured' })).toBe(false);
+      expect(drawEventSourceIdentityConfigured({ ...real, city: 'Unconfigured' })).toBe(false);
+    });
+
+    it('is the single source of truth both operator actions and the poller rely on', () => {
+      // Item 13 parity guard: draw-operations.ts (certification, flag toggles) and
+      // draw-ingestion.ts (the polling worker) must both call this shared helper
+      // instead of re-implementing the surface/venue/city sentinel check inline,
+      // so the two call sites cannot drift out of sync with each other.
+      const operationsSource = readFileSync(resolve(process.cwd(), 'server/draw-operations.ts'), 'utf8');
+      const ingestionSource = readFileSync(resolve(process.cwd(), 'server/draw-ingestion.ts'), 'utf8');
+
+      expect(operationsSource).toMatch(/import\s*\{[^}]*\bdrawEventSourceIdentityConfigured\b[^}]*\}\s*from\s*['"]\.\/draw-source\.js['"]/);
+      expect(ingestionSource).toMatch(/import\s*\{[^}]*\bdrawEventSourceIdentityConfigured\b[^}]*\}\s*from\s*['"]\.\/draw-source\.js['"]/);
+
+      // Neither call site should still carry its own inline copy of the sentinel check.
+      expect(operationsSource).not.toMatch(/===\s*['"]Unknown['"]\s*\n?\s*\|\|/);
+      expect(ingestionSource).not.toMatch(/===\s*['"]Unknown['"]\s*\n?\s*\|\|/);
+    });
   });
 });

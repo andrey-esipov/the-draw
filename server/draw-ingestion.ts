@@ -16,7 +16,12 @@ import {
   DRAW_SOURCE_WORKER_ENABLED,
 } from './env.js';
 import { reconcileDrawRevision } from './draw-reconciliation.js';
-import { DRAW_PARSER_VERSION, MAX_WIKITEXT_BYTES, parseMediaWikiRevision } from './draw-source.js';
+import {
+  DRAW_PARSER_VERSION,
+  drawEventSourceIdentityConfigured,
+  MAX_WIKITEXT_BYTES,
+  parseMediaWikiRevision,
+} from './draw-source.js';
 import {
   drawAcceptedRevisions,
   drawEventHeads,
@@ -450,11 +455,7 @@ export async function pollDrawEvent(
     if (!event || !event.pollingEnabled || now < event.createdAt || now > event.completesAt) {
       return { eventId, state: 'skipped' };
     }
-    if (
-      event.surface === 'Unknown'
-      || event.venue === 'Unconfigured'
-      || event.city === 'Unconfigured'
-    ) {
+    if (!drawEventSourceIdentityConfigured(event)) {
       throw sourceFailure('source_identity_unconfigured', 'event source identity requires operator configuration');
     }
     const title = pageTitle(event.sourcePage);

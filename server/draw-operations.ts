@@ -5,7 +5,7 @@ import {
   DRAW_SOURCE_WORKER_ENABLED,
   DRAW_LEAGUE_MUTATIONS_ENABLED,
 } from './env.js';
-import { DRAW_PARSER_VERSION } from './draw-source.js';
+import { DRAW_PARSER_VERSION, drawEventSourceIdentityConfigured } from './draw-source.js';
 import {
   drawAcceptedRevisions,
   drawEventHeads,
@@ -142,11 +142,7 @@ export async function certifyDrawEvent(
       city: drawEvents.city,
     }).from(drawEvents).where(eq(drawEvents.slug, slug)).limit(1);
     if (!configured) throw new Error('draw event not found');
-    if (
-      configured.surface === 'Unknown'
-      || configured.venue === 'Unconfigured'
-      || configured.city === 'Unconfigured'
-    ) {
+    if (!drawEventSourceIdentityConfigured(configured)) {
       throw new Error('draw event source identity must be configured before certification');
     }
     const [event] = await tx.update(drawEvents).set({
@@ -184,11 +180,7 @@ export async function setDrawEventFlags(
         city: drawEvents.city,
       }).from(drawEvents).where(eq(drawEvents.slug, slug)).limit(1);
       if (!configured) throw new Error('draw event not found');
-      if (
-        configured.surface === 'Unknown'
-        || configured.venue === 'Unconfigured'
-        || configured.city === 'Unconfigured'
-      ) {
+      if (!drawEventSourceIdentityConfigured(configured)) {
         throw new Error('draw event source identity must be configured before enabling flags');
       }
     }

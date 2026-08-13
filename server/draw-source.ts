@@ -12,6 +12,24 @@ import { validateParsedDrawRevision } from '../shared/draw/validation.js';
 
 export const DRAW_PARSER_VERSION = 'mediawiki-v1';
 export const MAX_WIKITEXT_BYTES = 2 * 1024 * 1024;
+
+/**
+ * A newly-configured draw event ships with placeholder surface/venue/city
+ * values ('Unknown'/'Unconfigured') until an operator sets the real values.
+ * Both operator actions (certification, flag toggles) and the polling
+ * worker must refuse to treat that event as live until an operator has
+ * configured its real identity -- this is the single source of truth for
+ * that check so the two call sites can't drift apart.
+ */
+export interface DrawEventSourceIdentity {
+  surface: string;
+  venue: string;
+  city: string;
+}
+
+export function drawEventSourceIdentityConfigured(event: DrawEventSourceIdentity): boolean {
+  return event.surface !== 'Unknown' && event.venue !== 'Unconfigured' && event.city !== 'Unconfigured';
+}
 const MAX_TEMPLATE_PARAMETERS = 10_000;
 const ROUND_NAMES = [
   'First round',
