@@ -283,4 +283,62 @@ describe('league-aware shell', () => {
     expect(screen.queryByText('Your picks could not be loaded')).toBeNull();
     fetcher.mockRestore();
   });
+
+  it('polls the league every 60 seconds while the tab is visible, and stops on unmount', async () => {
+    vi.useFakeTimers();
+    const leagueResponse = () => new Response(JSON.stringify({
+      league: { id: 'league-1', name: 'Friends', eventSlug: 'wimbledon:2026-men', eventKind: 'mens_singles', lockAt: '2026-08-24T15:00:00.000Z', revealed: true },
+      participantId: 'participant-1',
+      participantCount: 1,
+      viewer: { draft: { exists: false, version: 0, pickCount: 0 }, submission: { active: false, complete: false } },
+      projection: {
+        canonical: {
+          revisionId: 'rev-2', sourceRevisionId: '102', checksum: 'b'.repeat(64),
+          fetchedAt: '2026-08-24T15:01:00.000Z', acceptedAt: '2026-08-24T15:02:00.000Z',
+          sourceUrl: 'https://en.wikipedia.org/wiki/fixture', corrected: false,
+          freshness: { state: 'current', lastAttemptAt: null, lastSuccessfulAt: null, delayReason: null },
+        },
+        movementAvailable: false,
+        standings: [],
+        participants: [],
+        recap: { state: 'none' },
+      },
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    const fetcher = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => leagueResponse());
+    Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'visible' });
+
+    const { unmount } = render(<LeagueShell
+      capability={{ kind: 'participant', token: 'return-secret' }}
+      state={{
+        kind: 'participant',
+        checkedAt: '2026-08-11T23:00:00.000Z',
+        league: {
+          league: { id: 'league-1', name: 'Friends', eventSlug: 'wimbledon:2026-men', eventKind: 'mens_singles', lockAt: '2026-08-24T15:00:00.000Z', revealed: true },
+          participantId: 'participant-1',
+          participantCount: 1,
+          viewer: { draft: { exists: false, version: 0, pickCount: 0 }, submission: { active: false, complete: false } },
+          projection: null,
+        },
+      }}
+    />);
+    // With `revealed: true` already known from the initial capability response, mounting
+    // does not itself trigger a fetch — the shell only reaches out to the network on the
+    // visibility-driven and interval-driven refresh, which is what this test targets.
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetcher).toHaveBeenCalledTimes(0);
+
+    await vi.advanceTimersByTimeAsync(60_000);
+    await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(1));
+
+    await vi.advanceTimersByTimeAsync(60_000);
+    await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
+
+    unmount();
+    const callsAtUnmount = fetcher.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(180_000);
+    expect(fetcher.mock.calls.length).toBe(callsAtUnmount);
+
+    fetcher.mockRestore();
+    vi.useRealTimers();
+  });
 });
