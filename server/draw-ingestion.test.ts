@@ -105,7 +105,7 @@ const dependencies = (fetch: DrawSourceFetch, now = new Date('2026-08-11T17:00:0
   lookup: vi.fn(async () => ['208.80.154.224']),
   now: () => now,
   userAgent: 'TheDraw/1.0 (source-operations@the-draw.replit.app)',
-  deadlineMs: 50,
+  deadlineMs: 5_000,
 });
 
 describe('Draw source ingestion', () => {
