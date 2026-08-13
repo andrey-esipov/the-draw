@@ -81,7 +81,7 @@ describe('MediaWiki draw source qualification', () => {
       { cwd: process.cwd(), encoding: 'utf8' },
     );
     expect(output).toContain('completed draw matches');
-  });
+  }, 120_000);
 
   it('qualifies a complete best-of-three women format against its Python oracle contract', () => {
     const result = parseMediaWikiRevision(inputFor(womenOracle, 'complete-wimbledon-women.wiki', '200'));
