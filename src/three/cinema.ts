@@ -128,7 +128,7 @@ export function buildCinematic(
   const lastIndex = path.length - 1;
   const dest = path[lastIndex]!;
   const beats: Beat[] = [];
-  let t = 0;
+  let t: number;
 
   /**
    * The framing that puts one match in the middle of frame. Distance scales with

@@ -35,15 +35,15 @@ export interface Stage {
   beginTransition: (durationMs: number, opts?: TransitionOpts) => Promise<void>;
 }
 
-export function createStage(canvas: HTMLCanvasElement, w: number, h: number): Stage {
+export function createStage(canvas: HTMLCanvasElement, w: number, h: number, lowPower = false): Stage {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: false,
-    powerPreference: 'high-performance',
+    powerPreference: lowPower ? 'low-power' : 'high-performance',
     stencil: false,
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPower ? 1 : 1.5));
   renderer.setSize(w, h);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.1;
@@ -284,7 +284,7 @@ export function createStage(canvas: HTMLCanvasElement, w: number, h: number): St
     advanceTransition(now);
     sceneBg = scene.background;
     scene.background = bg;
-    if (!DEBUG_NO_BLOOM) {
+    if (!DEBUG_NO_BLOOM && !lowPower) {
       scene.traverse(darken);
       bloomComposer.render();
       scene.traverse(restore);

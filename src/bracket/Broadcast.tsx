@@ -28,9 +28,11 @@ interface Props {
   onRunEnd: () => void;
   /** True when the board is taking over a trophy the title screen already placed. */
   settled?: boolean;
+  /** Session-only tier derived from save-data or a measured slow frame budget. */
+  lowPower?: boolean;
 }
 
-export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPick, onRunEnd, settled }: Props) {
+export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPick, onRunEnd, settled, lowPower = false }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const api = useRef<{
@@ -49,7 +51,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     let w = host.clientWidth;
     let h = host.clientHeight;
 
-    const stage = createStage(canvas, w, h);
+    const stage = createStage(canvas, w, h, lowPower);
     const world = createWorld(stage.scene, stage.renderer);
     world.setSlam(slam, theme);
     // Reveal the freshly-built slam through a light-wipe rather than a hard
@@ -129,6 +131,15 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     const ndc = new THREE.Vector2();
     const ray = new THREE.Raycaster();
     let hovering = false;
+    let raf = 0;
+    let demandUntil = 0;
+    const scheduleFrame = () => {
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+    const demandRender = (durationMs = 180) => {
+      demandUntil = Math.max(demandUntil, performance.now() + durationMs);
+      scheduleFrame();
+    };
     /** The rig pose to return to when an opened match card is dismissed. */
     let restorePose: CameraPose | null = null;
 
@@ -151,6 +162,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       if (plates.expanded()?.match.id === n.match.id) return;
       if (!restorePose) restorePose = controls.pose();
       plates.setExpanded(n);
+      demandRender(reduced ? 40 : 900);
       sound.select();
       sound.expand();
       if (!reduced) sound.glide(0.85, true);
@@ -160,6 +172,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     function closeCard() {
       if (!plates.expanded()) return;
       plates.closeExpanded();
+      demandRender(reduced ? 40 : 950);
       sound.dismiss();
       if (restorePose) {
         if (!reduced) sound.glide(0.9, false);
@@ -176,6 +189,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     }
 
     function setLit(id: string | null) {
+      demandRender(220);
       litId = id;
       clearRoute();
       if (!id) {
@@ -213,6 +227,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
         rest: controls.restPose(),
       });
       if (reduced) route.setProgress(1);
+      else if (lowPower) route.setProgress(1);
     }
 
     /**
@@ -226,6 +241,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     function reveal() {
       const n = litPath[litPath.length - 1];
       if (!n) return;
+      demandRender(reduced ? 40 : 1250);
       plates.closeExpanded();
       restorePose = null;
       if (!reduced) sound.glide(0.95, true);
@@ -240,6 +256,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
 
     function play() {
       if (!cinema) return;
+      demandRender(reduced ? 40 : Math.ceil(cinema.duration * 1000) + 120);
       crowned = false;
       plates.closeExpanded();
       restorePose = null;
@@ -276,19 +293,21 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     let hushGoal = 1;
     let hushNow = 1;
     let hushAt = 0;
-    const wake = () => { hushGoal = 1; };
+    const wake = () => { hushGoal = 1; demandRender(760); };
     // Moving the pointer counts too, but not straight away. Hovering a card
     // traces that player's route, and answering a hover at three tenths reads
     // as the board having gone to sleep. A grace window keeps an idle mouse or
     // a nudge from cutting the arrival short.
-    const wakeOnMove = () => { if (performance.now() - hushAt > HUSH_GRACE) hushGoal = 1; };
+    const wakeOnMove = () => {
+      if (performance.now() - hushAt > HUSH_GRACE) hushGoal = 1;
+      demandRender(180);
+    };
     window.addEventListener('pointerdown', wake, { passive: true });
     window.addEventListener('wheel', wake, { passive: true });
     window.addEventListener('keydown', wake, { passive: true });
     window.addEventListener('touchstart', wake, { passive: true });
     window.addEventListener('pointermove', wakeOnMove, { passive: true });
 
-    let raf = 0;
     const clock = new THREE.Clock();
     let camOverride: { pos: THREE.Vector3; look: THREE.Vector3 } | null = null;
 
@@ -302,8 +321,9 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     };
 
     function frame() {
-      raf = requestAnimationFrame(frame);
+      raf = 0;
       const now = performance.now();
+      if (document.hidden) return;
       const dt = clock.getDelta();
 
       // Taking the camera cancels the arrival outright: nobody should have a
@@ -387,7 +407,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       } else if (controls.hasMoved) {
         controls.update(dt);
         route?.setProgress(1);
-      } else if (!reduced) {
+      } else if (!reduced && !lowPower) {
         // Until the viewer takes the camera, keep the board breathing. A dead
         // still frame is the difference between a render and a live broadcast,
         // and this is the frame most people will only ever see.
@@ -398,6 +418,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
         const rest = controls.restPose();
         stage.camera.position.copy(rest.pos);
         stage.camera.lookAt(rest.look);
+        route?.setProgress(1);
       }
 
       podium.update(now);
@@ -405,10 +426,19 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       route?.syncScale(stage.camera, h);
       stage.render();
       bootDone();
+      if (
+        !lowPower
+        || !built
+        || !arrived
+        || running
+        || Math.abs(hushNow - hushGoal) > 0.002
+        || now < demandUntil
+      ) scheduleFrame();
     }
-    frame();
+    scheduleFrame();
 
     function onMove(e: PointerEvent) {
+      demandRender(180);
       const r = host!.getBoundingClientRect();
       pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, ((e.clientY - r.top) / r.height) * 2 - 1);
       ndc.set(pointer.x, -pointer.y);
@@ -427,6 +457,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
     }
 
     function onClick() {
+      demandRender(900);
       if (running) return;
       ray.setFromCamera(ndc, stage.camera);
       // A click on the open card itself is not a dismissal — it is the viewer
@@ -456,11 +487,17 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       route?.resize(w, h);
       plates?.resize(w, h);
       controls.fit(w / h);
+      demandRender(220);
     }
+
+    const onVisibility = () => {
+      if (!document.hidden) demandRender(220);
+    };
 
     host.addEventListener('pointermove', onMove);
     host.addEventListener('click', onClick);
     window.addEventListener('keydown', onEscape);
+    document.addEventListener('visibilitychange', onVisibility);
     const ro = new ResizeObserver(resize);
     ro.observe(host);
 
@@ -478,6 +515,7 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       host.removeEventListener('pointermove', onMove);
       host.removeEventListener('click', onClick);
       window.removeEventListener('keydown', onEscape);
+      document.removeEventListener('visibilitychange', onVisibility);
       clearRoute();
       controls.dispose();
       podium.dispose();
@@ -489,7 +527,9 @@ export function Broadcast({ slam, draw, theme, lit, playToken, focusToken, onPic
       api.current = null;
       void litId;
     };
-  }, [slam, draw, theme, onPick, onRunEnd]);
+  // `lit` is applied through the imperative route API below; rebuilding WebGL would be wasteful.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slam, draw, theme, onPick, onRunEnd, lowPower, settled]);
 
   useEffect(() => {
     api.current?.setLit(lit);

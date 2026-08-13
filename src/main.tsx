@@ -7,6 +7,7 @@ import '@fontsource/geist-mono/400.css';
 import './styles/base.css';
 import './styles/scrim.css';
 import './styles/title.css';
+import './styles/league.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(

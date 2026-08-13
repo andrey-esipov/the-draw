@@ -147,6 +147,10 @@ class Sound {
   slamChange(): void { this.fire((e) => e.slamChange()); }
   hover(): void { this.fire((e) => e.hover()); }
   select(): void { this.fire((e) => e.select()); }
+  confirmPick(extendsRoute = false): void { this.fire((e) => e.confirmPick(extendsRoute)); }
+  routeExtend(): void { this.fire((e) => e.routeExtend()); }
+  roundNavigate(): void { this.fire((e) => e.roundNavigate()); }
+  friendRoute(): void { this.fire((e) => e.friendRoute()); }
   expand(): void { this.fire((e) => e.expand()); }
   dismiss(): void { this.fire((e) => e.dismiss()); }
   glide(seconds?: number, depart?: boolean): void { this.fire((e) => e.glide(seconds, depart)); }

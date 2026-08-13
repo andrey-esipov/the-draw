@@ -518,6 +518,31 @@ export class Engine {
     this.thock(0.075 * trim, 1.5, 0.22);
   }
 
+  /** A League bracket pick confirmed. extendsRoute adds a swoosh when the pick keeps a whole route alive. */
+  confirmPick(extendsRoute = false) {
+    if (!this.canVoice('confirm-pick', 90)) return;
+    this.thock(0.07, 1.12, 0.18);
+    if (extendsRoute) this.swoosh(0.36, 0.036, 360, 920, 0.7, 0.18);
+  }
+
+  /** A League pick that extends the visitor's live route through a later round. */
+  routeExtend() {
+    if (!this.canVoice('route-extend', 120)) return;
+    this.swoosh(0.38, 0.045, 360, 980, 0.7, 0.2);
+  }
+
+  /** Navigating between rounds in the League bracket picker. */
+  roundNavigate() {
+    if (!this.canVoice('round-navigate', 100)) return;
+    this.swoosh(0.32, 0.038, 720, 420, 0.72, 0.16);
+  }
+
+  /** A League standings row highlighting a friend's route. */
+  friendRoute() {
+    if (!this.canVoice('friend-route', 140)) return;
+    this.swoosh(0.52, 0.042, 320, 900, 0.64, 0.2);
+  }
+
   /** A card sweeping open — a longer, soft swoosh riding the ~460ms open. */
   expand() {
     if (!this.canVoice('expand', 90)) return;

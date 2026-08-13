@@ -1,3 +1,10 @@
+// SlamId is a separate, closed union used for menu navigation, theming, and
+// per-slam asset routing (title vessels, court renders). It is NOT the type
+// of Draw.id: a league draw's id is a year-qualified event id (e.g.
+// "us-open-2026-men"), not one of these 8 canonical slam slugs. Draw and its
+// nested types are re-exported wholesale from the shared draw contract so the
+// frontend's wire format always matches what the backend (draw ingestion,
+// league projections) actually serializes.
 export type SlamId =
   | 'australian-open-men'
   | 'australian-open-women'
@@ -8,54 +15,13 @@ export type SlamId =
   | 'us-open-men'
   | 'us-open-women';
 
-export type Surface = 'Hard' | 'Clay' | 'Grass';
-
-export interface Player {
-  id: string;
-  name: string;
-  short: string;
-  country: string | null;
-  seed: string | null;
-}
-
-export interface SetScore {
-  games: number;
-  tiebreak: number | null;
-  won: boolean;
-  /** The set the loser retired in. Its games count is where they stopped. */
-  retired?: boolean;
-}
-
-export interface Side {
-  player: string;
-  seed: string | null;
-  sets: SetScore[];
-}
-
-export interface Match {
-  id: string;
-  round: number;
-  position: number;
-  sides: Side[];
-  winner: string | null;
-}
-
-export interface Round {
-  round: number;
-  name: string;
-  matches: Match[];
-}
-
-export interface Draw {
-  id: SlamId;
-  tournament: string;
-  year: number;
-  event: string;
-  surface: Surface;
-  venue: string;
-  city: string;
-  bestOf: 3 | 5;
-  source: { wikipedia: string; url: string };
-  players: Record<string, Player>;
-  rounds: Round[];
-}
+export type {
+  Draw,
+  Match,
+  MatchTerminality,
+  Player,
+  Round,
+  SetScore,
+  Side,
+  Surface,
+} from '../../shared/draw/contracts';

@@ -62,8 +62,37 @@ const ROUND_NAMES = [
   'Final',
 ];
 
+const EMPTY_DRAW_META: Record<string, Pick<Draw, 'tournament' | 'surface' | 'venue' | 'city'>> = {
+  'australian-open': {
+    tournament: 'Australian Open',
+    surface: 'Hard',
+    venue: 'Melbourne Park',
+    city: 'Melbourne',
+  },
+  'french-open': {
+    tournament: 'Roland-Garros',
+    surface: 'Clay',
+    venue: 'Stade Roland-Garros',
+    city: 'Paris',
+  },
+  wimbledon: {
+    tournament: 'Wimbledon',
+    surface: 'Grass',
+    venue: 'All England Lawn Tennis and Croquet Club',
+    city: 'London',
+  },
+  'us-open': {
+    tournament: 'US Open',
+    surface: 'Hard',
+    venue: 'USTA Billie Jean King National Tennis Center',
+    city: 'New York',
+  },
+};
+
 /** The shape of a 128-player draw with nobody in it yet. */
 export function emptyDraw(id: SlamId, event: string): Draw {
+  const tournamentId = id.replace(/-(men|women)$/, '');
+  const meta = EMPTY_DRAW_META[tournamentId] ?? EMPTY_DRAW_META['us-open']!;
   const rounds = [];
   for (let r = 1; r <= 7; r++) {
     const count = 2 ** (7 - r);
@@ -81,15 +110,30 @@ export function emptyDraw(id: SlamId, event: string): Draw {
   }
   return {
     id,
-    tournament: 'US Open',
+    tournament: meta.tournament,
     year: 2026,
     event,
-    surface: 'Hard',
-    venue: 'USTA Billie Jean King National Tennis Center',
-    city: 'New York',
+    surface: meta.surface,
+    venue: meta.venue,
+    city: meta.city,
     bestOf: id.endsWith('men') ? 5 : 3,
     source: { wikipedia: '', url: '' },
     players: {},
     rounds,
+  };
+}
+
+export function blankDraw(draw: Draw): Draw {
+  return {
+    ...draw,
+    players: {},
+    rounds: draw.rounds.map((round) => ({
+      ...round,
+      matches: round.matches.map((match) => ({
+        ...match,
+        sides: [],
+        winner: null,
+      })),
+    })),
   };
 }

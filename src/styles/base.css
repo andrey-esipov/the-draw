@@ -401,8 +401,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .snd,
 .slammenu-btn {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
@@ -1217,6 +1217,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 @media (max-width: 860px) and (orientation: portrait), (max-width: 620px) {
+  /* `.is-radial .search` (two classes) outranks the plain `.search` reset
+     below on specificity alone, so the radial variant's rightward offset
+     survives unless it is reset explicitly here too — otherwise the search
+     pill clips off the right edge of narrow viewports in radial mode. */
+  .is-radial .search {
+    left: auto;
+  }
+
   body { overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: none; }
   .stage { overflow-x: hidden; }
   html, body, #root { height: auto; min-height: 100%; }
@@ -1230,7 +1238,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     padding-bottom: 56px;
   }
 
-  /* Two 42px buttons ride fixed at the top right on this breakpoint. The
+  /* Two 44px buttons ride fixed at the top right on this breakpoint. The
      masthead sets left and reserves their width rather than centring
      underneath them, where a long name ran straight through the sound
      toggle. */
@@ -1800,6 +1808,38 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     align-self: center;
     transform: none;
     margin-top: -8px;
+  }
+
+  .viewbar .run,
+  .viewbar .viewswap button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 359px) {
+  .field {
+    height: min(62vh, 118vw);
+  }
+
+  .viewbar {
+    display: grid;
+    width: calc(100% - (var(--pad) * 2));
+    gap: 8px;
+  }
+
+  .viewbar .run {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .viewbar .viewswap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .viewbar .viewswap button {
+    justify-content: center;
   }
 }
 

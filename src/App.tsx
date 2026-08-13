@@ -15,8 +15,27 @@ import { Controls } from './ui/Controls';
 import { drawControlsBus } from './three/controls';
 import { bootDone } from './boot';
 import { TitleScreen } from './title/TitleScreen';
+import { LeagueShell } from './ui/LeagueShell';
+import {
+  loadLeagueAccess,
+  parseCapabilityFragment,
+  type LeagueAccessState,
+} from './data/league-api';
+import { leagueSlam } from './data/league-visual';
+import { useDeferredLowPowerTier } from './performance-tier';
+import { blankDraw, emptyDraw } from './data/form';
+import { DrawIcon } from './ui/DrawIcon';
+import {
+  createLeaguePreviewDraw,
+  createLeaguePreviewFetch,
+  type LeaguePreviewMode,
+} from './data/league-preview';
 
 type Tour = 'men' | 'women';
+
+function eventSlugFor(slam: SlamId, tour: Tour): string {
+  return `${slam.replace(/-(men|women)$/, '')}-2026-${tour}`;
+}
 
 /** `?enter=1` walks straight onto the board, which is what the capture rigs want. */
 const SKIP_TITLE =
@@ -60,8 +79,49 @@ const HAS_WEBGL = (() => {
     return false;
   }
 })();
+const LOCAL_LEAGUE_PREVIEW =
+  import.meta.env.DEV && new URLSearchParams(window.location.search).has('league-preview');
+const LOCAL_LEAGUE_PREVIEW_MODE: LeaguePreviewMode | null = (() => {
+  if (!LOCAL_LEAGUE_PREVIEW) return null;
+  const value = new URLSearchParams(window.location.search).get('league-preview');
+  if (value === 'awaiting' || value === 'open' || value === 'live') return value;
+  return 'auto';
+})();
+const LEAGUE_CREATION_AVAILABLE =
+  import.meta.env.VITE_DRAW_LEAGUES_ENABLED === 'true' || LOCAL_LEAGUE_PREVIEW;
+
+function useLowPowerTier(): boolean {
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+  const [lowPower, setLowPower] = useState(saveData);
+
+  useEffect(() => {
+    if (saveData) return;
+    let frame = 0;
+    let slowStreak = 0;
+    let previous = performance.now();
+    let raf = 0;
+    const measure = (now: number) => {
+      const frameTime = now - previous;
+      previous = now;
+      frame += 1;
+      if (frame > 12) slowStreak = frameTime > 24 ? slowStreak + 1 : Math.max(0, slowStreak - 2);
+      if (slowStreak >= 45) setLowPower(true);
+      else if (frame < 180) raf = requestAnimationFrame(measure);
+    };
+    raf = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(raf);
+  }, [saveData]);
+
+  return lowPower;
+}
 
 export function App() {
+  const [capabilityBootstrap, setCapabilityBootstrap] = useState(() => parseCapabilityFragment(window.location.hash));
+  const [leagueAccess, setLeagueAccess] = useState<LeagueAccessState | null>(() => (
+    capabilityBootstrap.kind === 'invalid' ? { kind: 'invalid-access' }
+      : capabilityBootstrap.kind === 'capability' ? { kind: 'loading' }
+        : null
+  ));
   const [slam, setSlam] = useState<SlamId>(SLAM_PARAM ?? 'wimbledon-men');
   const [titled, setTitled] = useState(!SKIP_TITLE && HAS_WEBGL);
   const [handedOver, setHandedOver] = useState(false);
@@ -73,7 +133,10 @@ export function App() {
   const [prediction, setPrediction] = useState<string | null>(null);
   const [pendingName, setPendingName] = useState<string | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
-  const [view, setView] = useState<'board' | 'radial'>(HAS_WEBGL ? 'board' : 'radial');
+  const [drawAwaiting, setDrawAwaiting] = useState(false);
+  const [view, setView] = useState<'board' | 'radial'>(
+    HAS_WEBGL && !window.matchMedia('(max-width: 700px)').matches ? 'board' : 'radial',
+  );
   const [playToken, setPlayToken] = useState(0);
   const [running, setRunning] = useState(false);
   const [landed, setLanded] = useState(false);
@@ -81,8 +144,62 @@ export function App() {
   const [returnedFrom, setReturnedFrom] = useState<SlamId | null>(null);
   const [focusToken, setFocusToken] = useState(0);
   const [flown, setFlown] = useState(false);
+  const detectedLowPower = useLowPowerTier();
+  const lowPower = useDeferredLowPowerTier(detectedLowPower, running);
+  const [leagueVisual, setLeagueVisual] = useState<{ draw: Draw; playerId: string | null } | null>(null);
+  const previewEventSlug = eventSlugFor(slam, tour);
+  const explicitPreviewDraw = useMemo(
+    () => LOCAL_LEAGUE_PREVIEW_MODE === 'open' || LOCAL_LEAGUE_PREVIEW_MODE === 'live'
+      ? createLeaguePreviewDraw(previewEventSlug)
+      : null,
+    [previewEventSlug],
+  );
+  const previewTransportDraw = LOCAL_LEAGUE_PREVIEW_MODE === 'auto' ? draw : explicitPreviewDraw;
+  const effectivePreviewMode: LeaguePreviewMode | null = LOCAL_LEAGUE_PREVIEW_MODE === 'auto'
+    ? (draw ? 'open' : 'awaiting')
+    : LOCAL_LEAGUE_PREVIEW_MODE;
+  const previewFetcher = useMemo(
+    () => LOCAL_LEAGUE_PREVIEW_MODE
+      ? createLeaguePreviewFetch(previewTransportDraw, previewEventSlug, effectivePreviewMode ?? 'awaiting')
+      : undefined,
+    [effectivePreviewMode, previewEventSlug, previewTransportDraw],
+  );
+  const handleLeagueVisualChange = useCallback((nextDraw: Draw | null, playerId: string | null) => {
+    setLeagueVisual(nextDraw ? { draw: nextDraw, playerId } : null);
+  }, []);
+  const handleCapabilityChange = useCallback((capability: { kind: 'invitation' | 'participant'; token: string }) => {
+    const url = new URL(window.location.href);
+    url.hash = `${capability.kind === 'invitation' ? 'invite' : 'return'}=${capability.token}`;
+    window.history.replaceState(window.history.state, '', url);
+    setCapabilityBootstrap({ kind: 'capability', capability });
+  }, []);
 
-  const forthcoming = slam.startsWith('us-open');
+  const upcoming = slam.startsWith('us-open');
+  const forthcoming = upcoming && drawAwaiting;
+
+  useEffect(() => {
+    const syncCapability = () => {
+      const next = parseCapabilityFragment(window.location.hash);
+      setCapabilityBootstrap(next);
+      setLeagueVisual(null);
+      setLeagueAccess(
+        next.kind === 'invalid' ? { kind: 'invalid-access' }
+          : next.kind === 'capability' ? { kind: 'loading' }
+            : null,
+      );
+    };
+    window.addEventListener('hashchange', syncCapability);
+    return () => window.removeEventListener('hashchange', syncCapability);
+  }, []);
+
+  useEffect(() => {
+    if (capabilityBootstrap.kind !== 'capability') return;
+    let live = true;
+    loadLeagueAccess(capabilityBootstrap.capability, previewFetcher).then((state) => {
+      if (live) setLeagueAccess(state);
+    });
+    return () => { live = false; };
+  }, [capabilityBootstrap, previewFetcher]);
 
   const handleHover = useCallback((id: string | null) => { if (id) sound.hover(); setHover(id); }, []);
   // Committing a name from search is never a toggle: you asked for that player,
@@ -121,29 +238,123 @@ export function App() {
   useEffect(() => {
     setPicked(null);
     setHover(null);
-    if (forthcoming) { setDraw(null); setLoadFailed(false); return; }
     let live = true;
+    setDraw(null);
+    setDrawAwaiting(false);
     setLoadFailed(false);
-    fetch(`${import.meta.env.BASE_URL}draws/${slam}.json`)
-      .then((r) => {
-        if (!r.ok) throw new Error(`${slam} unavailable`);
-        return r.json();
+    const load = async (): Promise<Draw | null> => {
+      if (LOCAL_LEAGUE_PREVIEW_MODE === 'awaiting') return null;
+      if (LOCAL_LEAGUE_PREVIEW_MODE === 'open' || LOCAL_LEAGUE_PREVIEW_MODE === 'live') {
+        return explicitPreviewDraw;
+      }
+      if (upcoming) {
+        const eventSlug = eventSlugFor(slam, tour);
+        try {
+          const response = await fetch(`/api/draw/events/${encodeURIComponent(eventSlug)}`, {
+            headers: { Accept: 'application/json' },
+            cache: 'no-store',
+          });
+          if (
+            response.ok
+            && response.headers.get('content-type')?.includes('application/json')
+          ) {
+            const availability = await response.json() as
+              | { state: 'awaiting' }
+              | { state: 'ready'; draw: Draw };
+            if (availability.state === 'awaiting') return null;
+            if (availability.state === 'ready' && availability.draw) return availability.draw;
+          }
+          if (!import.meta.env.DEV) throw new Error(`${slam} availability unavailable`);
+        } catch (error) {
+          if (!import.meta.env.DEV) throw error;
+        }
+      }
+      const response = await fetch(`${import.meta.env.BASE_URL}draws/${slam}.json`, {
+        headers: { Accept: 'application/json' },
+      });
+      if (response.status === 404 && upcoming) return null;
+      if (!response.ok) throw new Error(`${slam} unavailable`);
+      if (upcoming && !response.headers.get('content-type')?.includes('application/json')) return null;
+      return response.json() as Promise<Draw>;
+    };
+    void load()
+      .then((d) => {
+        if (!live) return;
+        setDraw(d);
+        setDrawAwaiting(d === null && upcoming);
       })
-      .then((d) => { if (live) setDraw(d); })
-      .catch(() => { if (live) { setDraw(null); setLoadFailed(true); } });
+      .catch(() => {
+        if (live) {
+          setDraw(null);
+          setDrawAwaiting(false);
+          setLoadFailed(true);
+        }
+      });
     return () => { live = false; };
-  }, [slam, forthcoming]);
+  }, [explicitPreviewDraw, slam, tour, upcoming]);
 
-  const geo = useMemo(() => (draw ? buildGeometry(draw, SCALE, CENTER) : null), [draw]);
-  const index = useMemo(() => (draw ? indexDraw(draw) : null), [draw]);
-  const theme = useMemo(() => themeFor(slam), [slam]);
+  const privateSlam = leagueAccess ? leagueSlam(leagueAccess) : null;
+  const isLeagueEntry = leagueAccess?.kind === 'create' && leagueVisual === null;
+  const entryPreviewDraw = useMemo(() => {
+    if (!isLeagueEntry) return null;
+    return draw ? blankDraw(draw) : emptyDraw(slam, `${themeFor(slam).label} ${tour === 'men' ? "men's" : "women's"} singles`);
+  }, [draw, isLeagueEntry, slam, tour]);
+  useEffect(() => {
+    if (!isLeagueEntry || !HAS_WEBGL || !window.matchMedia('(max-width: 900px)').matches) return;
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => drawControlsBus.current?.frame('final'));
+    });
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      cancelAnimationFrame(secondFrame);
+    };
+  }, [isLeagueEntry]);
+  const visualDraw = leagueAccess ? leagueVisual?.draw ?? entryPreviewDraw : draw;
+  const geo = useMemo(() => (visualDraw ? buildGeometry(visualDraw, SCALE, CENTER) : null), [visualDraw]);
+  const index = useMemo(() => (visualDraw ? indexDraw(visualDraw) : null), [visualDraw]);
+  const theme = useMemo(() => {
+    const base = themeFor(privateSlam ?? slam);
+    if (!leagueAccess || privateSlam) return base;
+    return {
+      ...base,
+      ground: '#18211d',
+      groundDeep: '#07110d',
+      chalk: '#edf1e8',
+      chalkDim: '#aab5ac',
+      flare: '#d8c56a',
+      flareGlow: '#bfa53f',
+      trace: '#c4cec6',
+      heritage: '#66746b',
+      rim: '#849087',
+      fog: '#050b08',
+      label: 'Draw Room',
+      city: '',
+    };
+  }, [leagueAccess, privateSlam, slam]);
   const upsets = useMemo(() => (index ? upsetMatchIds(index) : []), [index]);
 
   const activeId = hover ?? picked;
   const shownId = activeId ?? index?.champion?.id ?? null;
-  const shown = shownId && draw ? (draw.players[shownId] ?? null) : null;
+  const shown = shownId && visualDraw ? (visualDraw.players[shownId] ?? null) : null;
 
   const slams = tour === 'men' ? SLAM_ORDER : SLAM_ORDER_WOMEN;
+  const localPreviewHref = useMemo(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('slam', slam);
+    url.searchParams.set('league-preview', 'open');
+    return url.toString();
+  }, [slam]);
+  const localPreviewModeHref = useCallback((mode: LeaguePreviewMode) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('slam', slam);
+    url.searchParams.set('league-preview', mode);
+    const capability = capabilityBootstrap.kind === 'capability'
+      ? capabilityBootstrap.capability
+      : { kind: 'participant' as const, token: 'local-preview-participant' };
+    url.hash = `${capability.kind === 'invitation' ? 'invite' : 'return'}=${capability.token}`;
+    return url.toString();
+  }, [capabilityBootstrap, slam]);
 
   const handlePickMatch = useCallback(
     (matchId: string | null) => {
@@ -224,25 +435,40 @@ export function App() {
     window.setTimeout(() => setHandedOver(false), 1500);
   }, []);
 
-  if (titled) return <TitleScreen onEnter={handleEnter} returnFrom={returnedFrom} />;
+  if (titled && !leagueAccess) return <TitleScreen onEnter={handleEnter} returnFrom={returnedFrom} />;
 
   return (
     <main
-      className={`stage${view === 'radial' ? ' is-radial' : ''}${shown ? ' has-player-detail' : ''}${running ? ' is-running' : ''}${landed ? ' is-landed' : ''}${flown && view === 'board' ? ' is-flown' : ''}`}
+      className={`stage${view === 'radial' ? ' is-radial' : ''}${shown ? ' has-player-detail' : ''}${running ? ' is-running' : ''}${landed ? ' is-landed' : ''}${flown && view === 'board' ? ' is-flown' : ''}${leagueAccess ? ' has-league' : ''}${isLeagueEntry ? ' is-league-entry' : ''}${lowPower ? ' is-low-power' : ''}`}
       style={
         {
           background: theme.groundDeep,
           color: theme.chalk,
           '--ground': theme.ground,
           '--ground-deep': theme.groundDeep,
+          '--chalk': theme.chalk,
+          '--chalk-dim': theme.chalkDim,
+          '--flare': theme.flare,
         } as React.CSSProperties
       }
     >
       <div className="scrim" aria-hidden="true" />
       {handedOver && <div className="handoff" aria-hidden="true" />}
       <header className="mark" style={{ '--flare': theme.flare } as React.CSSProperties}>
-        {HAS_WEBGL ? (
-          <button type="button" className="mark-word mark-home" onClick={goHome}>
+        {HAS_WEBGL && (!leagueAccess || isLeagueEntry) ? (
+          <button
+            type="button"
+            className="mark-word mark-home"
+            aria-label={isLeagueEntry ? `Back to the ${theme.label} draw` : undefined}
+            onClick={() => {
+              if (isLeagueEntry) {
+                setLeagueAccess(null);
+                setLeagueVisual(null);
+              } else {
+                goHome();
+              }
+            }}
+          >
             The Draw
           </button>
         ) : (
@@ -251,26 +477,46 @@ export function App() {
         <h1 className="mark-slam">{theme.label}</h1>
         <span className="mark-rule" aria-hidden="true" />
         <p className="mark-meta">
-          2026 <span className="dot">·</span>{' '}
-          {forthcoming ? `Draw out ${DRAW_DATE_SHORT}` : draw ? draw.event : ' '}
+          {leagueAccess
+            ? privateSlam
+              ? <>2026 <span className="dot">·</span> {privateSlam.endsWith('-women') ? "Women's singles" : "Men's singles"}</>
+              : 'Private league'
+            : <>2026 <span className="dot">·</span>{' '}{forthcoming ? `Draw out ${DRAW_DATE_SHORT}` : draw ? draw.event : ' '}</>}
         </p>
       </header>
 
       <div className="cluster">
         <SoundToggle slam={slam} />
-        <SlamMenu
-          slam={slam}
-          tour={tour}
-          slams={slams}
-          onSlam={setSlam}
-          onTour={(t) => {
-            setTour(t);
-            setSlam(slam.replace(/-(men|women)$/, `-${t}`) as SlamId);
-          }}
-        />
+        {!leagueAccess && (
+          <SlamMenu
+            slam={slam}
+            tour={tour}
+            slams={slams}
+            onSlam={setSlam}
+            onTour={(t) => {
+              setTour(t);
+              setSlam(slam.replace(/-(men|women)$/, `-${t}`) as SlamId);
+            }}
+          />
+        )}
       </div>
 
-      {forthcoming && (
+      {LEAGUE_CREATION_AVAILABLE && !leagueAccess && (
+        <button
+          type="button"
+          className="league-launch"
+          onClick={() => setLeagueAccess({
+            kind: 'create',
+            eventSlug: eventSlugFor(slam, tour),
+            eventName: `${theme.label} ${tour === 'men' ? "men's" : "women's"}`,
+          })}
+        >
+          <DrawIcon name="invitation" />
+          Start a private league
+        </button>
+      )}
+
+      {forthcoming && !leagueAccess && (
         <>
           <Forthcoming
             theme={theme}
@@ -284,14 +530,14 @@ export function App() {
         </>
       )}
 
-      {!forthcoming && !draw && !loadFailed && (
+      {!leagueAccess && !forthcoming && !draw && !loadFailed && (
         <div className="rail">
           <p className="eyebrow">Loading</p>
           <h1 className="player-name">Reading the draw</h1>
         </div>
       )}
 
-      {loadFailed && !forthcoming && (
+      {!leagueAccess && loadFailed && !forthcoming && (
         <div className="rail">
           <p className="eyebrow">Unavailable</p>
           <h1 className="player-name">This draw did not load</h1>
@@ -302,25 +548,30 @@ export function App() {
         </div>
       )}
 
-      {draw && geo && index && (
+      {visualDraw && geo && index && (
         <>
-          <Rail index={index} theme={theme} player={shown} traced={activeId !== null} />
-          <div className="field">
-            {view === 'board' ? (
+          {!leagueAccess && <Rail index={index} theme={theme} player={shown} traced={activeId !== null} />}
+          <div
+            className="field"
+            aria-hidden={leagueAccess && !isLeagueEntry ? true : undefined}
+            inert={leagueAccess && !isLeagueEntry ? true : undefined}
+          >
+            {view === 'board' || (isLeagueEntry && HAS_WEBGL) ? (
               <Broadcast
-                slam={slam}
-                draw={draw}
+                slam={privateSlam ?? slam}
+                draw={visualDraw}
                 theme={theme}
-                lit={shownId}
+                lit={leagueAccess ? leagueVisual?.playerId ?? null : shownId}
                 playToken={playToken}
                 focusToken={focusToken}
                 onPick={handlePickMatch}
                 onRunEnd={handleRunEnd}
                 settled={cameFromTitle}
+                lowPower={lowPower}
               />
             ) : (
               <Bracket
-                draw={draw}
+                draw={visualDraw}
                 geo={geo}
                 theme={theme}
                 upsets={upsets}
@@ -333,7 +584,7 @@ export function App() {
             )}
           </div>
 
-          <div className="viewbar">
+          {!leagueAccess && <div className="viewbar">
             <button
               type="button"
               className="run"
@@ -385,13 +636,13 @@ export function App() {
                 </>
               )}
             </div>
-          </div>
+          </div>}
         </>
       )}
 
-      {!forthcoming && draw && view === 'board' && <Controls running={running} />}
+      {(!leagueAccess || isLeagueEntry) && !forthcoming && draw && view === 'board' && <Controls running={running} />}
 
-      {!forthcoming && draw && view === 'radial' && (
+      {!leagueAccess && !forthcoming && draw && view === 'radial' && (
         <div className="legend">
           <span className="legend-item">
             <svg className="legend-glyph" viewBox="0 0 30 10" aria-hidden="true">
@@ -409,17 +660,58 @@ export function App() {
         </div>
       )}
 
-      {!forthcoming && draw && (
+      {!leagueAccess && !forthcoming && draw && (
         <p className="compact-note">Search a name to trace their tournament</p>
       )}
 
-      {!forthcoming && draw && (
+      {!leagueAccess && !forthcoming && draw && (
         <Search
           draw={draw}
           flare={theme.flare}
           onHover={handleHover}
           onSelect={handleSelect}
         />
+      )}
+
+      {leagueAccess && (
+        <div className="league-layer">
+          {LOCAL_LEAGUE_PREVIEW && (
+            <div className="league-preview-console">
+              <p className="league-preview-flag" role="status">
+                Local preview <span>Nothing leaves this browser</span>
+              </p>
+              <nav aria-label="Local preview state">
+                {([
+                  ['awaiting', 'Awaiting draw'],
+                  ['open', 'Picks open'],
+                  ['live', 'Live clubhouse'],
+                ] as const).map(([mode, label]) => (
+                  <a
+                    key={mode}
+                    href={localPreviewModeHref(mode)}
+                    aria-current={effectivePreviewMode === mode ? 'page' : undefined}
+                  >
+                    {label}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          )}
+          {import.meta.env.DEV && !LOCAL_LEAGUE_PREVIEW && isLeagueEntry && (
+            <a className="league-preview-switch" href={localPreviewHref}>
+              Run local simulation <span>No backend required</span>
+            </a>
+          )}
+          <LeagueShell
+            state={leagueAccess}
+            capability={capabilityBootstrap.kind === 'capability' ? capabilityBootstrap.capability : undefined}
+            onVisualChange={handleLeagueVisualChange}
+            previewDraw={LOCAL_LEAGUE_PREVIEW ? draw : undefined}
+            previewFetch={previewFetcher}
+            previewMode={effectivePreviewMode ?? undefined}
+            onCapabilityChange={handleCapabilityChange}
+          />
+        </div>
       )}
     </main>
   );
