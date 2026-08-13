@@ -9,3 +9,9 @@ node_modules
 screenshots/
 shots
 .audit/
+.dev-db/
+.draw-e2e-run/
+.impeccable/
+.playwright-mcp/
+test-results/
+playwright-report/

@@ -1,18 +1,27 @@
 run = "npm run dev"
-entrypoint = "src/main.tsx"
-modules = ["nodejs-20", "web", "python-3.12"]
+entrypoint = "server/bootstrap.ts"
+modules = ["nodejs-20", "web", "python-3.12", "postgresql-16"]
 
 [nix]
 channel = "stable-25_05"
 
-# The Draw is a static Vite app with no server and no database.
+# The Draw is a single self-contained Express + Postgres app. MediaWiki
+# polling, reconciliation, and email/retention maintenance all run in-process
+# on a fixed interval (see server/draw-ingestion.ts), so this must deploy to
+# a Reserved VM (always-on), not autoscale or static: an autoscaled instance
+# can be spun down between requests and would silently stop polling, and a
+# static target has no server at all.
 [deployment]
-deploymentTarget = "static"
+deploymentTarget = "vm"
 build = ["sh", "-c", "npm ci && npm run build"]
-publicDir = "dist"
+run = ["sh", "-c", "npm start"]
+healthCheckPath = "/api/health"
+
+[env]
+PORT = "3000"
 
 [[ports]]
-localPort = 5210
+localPort = 3000
 externalPort = 80
 
 [workflows]
@@ -28,4 +37,4 @@ outputType = "webview"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
-waitForPort = 5210
+waitForPort = 3000
