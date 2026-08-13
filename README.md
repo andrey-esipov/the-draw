@@ -68,10 +68,10 @@ explicit opt-in — nothing runs "by accident."
 | `DATABASE_URL` | Yes | Real `postgres://` URL. Without it, dev falls back to an ephemeral embedded PGlite database (`./.dev-db`) — fine locally, not durable across a redeploy. |
 | `PUBLIC_URL` | Yes | Canonical HTTPS origin (no path/query/hash), e.g. `https://the-draw.replit.app`. Mints every invitation/return link and enforces the same-origin boundary on `/api/draw` mutations. |
 | `SESSION_SECRET` | Yes | Signs invitation/participant capability tokens. Rotating it invalidates outstanding links. |
-| `DRAW_LEAGUE_MUTATIONS_ENABLED` | Yes, for leagues to work at all | `true` to accept league-creation/pick/participant writes. Left unset, the app serves the draw read-only and every mutation route 404s — an explicit safety gate, not a bug. |
-| `DRAW_SOURCE_WORKER_ENABLED` | Yes, for polling | `true` to run the 60-second MediaWiki polling/reconciliation loop. Requires `DRAW_SOURCE_USER_AGENT` too. |
+| `DRAW_LEAGUE_MUTATIONS_ENABLED` | Yes, for leagues to work at all | `true` to accept league-creation/pick/participant/draft writes (`POST /api/draw/leagues`, `/participants`, `/submissions`, `PUT /api/draw/draft`). Left unset, those routes 404 and the draw serves read-only. This kill-switch does **not** cover participant removal or return-link email — `DELETE /api/draw/participant` and `POST /api/draw/email` stay reachable (same-origin only) regardless of this flag, since they are not league-creation mutations. |
+| `DRAW_SOURCE_WORKER_ENABLED` | Yes | `true` to run the 60-second MediaWiki polling/reconciliation loop; the app fails to boot in production without it (draw availability depends on it). Requires `DRAW_SOURCE_USER_AGENT` too. |
 | `DRAW_SOURCE_USER_AGENT` | With the line above | Identifies this deployment to MediaWiki per their API etiquette, e.g. `TheDraw/1.0 (you@example.com)`. |
-| `DRAW_RETENTION_WORKER_ENABLED` | Recommended | `true` to run the scheduled retention sweep of expired league data. |
+| `DRAW_RETENTION_WORKER_ENABLED` | Yes | `true` to run the scheduled retention sweep of expired league data; the app fails to boot in production without it. |
 | `DRAW_EMAIL_WORKER_ENABLED` | No — leave unset | Email delivery for return links is **explicitly disabled** until a standalone canary is proven; see below. |
 | `PORT` | No | Defaults to `3000`. Replit sets this automatically for the configured deployment. |
 
@@ -128,7 +128,14 @@ npm start       # NODE_ENV=production tsx server/bootstrap.ts
 ```
 
 Set `DATABASE_URL`, `PUBLIC_URL=https://the-draw.replit.app`, `SESSION_SECRET`,
-`DRAW_LEAGUE_MUTATIONS_ENABLED=true`, `DRAW_SOURCE_WORKER_ENABLED=true`, and
-`DRAW_SOURCE_USER_AGENT` as Replit Secrets (see the environment variable table
-above). `GET /api/health` reports DB connectivity plus MediaWiki-source, email, and
-retention worker health for readiness checks.
+`DRAW_LEAGUE_MUTATIONS_ENABLED=true`, `DRAW_RETENTION_WORKER_ENABLED=true`,
+`DRAW_SOURCE_WORKER_ENABLED=true`, and `DRAW_SOURCE_USER_AGENT` as Replit Secrets
+(see the environment variable table above; the first two are already committed
+in `.replit`, the rest carry operator-specific values and stay secrets). `GET
+/api/health` reports liveness — DB connectivity plus MediaWiki-source, email, and
+retention worker health — without failing the deployment for expected/valid
+states (e.g. no canonical revision yet, email intentionally disabled). `GET
+/api/ready`, wired as `.replit`'s `healthCheckPath`, is the deployment readiness
+gate: it fails (503) if the source or retention workers are disabled/misconfigured
+in production, or if a required worker is genuinely unhealthy — the signal Replit
+should use to decide whether the instance is fit to receive traffic.
