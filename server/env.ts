@@ -80,5 +80,14 @@ export function requiredEnvErrors(): string[] {
   if (DRAW_EMAIL_WORKER_ENABLED && !hasDrawEmailProvider) {
     missing.push('RESEND_API_KEY and RESEND_FROM_EMAIL (required when DRAW_EMAIL_WORKER_ENABLED=true)');
   }
+  // Polling and retention are documented as required in production (see README) — enforcing
+  // them here turns "silently disabled" into a fail-fast boot error instead of a readiness
+  // endpoint quietly reporting degraded service after the fact.
+  if (isProd && !DRAW_SOURCE_WORKER_ENABLED) {
+    missing.push('DRAW_SOURCE_WORKER_ENABLED=true (required in production — draw availability depends on the MediaWiki polling loop)');
+  }
+  if (isProd && !DRAW_RETENTION_WORKER_ENABLED) {
+    missing.push('DRAW_RETENTION_WORKER_ENABLED=true (required in production — expired league data must be swept, not silently retained)');
+  }
   return missing;
 }

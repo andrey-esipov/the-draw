@@ -15,10 +15,19 @@ channel = "stable-25_05"
 deploymentTarget = "vm"
 build = ["sh", "-c", "npm ci && npm run build"]
 run = ["sh", "-c", "npm start"]
-healthCheckPath = "/api/health"
+healthCheckPath = "/api/ready"
 
 [env]
 PORT = "3000"
+# DRAW_LEAGUE_MUTATIONS_ENABLED and DRAW_RETENTION_WORKER_ENABLED are booleans with no other
+# required config, so they are safe to commit here (unlike DATABASE_URL/PUBLIC_URL/
+# SESSION_SECRET/DRAW_SOURCE_USER_AGENT, which stay Replit Secrets). DRAW_SOURCE_WORKER_ENABLED
+# also stays a Replit Secret alongside DRAW_SOURCE_USER_AGENT (its required, operator-specific
+# MediaWiki contact string) — server/env.ts fails the production boot fast with a clear error if
+# either DRAW_SOURCE_WORKER_ENABLED or DRAW_RETENTION_WORKER_ENABLED is left unset, so a redeploy
+# can no longer silently ship with polling or retention turned off.
+DRAW_LEAGUE_MUTATIONS_ENABLED = "true"
+DRAW_RETENTION_WORKER_ENABLED = "true"
 
 [[ports]]
 localPort = 3000

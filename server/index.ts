@@ -16,6 +16,8 @@ import { sql } from 'drizzle-orm';
 import { db, runMigrations } from './db.js';
 import {
   DRAW_LEAGUE_MUTATIONS_ENABLED,
+  DRAW_RETENTION_WORKER_ENABLED,
+  DRAW_SOURCE_WORKER_ENABLED,
   isProd,
   PORT,
   requiredEnvErrors,
@@ -26,6 +28,7 @@ import { mountDrawRoutes } from './draw-routes.js';
 import { mountDrawStatic } from './draw-static.js';
 import { drawEmailHealth, startDrawEmailDelivery } from './draw-email-outbox.js';
 import { drawRetentionHealth, startDrawRetentionMaintenance } from './draw-retention.js';
+import { computeDrawReadinessReasons } from './draw-readiness.js';
 import { assertDrawAcceptanceMode, drawAcceptanceModeErrors, shouldServeBuiltSpa } from './draw-acceptance.js';
 import type { StartupGate } from './startup-gate.js';
 
@@ -98,18 +101,20 @@ export async function initializeApplication(app: Express, startupGate: StartupGa
   // Health check: mounted before body parsing — a load-balancer/monitoring probe,
   // not an authenticated route. Pings the DB with a short timeout so "200 OK"
   // actually means the app can serve real requests, not just that the process
-  // is alive.
+  // is alive. This is liveness only — it does not gate on whether
+  // production-required workers are actually enabled; see /api/ready for that.
+  const collectDrawSubsystemHealth = () => Promise.race([
+    Promise.all([
+      db.execute(sql`select 1`),
+      drawSourceHealth(),
+      drawEmailHealth(),
+      drawRetentionHealth(),
+    ]),
+    new Promise<never>((_resolve, reject) => setTimeout(() => reject(new Error('db_health_timeout')), 2000)),
+  ]);
   app.get('/api/health', async (_req, res) => {
     try {
-      const [, drawSource, drawEmail, drawRetention] = await Promise.race([
-        Promise.all([
-          db.execute(sql`select 1`),
-          drawSourceHealth(),
-          drawEmailHealth(),
-          drawRetentionHealth(),
-        ]),
-        new Promise<never>((_resolve, reject) => setTimeout(() => reject(new Error('db_health_timeout')), 2000)),
-      ]);
+      const [, drawSource, drawEmail, drawRetention] = await collectDrawSubsystemHealth();
       const drawOperational = drawEmail.state !== 'unhealthy' && drawRetention.state !== 'unhealthy';
       res.json({
         ok: true,
@@ -123,6 +128,40 @@ export async function initializeApplication(app: Express, startupGate: StartupGa
     } catch (e) {
       console.error('[the-draw] health check: db ping failed:', e);
       res.status(503).json({ ok: false, db: 'error', ts: Date.now() });
+    }
+  });
+
+  // Deployment readiness: distinct from liveness above, and what `.replit`'s
+  // `healthCheckPath` targets. Fails (non-2xx) whenever a production-required worker is
+  // disabled or a subsystem reports itself genuinely unhealthy, so a misconfigured deploy
+  // is caught before traffic is routed to it instead of reporting a plain 200 regardless.
+  // A draw that has not been announced yet ("never_fetched") is a valid, expected awaiting
+  // state, not a failure — only a source that tried and failed, drifted stale, or was
+  // withheld by reconciliation counts against readiness.
+  app.get('/api/ready', async (_req, res) => {
+    try {
+      const [, drawSource, drawEmail, drawRetention] = await collectDrawSubsystemHealth();
+      const reasons = computeDrawReadinessReasons({
+        isProd,
+        sourceWorkerEnabled: DRAW_SOURCE_WORKER_ENABLED,
+        retentionWorkerEnabled: DRAW_RETENTION_WORKER_ENABLED,
+        drawSource,
+        drawEmail,
+        drawRetention,
+      });
+      const ready = reasons.length === 0;
+      res.status(ready ? 200 : 503).json({
+        ready,
+        reasons,
+        db: 'ok',
+        ts: Date.now(),
+        drawSource,
+        drawEmail,
+        drawRetention,
+      });
+    } catch (e) {
+      console.error('[the-draw] readiness check failed:', e);
+      res.status(503).json({ ready: false, reasons: ['db_unreachable'], ts: Date.now() });
     }
   });
 
