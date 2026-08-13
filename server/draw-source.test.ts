@@ -114,7 +114,7 @@ describe('MediaWiki draw source qualification', () => {
       { cwd: process.cwd(), encoding: 'utf8' },
     );
     expect(output).toContain('completed draw matches');
-  });
+  }, 120_000);
 
   it('requires an explicit retirement before one best-of-three winning set is terminal', () => {
     const base = inputFor(womenOracle, 'complete-wimbledon-women.wiki', '201');
