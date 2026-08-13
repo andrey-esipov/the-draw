@@ -307,22 +307,32 @@ export async function drawSourceHealth(
         : null;
       let state: DrawSourceHealthState;
       if (event.delayCode === 'reconciliation_conflict') state = 'conflicting';
-      else if (!event.lastSuccessfulAt) state = 'never_fetched';
       else if (event.delayCode) state = 'delayed';
+      else if (!event.lastSuccessfulAt) state = 'never_fetched';
       else if (freshnessAgeMs !== null && freshnessAgeMs > DRAW_FRESHNESS_TARGET_MS) state = 'stale';
       else state = 'current';
+      // Once an event's lifecycle has completed (now > completesAt) and stopped being
+      // actively polled, its freshness/staleness is historical, not a live-production
+      // concern — a finished tournament must not keep failing readiness forever. An event
+      // that completed without ever acquiring canonical history is still a real problem,
+      // so it stays readiness-relevant regardless of lifecycle state.
+      const hasCanonicalAcceptedRevision = Boolean(sourceRevisionId);
+      const pollingActive = event.pollingEnabled && now <= event.completesAt;
+      const readinessRelevant = pollingActive || !hasCanonicalAcceptedRevision;
       return {
         id: event.id,
         slug: event.slug,
         state,
         pollingEnabled: event.pollingEnabled,
+        pollingActive,
+        readinessRelevant,
         creationEnabled: event.creationEnabled,
         lastAttemptAt: event.lastAttemptAt?.toISOString() ?? null,
         lastSuccessfulAt: event.lastSuccessfulAt?.toISOString() ?? null,
         sourceFreshnessAgeMs: freshnessAgeMs,
         delayCode: publicDelayCode(event.delayCode),
         projectionLag: Boolean(event.projectionFailureCode),
-        hasCanonicalAcceptedRevision: Boolean(sourceRevisionId),
+        hasCanonicalAcceptedRevision,
         canonicalSourceRevisionId: sourceRevisionId ?? null,
         canonicalChecksum: checksum ?? null,
         canonicalAcceptedAt: sourceRevisionId

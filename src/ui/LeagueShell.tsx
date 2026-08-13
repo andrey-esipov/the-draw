@@ -79,6 +79,7 @@ export function LeagueShell({
   const [draft, setDraft] = useState<DrawDraftAccess | null>(null);
   const [links, setLinks] = useState<{ invitationLink?: string; returnLink: string } | null>(null);
   const [draftFailure, setDraftFailure] = useState(false);
+  const [participantLoading, setParticipantLoading] = useState(false);
   const refreshActive = useRef(false);
   const draftPending = useRef(false);
   const refreshRef = useRef<() => Promise<void>>(async () => {});
@@ -106,7 +107,9 @@ export function LeagueShell({
           : draft
             ? 'picker'
             : 'draft-loading'
-        : state.kind;
+        : participantLoading
+          ? 'loading-participant'
+          : state.kind;
 
   useLayoutEffect(() => {
     document.querySelector<HTMLElement>('.league-layer')?.scrollTo({ top: 0, behavior: 'auto' });
@@ -123,6 +126,7 @@ export function LeagueShell({
     const generation = ++participantLoadGeneration.current;
     setCapability(participantCapability);
     setDraftFailure(false);
+    setParticipantLoading(true);
     try {
       const access = knownState?.kind === 'participant'
         ? { league: knownState.league, checkedAt: knownState.checkedAt }
@@ -152,6 +156,8 @@ export function LeagueShell({
       } else {
         setDraftFailure(true);
       }
+    } finally {
+      if (generation === participantLoadGeneration.current) setParticipantLoading(false);
     }
   }, [fetcher]);
 
@@ -166,6 +172,7 @@ export function LeagueShell({
     setDraft(null);
     setLinks(null);
     setDraftFailure(false);
+    setParticipantLoading(false);
     if (initialState.kind === 'participant' && initialCapability?.kind === 'participant') {
       void loadParticipant(initialCapability, initialState);
     }
@@ -182,9 +189,16 @@ export function LeagueShell({
       if (!current.league.league.revealed && draft) {
         const currentDraft = await readLeagueDraft(capability, fetcher);
         if (generation !== participantLoadGeneration.current) return;
+        // A source-driven change is detected via acceptedRevisionId/affectedMatchIds. A
+        // same-revision edit made from another tab (or device) under this same accepted
+        // revision only shows up as a bumped authoritative draft version/checksum or
+        // different picks — without this check that edit is silently dropped on refresh.
         if (
           currentDraft.acceptedRevisionId !== draft.acceptedRevisionId
           || currentDraft.affectedMatchIds.length
+          || currentDraft.version !== draft.version
+          || currentDraft.acceptedRevisionChecksum !== draft.acceptedRevisionChecksum
+          || JSON.stringify(currentDraft.picks) !== JSON.stringify(draft.picks)
         ) {
           if (!draftPending.current) setDraft(currentDraft);
         }
@@ -237,6 +251,11 @@ export function LeagueShell({
             return result.delivery.state === 'unconfirmed' ? 'failed' : result.delivery.state;
           }}
           onContinue={() => {
+            // Enter the participant-loading transition in the same synchronous flush that
+            // clears the links screen, so React never renders an intermediate frame that
+            // falls through to the create/join form while loadParticipant is still in
+            // flight — state.kind stays 'create'/'invitation' until it resolves.
+            setParticipantLoading(true);
             setLinks(null);
             onCapabilityChange?.(capability);
             void loadParticipant(capability);
@@ -245,6 +264,10 @@ export function LeagueShell({
         <Signature />
       </main>
     );
+  }
+
+  if (surface === 'loading-participant') {
+    return <main className="league-shell" aria-busy="true"><section className="league-status" aria-live="polite"><p className="league-kicker">Private draft</p><h1>Loading your bracket</h1><p>Your participant access is being loaded.</p></section><Signature /></main>;
   }
 
   if (state.kind === 'create') {

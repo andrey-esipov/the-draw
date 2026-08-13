@@ -385,9 +385,16 @@ export function BracketPicker({
       if (apiError.code === 'locked') setSubmitError('The bracket locked before this submission reached the server.');
       else if (apiError.code === 'draft_conflict' || apiError.code === 'revision_conflict') {
         setSubmitError('The draw changed. Reloading your saved bracket.');
-        await onReload?.();
-      }
-      else setSubmitError('The bracket was not submitted. Your saved draft is still here; try again.');
+        try {
+          await onReload?.();
+        } catch {
+          // A failed reload must not leave the "Reloading your saved bracket." message
+          // frozen on screen forever, misleadingly implying it is still in progress —
+          // surface an explicit failure with a retry path instead. `interactionLocked`
+          // (submitting || effectiveLocked) still covers this whole window via `finally`.
+          if (mounted.current) setSubmitError('The draw changed, but your saved bracket could not be reloaded. Try again.');
+        }
+      } else setSubmitError('The bracket was not submitted. Your saved draft is still here; try again.');
     } finally {
       if (mounted.current) setSubmitting(false);
     }

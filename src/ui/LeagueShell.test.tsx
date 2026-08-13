@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { loadLeagueAccess, type LeagueAccessState } from '../data/league-api';
+import { createLeaguePreviewDraw } from '../data/league-preview';
 import { LeagueShell } from './LeagueShell';
 
 afterEach(() => {
@@ -241,6 +242,67 @@ describe('league-aware shell', () => {
     fetcher.mockRestore();
   });
 
+  it('moves straight to an explicit loading-participant transition on Start picking, never back to the create form', async () => {
+    // Regression: the links -> picking handoff used to clear `links` before loadParticipant
+    // resolved, letting React fall through to state.kind ('create') and briefly re-render
+    // the create form while the participant fetch was still in flight.
+    let resolveLeague!: (response: Response) => void;
+    const leaguePending = new Promise<Response>((resolve) => { resolveLeague = resolve; });
+    const fetcher = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
+      const path = new URL(
+        typeof input === 'string' ? input : input instanceof URL ? input : input.url,
+        window.location.origin,
+      ).pathname;
+      if (init?.method === 'POST' && path.endsWith('/api/draw/leagues')) {
+        return new Response(JSON.stringify({
+          leagueId: 'league-1',
+          participantId: 'participant-1',
+          eventKind: 'mens_singles',
+          invitationLink: 'https://the-draw.replit.app/#invite=abc',
+          returnLink: 'https://the-draw.replit.app/#return=xyz',
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      if (path.endsWith('/api/draw/league')) return leaguePending;
+      throw new Error(`unexpected fetch: ${path}`);
+    });
+
+    render(<LeagueShell state={{ kind: 'create', eventSlug: 'us-open-2026-men', eventName: 'US Open' }} />);
+    fireEvent.change(screen.getByLabelText('League name'), { target: { value: 'Friday Night Draw' } });
+    fireEvent.change(screen.getByLabelText('Your display name'), { target: { value: 'Ada' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Create private league' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Start picking' }));
+
+    expect(await screen.findByRole('heading', { name: 'Loading your bracket' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Create private league' })).toBeNull();
+    expect(screen.queryByLabelText('League name')).toBeNull();
+
+    resolveLeague(new Response(JSON.stringify({
+      league: {
+        id: 'league-1', name: 'Friday Night Draw', eventSlug: 'us-open-2026-men',
+        eventKind: 'mens_singles', lockAt: '2026-08-24T15:00:00.000Z', revealed: true,
+      },
+      participantId: 'participant-1',
+      participantCount: 1,
+      viewer: { draft: { exists: false, version: 0, pickCount: 0 }, submission: { active: false, complete: false } },
+      projection: {
+        canonical: {
+          revisionId: 'rev-1', sourceRevisionId: '101', checksum: 'a'.repeat(64),
+          fetchedAt: '2026-08-24T15:01:00.000Z', acceptedAt: '2026-08-24T15:02:00.000Z',
+          sourceUrl: 'https://en.wikipedia.org/wiki/fixture', corrected: false,
+          freshness: { state: 'current', lastAttemptAt: null, lastSuccessfulAt: null, delayReason: null },
+        },
+        movementAvailable: false,
+        standings: [],
+        participants: [],
+        recap: { state: 'none' },
+      },
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    await waitFor(() => expect(screen.queryByRole('heading', { name: 'Loading your bracket' })).toBeNull());
+    expect(screen.queryByRole('button', { name: 'Create private league' })).toBeNull();
+    fetcher.mockRestore();
+  });
+
   it('recovers to revealed standings when draft loading crosses the lock boundary', async () => {
     const fetcher = vi.spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(new Response(JSON.stringify({ error: 'locked' }), {
@@ -281,6 +343,63 @@ describe('league-aware shell', () => {
     />);
     expect(await screen.findByRole('heading', { name: 'No submitted brackets' })).toBeTruthy();
     expect(screen.queryByText('Your picks could not be loaded')).toBeNull();
+    fetcher.mockRestore();
+  });
+
+  it('picks up a same-revision draft edit made in another tab on refresh', async () => {
+    // Regression: refresh only reloaded the draft when acceptedRevisionId changed or
+    // affectedMatchIds was non-empty — a same-revision edit saved from another tab (no
+    // source movement) was silently dropped because neither condition fired.
+    const draw = createLeaguePreviewDraw('us-open-2026-men');
+    const draftWithPlayerName = (playerName: string, version: number) => ({
+      version,
+      picks: {},
+      acceptedRevisionId: 'revision-1',
+      acceptedRevisionChecksum: 'checksum-1',
+      affectedMatchIds: [],
+      locked: false,
+      draw: {
+        ...draw,
+        players: {
+          ...draw.players,
+          'preview-player-1': { ...draw.players['preview-player-1']!, name: playerName },
+        },
+      },
+    });
+    const fetcher = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(JSON.stringify(draftWithPlayerName('Player A', 1)), {
+        status: 200, headers: { 'Content-Type': 'application/json' },
+      }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        league: { id: 'league-1', name: 'Friends', eventSlug: 'us-open-2026-men', eventKind: 'mens_singles', lockAt: '2026-08-24T15:00:00.000Z', revealed: false },
+        participantId: 'participant-1',
+        participantCount: 1,
+        viewer: { draft: { exists: true, version: 2, pickCount: 0 }, submission: { active: false, complete: false } },
+        projection: null,
+      }), { status: 200, headers: { 'Content-Type': 'application/json' } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(draftWithPlayerName('Player B', 2)), {
+        status: 200, headers: { 'Content-Type': 'application/json' },
+      }));
+
+    render(<LeagueShell
+      capability={{ kind: 'participant', token: 'return-secret' }}
+      state={{
+        kind: 'participant',
+        checkedAt: '2026-08-11T23:00:00.000Z',
+        league: {
+          league: { id: 'league-1', name: 'Friends', eventSlug: 'us-open-2026-men', eventKind: 'mens_singles', lockAt: '2026-08-24T15:00:00.000Z', revealed: false },
+          participantId: 'participant-1',
+          participantCount: 1,
+          viewer: { draft: { exists: true, version: 1, pickCount: 0 }, submission: { active: false, complete: false } },
+          projection: null,
+        },
+      }}
+    />);
+    expect(await screen.findByText('Player A')).toBeTruthy();
+
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(await screen.findByText('Player B')).toBeTruthy();
+    expect(screen.queryByText('Player A')).toBeNull();
     fetcher.mockRestore();
   });
 

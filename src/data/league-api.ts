@@ -194,7 +194,7 @@ function validPathStep(value: unknown): boolean {
     && nullableString(step.acceptedWinnerName)
     && nullableString(step.acceptedOpponentId)
     && nullableString(step.acceptedOpponentName)
-    && ['alive', 'broken', 'unresolved', 'changed-opponent'].includes(String(step.state)),
+    && ['alive', 'broken', 'unresolved', 'changed-opponent', 'withdrawn'].includes(String(step.state)),
   );
 }
 
@@ -215,6 +215,7 @@ function validStanding(value: unknown): boolean {
     && numberField(standing, 'score')
     && numberField(standing, 'maxPossible')
     && (standing.movement === null || numberField(standing, 'movement'))
+    && typeof standing.unscorable === 'boolean'
     && stringField(champion, 'playerId')
     && stringField(champion, 'playerName')
     && ['alive', 'broken', 'unresolved'].includes(String(champion.state))
@@ -230,10 +231,10 @@ function validStanding(value: unknown): boolean {
 
 function validRecap(value: unknown): boolean {
   const recap = record(value);
-  if (!recap || !['none', 'updating', 'current'].includes(String(recap.state))) return false;
+  if (!recap || !['none', 'updating', 'unavailable', 'current'].includes(String(recap.state))) return false;
   if (recap.state === 'none') return true;
   if (!stringField(recap, 'acceptedRevisionId')) return false;
-  if (recap.state === 'updating') return true;
+  if (recap.state === 'updating' || recap.state === 'unavailable') return true;
   const view = record(recap.viewModel);
   const validMovement = (entry: unknown) => {
     const movement = record(entry);

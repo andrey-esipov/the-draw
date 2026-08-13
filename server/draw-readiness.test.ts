@@ -68,4 +68,20 @@ describe('computeDrawReadinessReasons', () => {
       expect(computeDrawReadinessReasons(input)).toEqual([]);
     }
   });
+
+  it('excludes a source event from readiness when readinessRelevant is explicitly false', () => {
+    const input = healthyInput();
+    input.drawSource = { events: [{ state: 'stale' as const, readinessRelevant: false }] };
+    expect(computeDrawReadinessReasons(input)).toEqual([]);
+  });
+
+  it('still fails readiness for an unhealthy event when readinessRelevant is true or omitted', () => {
+    const explicit = healthyInput();
+    explicit.drawSource = { events: [{ state: 'delayed' as const, readinessRelevant: true }] };
+    expect(computeDrawReadinessReasons(explicit)).toContain('draw_source_unhealthy');
+
+    const omitted = healthyInput();
+    omitted.drawSource = { events: [{ state: 'conflicting' as const }] };
+    expect(computeDrawReadinessReasons(omitted)).toContain('draw_source_unhealthy');
+  });
 });

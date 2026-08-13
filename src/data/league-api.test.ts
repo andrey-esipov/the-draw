@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import type { DrawLeagueProjection, DrawLeagueStanding } from '../../shared/draw/contracts';
 import {
   createLeague,
   joinLeague,
@@ -6,6 +7,84 @@ import {
   parseCapabilityFragment,
   saveLeagueDraft,
 } from './league-api';
+
+function fixtureStanding(overrides: Partial<DrawLeagueStanding> = {}): DrawLeagueStanding {
+  return {
+    participantId: 'withdrawn-participant',
+    seat: 1,
+    displayName: 'Andrey',
+    removed: false,
+    rank: 1,
+    tied: false,
+    score: 6,
+    maxPossible: 10,
+    movement: null,
+    unscorable: true,
+    champion: { playerId: 'a', playerName: 'A. Player', state: 'unresolved' },
+    correctByRound: [1],
+    submission: { version: 1, checksum: 'a'.repeat(64), picks: { r1m1: 'a' } },
+    path: [{
+      matchId: 'r1m1',
+      round: 1,
+      roundName: 'Round 1',
+      points: 1,
+      predictedWinnerId: 'a',
+      predictedWinnerName: 'A. Player',
+      predictedOpponentId: 'b',
+      predictedOpponentName: 'B. Player',
+      acceptedWinnerId: null,
+      acceptedWinnerName: null,
+      acceptedOpponentId: null,
+      acceptedOpponentName: null,
+      state: 'withdrawn',
+    }],
+    ...overrides,
+  };
+}
+
+function fixtureProjection(overrides: Partial<DrawLeagueProjection> = {}): DrawLeagueProjection {
+  return {
+    canonical: {
+      revisionId: 'revision-1',
+      sourceRevisionId: '101',
+      checksum: 'b'.repeat(64),
+      fetchedAt: '2026-08-24T15:01:00.000Z',
+      acceptedAt: '2026-08-24T15:02:00.000Z',
+      sourceUrl: 'https://en.wikipedia.org/wiki/fixture',
+      corrected: false,
+      freshness: {
+        state: 'current',
+        lastAttemptAt: '2026-08-24T15:03:00.000Z',
+        lastSuccessfulAt: '2026-08-24T15:03:00.000Z',
+        delayReason: null,
+      },
+    },
+    movementAvailable: true,
+    standings: [fixtureStanding()],
+    participants: [
+      { id: 'withdrawn-participant', seat: 1, displayName: 'Andrey', removed: false, submitted: true },
+    ],
+    recap: { state: 'none' },
+    ...overrides,
+  };
+}
+
+function fixtureParticipantAccess(projection: DrawLeagueProjection | null) {
+  return {
+    league: {
+      id: 'league-1',
+      name: 'Centre Court friends',
+      eventSlug: 'us-open-2026-men',
+      eventKind: 'mens_singles',
+      lockAt: '2026-08-24T15:00:00.000Z',
+      revealed: true,
+    },
+    participantId: 'withdrawn-participant',
+    participantCount: 1,
+    viewer: { draft: { exists: true, version: 1, pickCount: 1 }, submission: { active: true, complete: true } },
+    projection,
+  };
+}
 
 describe('private league capability bootstrap', () => {
   it('accepts exactly one invitation or return capability and rejects ambiguity', () => {
@@ -159,5 +238,44 @@ describe('private league capability bootstrap', () => {
       fetcher,
     );
     expect(saved.version).toBe(5);
+  });
+
+  it('accepts a withdrawn-player path state and its unscorable standing instead of reporting a network failure', async () => {
+    const result = await loadLeagueAccess(
+      { kind: 'participant', token: 'secret-return' },
+      async () => new Response(
+        JSON.stringify(fixtureParticipantAccess(fixtureProjection())),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+    expect(result.kind).toBe('participant');
+    if (result.kind !== 'participant') throw new Error('expected participant access');
+    expect(result.league.projection?.standings[0]).toMatchObject({ unscorable: true });
+    expect(result.league.projection?.standings[0]?.path[0]).toMatchObject({ state: 'withdrawn' });
+  });
+
+  it('accepts an unavailable recap state instead of reporting a network failure', async () => {
+    const result = await loadLeagueAccess(
+      { kind: 'participant', token: 'secret-return' },
+      async () => new Response(
+        JSON.stringify(fixtureParticipantAccess(fixtureProjection({
+          recap: { state: 'unavailable', acceptedRevisionId: 'revision-1' },
+        }))),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+    expect(result.kind).toBe('participant');
+    if (result.kind !== 'participant') throw new Error('expected participant access');
+    expect(result.league.projection?.recap).toEqual({ state: 'unavailable', acceptedRevisionId: 'revision-1' });
+  });
+
+  it('still rejects a standing missing the required unscorable field as an invalid response', async () => {
+    const malformed = fixtureParticipantAccess(fixtureProjection());
+    delete (malformed.projection!.standings[0] as { unscorable?: boolean }).unscorable;
+    const result = await loadLeagueAccess(
+      { kind: 'participant', token: 'secret-return' },
+      async () => new Response(JSON.stringify(malformed), { status: 200, headers: { 'Content-Type': 'application/json' } }),
+    );
+    expect(result.kind).toBe('network-failure');
   });
 });

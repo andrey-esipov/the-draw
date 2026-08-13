@@ -161,6 +161,68 @@ describe('Draw operations', () => {
       .toBe('stale');
   });
 
+  it('classifies a first failed attempt as delayed, not never_fetched, since it did try and fail', async () => {
+    await configureDrawEvent(base, { database, actor: 'andrey', reason: 'first-failure fixture' });
+    // The event has never succeeded (last_successful_at stays null) but did attempt and fail —
+    // this must report "delayed" (a real problem worth surfacing/blocking on), not
+    // "never_fetched" (the valid, expected "not announced yet" awaiting state).
+    await database.execute(sql`
+      UPDATE draw_events SET
+        delay_code = 'source_timeout',
+        last_attempt_at = '2026-08-11T16:55:00Z'
+      WHERE slug = ${base.slug}
+    `);
+    const health = await drawSourceHealth(database, new Date('2026-08-11T17:00:00Z'));
+    expect(health.events[0]).toMatchObject({ state: 'delayed', readinessRelevant: true });
+  });
+
+  it('excludes a completed event with canonical history from readiness once polling has lapsed', async () => {
+    await configureDrawEvent(base, { database, actor: 'andrey', reason: 'completed-lifecycle fixture' });
+    const [event] = await database.select().from(drawEvents).where(sql`slug = ${base.slug}`);
+    const revisionId = crypto.randomUUID();
+    await database.execute(sql`
+      INSERT INTO draw_accepted_revisions (
+        id, event_id, source_revision_id, checksum, fetched_at, accepted_at,
+        parser_version, payload, explicit_corrections, complete
+      ) VALUES (
+        ${revisionId}, ${event!.id}, '101', ${'a'.repeat(64)},
+        '2026-08-11T16:00:00Z', '2026-08-11T16:00:00Z', 'mediawiki-v1', '{}', '[]', true
+      )
+    `);
+    await database.execute(sql`
+      INSERT INTO draw_event_heads (event_id, accepted_revision_id, revision_accepted_at, advanced_at)
+      VALUES (${event!.id}, ${revisionId}, '2026-08-11T16:00:00Z', '2026-08-11T16:00:00Z')
+    `);
+    // Stale as of the event's own last_successful_at, but "now" is well past completesAt —
+    // the tournament is over, polling has legitimately lapsed, and it must not keep blocking
+    // deployment readiness forever even though the diagnostic state still reports "stale".
+    await database.execute(sql`
+      UPDATE draw_events SET last_successful_at = '2026-08-11T16:00:00Z' WHERE slug = ${base.slug}
+    `);
+    const health = await drawSourceHealth(database, new Date('2026-09-01T00:00:00Z'));
+    expect(health.events[0]).toMatchObject({
+      state: 'stale',
+      pollingActive: false,
+      readinessRelevant: false,
+      hasCanonicalAcceptedRevision: true,
+    });
+  });
+
+  it('keeps a completed event readiness-relevant when it never acquired canonical history', async () => {
+    await configureDrawEvent(base, { database, actor: 'andrey', reason: 'completed-without-data fixture' });
+    await database.execute(sql`
+      UPDATE draw_events SET delay_code = 'source_timeout', last_attempt_at = '2026-08-11T16:55:00Z'
+      WHERE slug = ${base.slug}
+    `);
+    const health = await drawSourceHealth(database, new Date('2026-09-01T00:00:00Z'));
+    expect(health.events[0]).toMatchObject({
+      state: 'delayed',
+      pollingActive: false,
+      readinessRelevant: true,
+      hasCanonicalAcceptedRevision: false,
+    });
+  });
+
   it('keeps free-text source and projection diagnostics out of public health', async () => {
     await configureDrawEvent(base, { database, actor: 'andrey', reason: 'health fixture' });
     await database.execute(sql`

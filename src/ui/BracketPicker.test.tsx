@@ -101,6 +101,33 @@ describe('bracket picker', () => {
     expect(screen.getByText(/Reloading your saved bracket/i)).toBeTruthy();
   });
 
+  it('shows an explicit reload-failure message instead of a frozen "Reloading" state when onReload rejects', async () => {
+    // Regression: a rejecting onReload used to escape uncaught, leaving the transient
+    // "Reloading your saved bracket." message on screen forever with no indication the
+    // reload actually failed.
+    const draw = smallDraw();
+    const reload = vi.fn().mockRejectedValue(new Error('offline'));
+    const submit = vi.fn().mockRejectedValue({ code: 'draft_conflict' });
+    render(<BracketPicker
+      draw={draw}
+      initialPicks={fillRemainingBySeed(draw, {})}
+      version={7}
+      affectedMatchIds={[]}
+      locked={false}
+      lockAt="2026-08-24T15:00:00Z"
+      onSave={vi.fn()}
+      onSubmit={submit}
+      onReload={reload}
+    />);
+    fireEvent.click(screen.getByRole('button', { name: 'Submit bracket' }));
+    await waitFor(() => expect(reload).toHaveBeenCalledOnce());
+    expect(await screen.findByText(/could not be reloaded/i)).toBeTruthy();
+    expect(screen.queryByText(/^The draw changed\. Reloading your saved bracket\.$/)).toBeNull();
+    // The interaction lock (submitting/effectiveLocked) must still clear once the
+    // failed reload attempt settles, so the existing Submit button remains the retry path.
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Submit bracket' }).hasAttribute('disabled')).toBe(false));
+  });
+
   it('locks every pick and the seed-fill tools for the entire submitting/reload window so a race pick cannot be silently discarded', async () => {
     const draw = smallDraw();
     let resolveReload: () => void = () => {};
